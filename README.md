@@ -26,6 +26,7 @@ IE213/
 ├── tests/              # Các bài kiểm thử tự động
 ├── .gitignore
 ├── package.json
+├── package-lock.json   # Lockfile duy nhất cho toàn bộ monorepo
 └── README.md
 ```
 
@@ -33,6 +34,12 @@ IE213/
 
 - [Node.js](https://nodejs.org/) >= 18.x
 - [npm](https://www.npmjs.com/) >= 9.x
+
+## Quy Ước Quản Lý Dependency
+
+- Dự án dùng `npm workspaces` cho `backend/` và `frontend/`.
+- Chỉ dùng `package-lock.json` tại thư mục root.
+- Không tạo hoặc commit `package-lock.json` riêng trong `backend/` và `frontend/`.
 
 ## Hướng Dẫn Cài Đặt
 
@@ -66,7 +73,7 @@ Chỉnh sửa `backend/.env` theo nhu cầu.
 ```bash
 npm run backend
 # hoặc
-cd backend && npm run dev
+npm run dev --workspace backend
 ```
 
 Server sẽ chạy tại: http://localhost:5000
@@ -76,7 +83,7 @@ Server sẽ chạy tại: http://localhost:5000
 ```bash
 npm run frontend
 # hoặc
-cd frontend && npm start
+npm run start --workspace frontend
 ```
 
 Ứng dụng sẽ mở tại: http://localhost:3000
