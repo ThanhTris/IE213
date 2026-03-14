@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
+const { getHealthStatus } = require("../controllers/health.controller");
+
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.json({ message: 'Welcome to IE213 API' });
-});
+router.get("/health", getHealthStatus);
 
 module.exports = router;

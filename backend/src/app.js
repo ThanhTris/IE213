@@ -1,32 +1,25 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+const notFound = require("./middleware/notFound");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
 app.use(cors());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== "test" && !process.env.JEST_WORKER_ID) {
+  app.use(morgan("dev"));
+}
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Routes
-const apiRoutes = require('./routes');
-app.use('/api', apiRoutes);
-
-// Health check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
-});
+const apiRoutes = require("./routes");
+app.use("/api", apiRoutes);
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
+app.use(notFound);
 
 // Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal Server Error' });
-});
+app.use(errorHandler);
 
 module.exports = app;
