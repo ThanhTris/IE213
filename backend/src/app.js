@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
+const health = require("./controllers/health.controller");
 
 const app = express();
 
@@ -14,7 +15,12 @@ app.use(express.json());
 
 // Routes
 const apiRoutes = require("./routes");
+const userRoutes = require("./routes/user.routes");
 app.use("/api", apiRoutes);
+app.use("/api/users", userRoutes);
+
+// Health check route
+app.get("/health", health.getHealthStatus);
 
 // 404 handler
 app.use(notFound);
