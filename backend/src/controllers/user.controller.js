@@ -1,8 +1,7 @@
-const User = require('../models/UserModel');
+const User = require("../models/UserModel");
 
-const handleError = (res, message, status = 400) => {
-  return res.status(status).json({ success: false, message });
-};
+const handleError = require("../utils/errorHandler");
+const handleSuccess = require("../utils/successHandler");
 
 // POST /api/users/auth
 const upsertUserByWallet = async (req, res) => {
@@ -10,7 +9,7 @@ const upsertUserByWallet = async (req, res) => {
     const { walletAddress, fullName, email, phone } = req.body;
 
     if (!walletAddress) {
-      return handleError(res, 'walletAddress is required', 400);
+      return handleError(res, "walletAddress is required", 400);
     }
 
     const wallet = walletAddress.trim().toLowerCase();
@@ -21,23 +20,23 @@ const upsertUserByWallet = async (req, res) => {
       // register
       user = new User({
         walletAddress: wallet,
-        fullName: fullName ? fullName.trim() : '',
-        email: email ? email.trim().toLowerCase() : '',
-        phone: phone ? phone.trim() : '',
+        fullName: fullName ? fullName.trim() : "",
+        email: email ? email.trim().toLowerCase() : "",
+        phone: phone ? phone.trim() : "",
       });
 
       await user.save();
-      return res.status(201).json({ success: true, message: 'User created', data: user });
+      return handleSuccess(res, "User registered successfully", user);
     }
 
     // login
-    return res.status(200).json({ success: true, message: 'User exists', data: user });
+    return handleSuccess(res, "User exists", user);
   } catch (error) {
-    console.error('[userAuth]', error);
+    console.error("[userAuth]", error);
     if (error.code === 11000) {
-      return handleError(res, 'Duplicate wallet or email exists', 409);
+      return handleError(res, "Duplicate wallet or email exists", 409);
     }
-    return handleError(res, 'Server error', 500);
+    return handleError(res, "Server error", 500);
   }
 };
 
@@ -46,18 +45,18 @@ const getUserByWallet = async (req, res) => {
   try {
     const walletAddress = req.query.walletAddress;
     if (!walletAddress) {
-      return handleError(res, 'walletAddress query is required', 400);
+      return handleError(res, "walletAddress query is required", 400);
     }
 
     const wallet = walletAddress.trim().toLowerCase();
 
-    const user = await User.findOne({ walletAddress: wallet }).select('-__v');
-    if (!user) return handleError(res, 'User not found', 404);
+    const user = await User.findOne({ walletAddress: wallet }).select("-__v");
+    if (!user) return handleError(res, "User not found", 404);
 
-    return res.status(200).json({ success: true, data: user });
+    return handleSuccess(res, "User found", user);
   } catch (error) {
-    console.error('[getUserByWallet]', error);
-    return handleError(res, 'Server error', 500);
+    console.error("[getUserByWallet]", error);
+    return handleError(res, "Server error", 500);
   }
 };
 
@@ -66,49 +65,50 @@ const updateUserByWallet = async (req, res) => {
   try {
     const walletAddress = req.params.walletAddress;
     if (!walletAddress) {
-      return handleError(res, 'walletAddress is required', 400);
+      return handleError(res, "walletAddress is required", 400);
     }
 
     const updates = {};
-    const fields = ['fullName', 'email', 'phone'];
+    const fields = ["fullName", "email", "phone"];
 
     fields.forEach((f) => {
       if (req.body[f] !== undefined) {
-        updates[f] = f === 'email' ? req.body[f].trim().toLowerCase() : req.body[f].trim();
+        updates[f] =
+          f === "email" ? req.body[f].trim().toLowerCase() : req.body[f].trim();
       }
     });
 
     if (Object.keys(updates).length === 0) {
-      return handleError(res, 'No fields to update', 400);
+      return handleError(res, "No fields to update", 400);
     }
 
     const wallet = walletAddress.trim().toLowerCase();
     const user = await User.findOneAndUpdate(
       { walletAddress: wallet },
       { $set: updates },
-      { new: true, runValidators: true }
-    ).select('-__v');
+      { new: true, runValidators: true },
+    ).select("-__v");
 
-    if (!user) return handleError(res, 'User not found', 404);
+    if (!user) return handleError(res, "User not found", 404);
 
-    return res.status(200).json({ success: true, message: 'Updated successfully', data: user });
+    return handleSuccess(res, "Updated successfully", user);
   } catch (error) {
-    console.error('[updateUserByWallet]', error);
+    console.error("[updateUserByWallet]", error);
     if (error.code === 11000) {
-      return handleError(res, 'Email already exists', 409);
+      return handleError(res, "Email already exists", 409);
     }
-    return handleError(res, 'Server error', 500);
+    return handleError(res, "Server error", 500);
   }
 };
 
 // GET /api/users
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-__v');
-    return res.status(200).json({ success: true, data: users });
+    const users = await User.find().select("-__v");
+    return handleSuccess(res, "Users found", users);
   } catch (error) {
-    console.error('[getAllUsers]', error);
-    return handleError(res, 'Server error', 500);
+    console.error("[getAllUsers]", error);
+    return handleError(res, "Server error", 500);
   }
 };
 
