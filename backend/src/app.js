@@ -16,8 +16,10 @@ app.use(express.json());
 // Routes
 const apiRoutes = require("./routes");
 const userRoutes = require("./routes/user.routes");
+const productRoutes = require("./routes/product.routes");
 app.use("/api", apiRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
 
 // Health check route
 app.get("/health", health.getHealthStatus);
