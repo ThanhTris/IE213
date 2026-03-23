@@ -1,10 +1,10 @@
 # Trạng thái API Backend
 
-Ngày cập nhật: 2026-03-22
+Ngày cập nhật: 2026-03-23
 
 ## 1) Tổng quan
 
-Mức hoàn thiện API backend hiện tại: 20%
+Mức hoàn thiện API backend hiện tại: 70%
 
 Backend đang có:
 
@@ -12,62 +12,77 @@ Backend đang có:
 - Chuẩn hóa response thành công/lỗi.
 - Route prefix /api.
 - Endpoint hoạt động thực tế: GET /api/health.
+- User API: đã có route/controller + JWT auth + role cơ bản.
+- Product API: đã có CRUD route/controller.
+- Warranty API: đã có route/controller cơ bản.
 
 Backend chưa có triển khai thực tế:
 
-- User API (auth/profile/update/list).
-- Product API (CRUD).
-- Repair Log API.
-- Warranty/NFT mapping API.
+- Repair Log API chưa sẵn sàng chạy do chưa được wire vào app và không đồng bộ tên file/module.
+- Chưa có bộ test đầy đủ cho Warranty và phần lớn Product API.
 
 ## 2) Bảng trạng thái endpoint
 
-| Endpoint                       | Trạng thái  | RESTful        | Ghi chú                                                 |
-| ------------------------------ | ----------- | -------------- | ------------------------------------------------------- |
-| GET /api/health                | Done        | Đúng           | Có controller + test health                             |
-| GET /api                       | Done (404)  | Chấp nhận được | Không có resource root, trả Route not found             |
-| POST /api/users/auth           | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| GET /api/users/me              | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| PUT /api/users/:walletAddress  | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| GET /api/users                 | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| POST /api/products             | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| GET /api/products              | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| GET /api/products/:idOrCode    | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| PUT /api/products/:idOrCode    | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
-| DELETE /api/products/:idOrCode | Not Started | Chưa đánh giá  | Có trong test kỳ vọng, chưa có route/controller thực tế |
+| Endpoint                                | Trạng thái  | RESTful        | Ghi chú                                                                   |
+| --------------------------------------- | ----------- | -------------- | ------------------------------------------------------------------------- |
+| GET /api/health                         | Done        | Đúng           | Có controller + test health                                               |
+| GET /api                                | Done (404)  | Chấp nhận được | Không có resource root, trả Route not found                               |
+| POST /api/users/auth                    | Done        | Đúng           | Đã triển khai login/register theo wallet                                  |
+| GET /api/users/me                       | Done        | Chấp nhận được | Có auth, dùng walletAddress query/body                                    |
+| PUT /api/users/:walletAddress           | Done        | Đúng           | Có auth + kiểm tra quyền user/admin                                       |
+| GET /api/users                          | Done        | Đúng           | Chỉ admin truy cập                                                        |
+| POST /api/products                      | Done        | Đúng           | Có auth + authorize admin                                                 |
+| GET /api/products                       | Done        | Đúng           | Public list, hỗ trợ includeInactive                                       |
+| GET /api/products/:idOrCode             | Done        | Đúng           | Hỗ trợ id hoặc productCode                                                |
+| PUT /api/products/:idOrCode             | Done        | Đúng           | Có auth + authorize admin                                                 |
+| DELETE /api/products/:idOrCode          | Done        | Đúng           | Có soft delete (mặc định) và hard delete qua query                        |
+| POST /api/warranties                    | In Progress | Đúng           | Đã có controller, chưa gắn auth/role                                      |
+| GET /api/warranties/:tokenId            | In Progress | Đúng           | Đã có controller cơ bản                                                   |
+| GET /api/warranties/owner/:ownerAddress | In Progress | Đúng           | Đã có controller cơ bản                                                   |
+| GET /api/warranties                     | In Progress | Chấp nhận được | Chưa giới hạn admin                                                       |
+| PUT /api/warranties/:tokenId            | In Progress | Đúng           | Đã có update cơ bản                                                       |
+| /api/repair-logs/\*                     | Blocked     | Chưa đánh giá  | File route/controller hiện chưa đồng bộ import path và chưa mount vào app |
 
 ## 3) Đánh giá RESTful sơ bộ
 
 - Phần đã triển khai:
-  - GET /api/health rõ ràng, đúng mục đích healthcheck.
-- Phần kỳ vọng theo test (chưa triển khai):
-  - Nhóm users và products đang đặt tên endpoint theo chuẩn tài nguyên, nhìn chung RESTful.
-  - Cần chuẩn hóa tiếp: quy tắc soft-delete/hard-delete bằng query hard=true nên có tài liệu rõ và thống nhất.
+  - Nhóm users và products theo chuẩn tài nguyên, nhìn chung RESTful.
+  - Warranty API đã có tài nguyên rõ nhưng thiếu auth/role.
+- Phần cần chuẩn hóa tiếp:
+  - Đồng bộ chuẩn response ở Warranty/RepairLog về cùng helper sendSuccess/sendError.
+  - Hoàn thiện và mount Repair Log route vào app sau khi đồng bộ tên file/module.
 
 ## 4) Checklist để chuyển trạng thái Done
 
 ### UC-Auth API
 
-- [ ] Tạo UserModel với unique walletAddress.
-- [ ] Tạo route/controller POST /api/users/auth.
-- [ ] Tạo route/controller GET /api/users/me.
-- [ ] Tạo route/controller PUT /api/users/:walletAddress.
-- [ ] Tạo route/controller GET /api/users.
-- [ ] Kết nối MongoDB thật và pass test backend.
+- [x] Tạo UserModel với unique walletAddress.
+- [x] Tạo route/controller POST /api/users/auth.
+- [x] Tạo route/controller GET /api/users/me.
+- [x] Tạo route/controller PUT /api/users/:walletAddress.
+- [x] Tạo route/controller GET /api/users.
+- [ ] Pass đầy đủ test backend cho luồng auth/user.
 
 ### UC-ProductCRUD API
 
-- [ ] Tạo ProductModel với unique productCode.
-- [ ] Tạo route/controller POST /api/products.
-- [ ] Tạo route/controller GET /api/products.
-- [ ] Tạo route/controller GET /api/products/:idOrCode.
-- [ ] Tạo route/controller PUT /api/products/:idOrCode.
-- [ ] Tạo route/controller DELETE /api/products/:idOrCode (soft/hard delete).
-- [ ] Kết nối MongoDB thật và pass test backend.
+- [x] Tạo ProductModel với unique productCode.
+- [x] Tạo route/controller POST /api/products.
+- [x] Tạo route/controller GET /api/products.
+- [x] Tạo route/controller GET /api/products/:idOrCode.
+- [x] Tạo route/controller PUT /api/products/:idOrCode.
+- [x] Tạo route/controller DELETE /api/products/:idOrCode (soft/hard delete).
+- [ ] Pass đầy đủ test backend cho product CRUD.
 
 ### UC-RepairLog API
 
-- [ ] Thiết kế schema repair log liên kết tokenId/serial/productCode.
-- [ ] Tạo API create/read/update repair logs.
+- [ ] Đồng bộ tên file/controller/middleware theo cấu trúc hiện tại.
+- [ ] Mount route repair log vào app.
 - [ ] Chuẩn hóa phân quyền kỹ thuật viên/quản trị.
-- [ ] Có đối soát với dữ liệu NFT bảo hành (nếu yêu cầu).
+- [ ] Viết test cho create/read/update/delete repair logs.
+
+### UC-Warranty API
+
+- [x] Tạo model Warranty.
+- [x] Tạo route/controller create/get/update warranty.
+- [ ] Bổ sung auth/role cho endpoint warranty.
+- [ ] Viết test cho warranty API.

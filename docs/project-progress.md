@@ -1,25 +1,27 @@
 # Báo cáo tiến độ dự án E-Warranty (Hybrid Blockchain)
 
-Ngày cập nhật: 2026-03-22
+Ngày cập nhật: 2026-03-23
 
 ## 1) Tóm tắt trạng thái tổng quan (thực tế)
 
 - [x] Smart Contract (On-chain): hoàn thành 100% (đã viết ERC-721, deploy Sepolia, có Contract Address và ABI).
 - [x] Database (Off-chain): hoàn thành 100% khâu thiết kế (5 bảng: User, Product, Warranties, RepairLog, TransferHistory).
-- [ ] Backend API: đang triển khai.
-- [ ] Frontend UI: bắt đầu triển khai trong tuần này.
+- [ ] Backend API: đã có User/Product/Warranty API cơ bản, còn cần hoàn thiện đồng bộ.
+- [ ] Frontend UI: mới ở mức nền tảng.
 
 ## 2) Tiến độ theo mảng kỹ thuật
 
 - Web3 (Smart Contract + kết nối chain): 100%
 - Database (MongoDB Atlas schema): 100%
-- Backend API: 30%
-- Frontend UI: 10%
+- Backend API: 70%
+- Frontend UI: 15%
 
 ## 3) Chiến lược tuần này (FE và BE chạy song song)
 
 - [x] BE định nghĩa API Contract và chuẩn JSON response trước.
 - [x] BE lưu API Docs + testcase vào thư mục docs/api/.
+- [x] BE đã có route/controller cho User và Product.
+- [x] BE đã có route/controller Warranty cơ bản.
 - [ ] FE dùng tài liệu API để tạo mock data và dựng UI song song.
 - [ ] FE thay mock bằng API thật ngay khi BE bàn giao endpoint.
 
@@ -47,35 +49,45 @@ Ngày cập nhật: 2026-03-22
 - Luồng: FE Connect MetaMask -> gửi walletAddress về BE -> BE lưu/đọc User trong MongoDB.
 - Trạng thái: In Progress
 - Definition of Done:
-  - [ ] Có API docs cho auth user.
-  - [ ] Có mã lỗi chuẩn và response chuẩn hóa.
-  - [ ] Controller xử lý đăng nhập/đăng ký theo walletAddress.
-  - [ ] Testcase cập nhật theo API contract.
+  - [x] Có API docs cho auth user.
+  - [x] Có mã lỗi chuẩn và response chuẩn hóa.
+  - [x] Controller xử lý đăng nhập/đăng ký theo walletAddress.
+  - [ ] Testcase cập nhật đầy đủ theo API contract.
 
 ### UC-ProductCRUD (Off-chain)
 
 - Luồng: FE gọi API Product -> BE validate và thao tác dữ liệu Product trong MongoDB.
 - Trạng thái: In Progress
 - Definition of Done:
-  - [ ] Có API docs cho create/read/update/delete product.
-  - [ ] Có mã lỗi chuẩn và response chuẩn hóa.
-  - [ ] Controller xử lý đầy đủ CRUD.
-  - [ ] Testcase cập nhật theo API contract.
+  - [x] Có API docs cho create/read/update/delete product.
+  - [x] Có mã lỗi chuẩn và response chuẩn hóa.
+  - [x] Controller xử lý đầy đủ CRUD.
+  - [ ] Testcase cập nhật đầy đủ theo API contract.
+
+### UC-WarrantyAPI (Hybrid)
+
+- Luồng: BE nhận dữ liệu mint/sản phẩm bảo hành -> lưu Warranty -> truy vấn theo tokenId/ownerAddress.
+- Trạng thái: In Progress
+- Definition of Done:
+  - [x] Có model Warranty và controller cơ bản.
+  - [x] Có route create/get/update cho Warranty.
+  - [ ] Chuẩn hóa auth/role cho endpoint Warranty.
+  - [ ] Có testcase backend cho Warranty API.
 
 ### UC-FEFoundation (Frontend)
 
 - Luồng: Dựng màn hình quản lý người dùng/sản phẩm -> gắn mock data từ docs/api -> chuyển sang API thật.
 - Trạng thái: In Progress
 - Definition of Done:
-  - [ ] Dựng UI màn hình chính.
+  - [x] Dựng khung app React + trang Home.
   - [ ] Có nút Connect MetaMask và trạng thái ví.
-  - [ ] Tích hợp mock data theo API docs của BE.
+  - [ ] Tích hợp mock data theo API docs của BE cho user/product.
   - [ ] Chuyển đổi sang API thật không đổi cấu trúc dữ liệu hiển thị.
 
 ## 5) Top 5 ưu tiên cao nhất tuần này
 
 - [ ] Ưu tiên 1: Hoàn tất docs/api/user-product.md (request/response/error codes/testcase) để FE dùng ngay.
-- [ ] Ưu tiên 2: Hoàn thiện controller + route cho User và Product dựa trên API contract đã chốt.
+- [ ] Ưu tiên 2: Chuẩn hóa và gắn đầy đủ test cho User/Product/Warranty.
 - [ ] Ưu tiên 3: FE dựng UI trang User/Product và bind mock data theo docs/api.
 - [ ] Ưu tiên 4: FE tích hợp nút Connect MetaMask, hiển thị walletAddress và chain Sepolia.
-- [ ] Ưu tiên 5: Đồng bộ checklist test BE/FE theo từng endpoint trước khi chuyển sang API thật.
+- [ ] Ưu tiên 5: Hoàn thiện Repair Log API (route wiring + đồng bộ tên file/module + test).
