@@ -4,7 +4,7 @@ const notFound = (req, res, _next) => {
   return sendError(res, {
     statusCode: 404,
     errorCode: "E404_NOT_FOUND",
-    message: "Route not found",
+    message: "Không tìm thấy đường dẫn",
   });
 };
 

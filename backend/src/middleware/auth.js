@@ -28,7 +28,7 @@ const authenticate = async (req, res, next) => {
       return sendError(res, {
         statusCode: 401,
         errorCode: "E401_UNAUTHORIZED",
-        message: "Missing Bearer token",
+        message: "Thiếu Bearer token",
       });
     }
 
@@ -39,7 +39,7 @@ const authenticate = async (req, res, next) => {
     return sendError(res, {
       statusCode: 401,
       errorCode: "E401_UNAUTHORIZED",
-      message: "Invalid or expired token",
+      message: "Token không hợp lệ hoặc đã hết hạn",
     });
   }
 };
@@ -50,7 +50,7 @@ const authorize = (roles) => {
       return sendError(res, {
         statusCode: 403,
         errorCode: "E403_FORBIDDEN",
-        message: "You do not have permission to perform this action",
+        message: "Bạn không có quyền thực hiện hành động này",
       });
     }
     return next();
