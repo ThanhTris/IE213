@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
 const connectDatabase = async () => {
-  const mongoUri = process.env.MONGODB_URI;
+  const mongoUrl = process.env.MONGODB_URL;
 
-  if (!mongoUri) {
-    throw new Error("MONGODB_URI is not defined");
+  if (!mongoUrl) {
+    throw new Error("MONGODB_URL is not defined");
   }
 
-  const conn = await mongoose.connect(mongoUri);
+  const conn = await mongoose.connect(mongoUrl);
   console.log(`MongoDB Connected: ${conn.connection.host}`);
 
   return conn;
