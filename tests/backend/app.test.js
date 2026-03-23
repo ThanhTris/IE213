@@ -35,7 +35,6 @@ describe("Removed Root Endpoint", () => {
 describe("404 Handler", () => {
   it("GET /unknown should return 404", async () => {
     const res = await request(app).get("/unknown-route");
-
     expect(res.statusCode).toBe(404);
     expect(res.body.success).toBe(false);
     expect(res.body.data).toBeNull();
