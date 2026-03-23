@@ -3,23 +3,36 @@ set -euo pipefail
 
 cd /workspaces/IE213
 
-# Cleanup any legacy root node_modules from previous devcontainer setup.
-if [[ -d /workspaces/IE213/node_modules ]]; then
-  rm -rf /workspaces/IE213/node_modules || true
-fi
+# Ensure mounted volumes are writable by the non-root devcontainer user.
+MOUNTED_PATHS=(
+  /workspaces/IE213/backend/node_modules
+  /workspaces/IE213/frontend/node_modules
+  /home/node/.npm
+)
+sudo mkdir -p "${MOUNTED_PATHS[@]}"
+sudo chown -R node:node "${MOUNTED_PATHS[@]}"
 
-if [[ -f backend/package.json ]]; then
-  echo "[post-create] Installing backend dependencies"
-  cd backend
-  npm install
-  cd ..
-fi
+install_deps() {
+  local app_dir="$1"
 
-if [[ -f frontend/package.json ]]; then
-  echo "[post-create] Installing frontend dependencies"
-  cd frontend
-  npm install
-  cd ..
-fi
+  if [[ ! -f "${app_dir}/package.json" ]]; then
+    echo "[post-create] Skip ${app_dir}: missing package.json"
+    return
+  fi
+
+  echo "[post-create] Installing ${app_dir} dependencies"
+  cd "/workspaces/IE213/${app_dir}"
+
+  if [[ -f package-lock.json ]]; then
+    npm ci --no-audit --no-fund
+  else
+    npm install --no-audit --no-fund
+  fi
+
+  cd /workspaces/IE213
+}
+
+install_deps backend
+install_deps frontend
 
 echo "[post-create] Done"

@@ -25,8 +25,6 @@ IE213/
 ├── docs/               # Tài liệu báo cáo, hướng dẫn sử dụng
 ├── tests/              # Các bài kiểm thử tự động
 ├── .gitignore
-├── package.json
-├── package-lock.json   # Lockfile duy nhất cho toàn bộ monorepo
 └── README.md
 ```
 
@@ -37,9 +35,10 @@ IE213/
 
 ## Quy Ước Quản Lý Dependency
 
-- Dự án dùng `npm workspaces` cho `backend/` và `frontend/`.
-- Chỉ dùng `package-lock.json` tại thư mục root.
-- Không tạo hoặc commit `package-lock.json` riêng trong `backend/` và `frontend/`.
+- Mỗi phần chạy độc lập tại thư mục riêng:
+  - `backend/` có `package.json`, `package-lock.json`, `node_modules` riêng.
+  - `frontend/` có `package.json`, `package-lock.json`, `node_modules` riêng.
+- Không cài dependency tại thư mục root.
 
 ## Hướng Dẫn Cài Đặt
 
@@ -50,17 +49,24 @@ git clone https://github.com/ThanhTris/IE213.git
 cd IE213
 ```
 
-### 2. Cài đặt tất cả dependencies
+### 2. Cài đặt Backend
 
 ```bash
+cd backend
 npm install
 ```
 
-Lệnh này sẽ cài đặt dependencies cho cả backend và frontend.
-
-### 3. Cấu hình biến môi trường
+### 3. Cài đặt Frontend
 
 ```bash
+cd ../frontend
+npm install
+```
+
+### 4. Cấu hình biến môi trường
+
+```bash
+cd /workspaces/IE213
 cp backend/.env.example backend/.env
 ```
 
@@ -71,9 +77,8 @@ Chỉnh sửa `backend/.env` theo nhu cầu.
 ### Chạy Backend (API Server)
 
 ```bash
-npm run backend
-# hoặc
-npm run dev --workspace backend
+cd backend
+npm run dev
 ```
 
 Server sẽ chạy tại: http://localhost:5000
@@ -81,35 +86,39 @@ Server sẽ chạy tại: http://localhost:5000
 ### Chạy Frontend (React App)
 
 ```bash
-npm run frontend
-# hoặc
-npm run start --workspace frontend
+cd frontend
+npm start
 ```
 
 Ứng dụng sẽ mở tại: http://localhost:3000
 
 ### Chạy cả Backend và Frontend cùng lúc
 
+Mở 2 terminal riêng:
+
 ```bash
-npm run dev
+# Terminal 1
+cd backend && npm run dev
+
+# Terminal 2
+cd frontend && npm start
 ```
 
 ## Kiểm Thử
 
 ```bash
-# Chạy tất cả tests
+# Backend tests
+cd backend
 npm test
 
-# Chỉ chạy backend tests
-npm run test:backend
-
-# Chỉ chạy frontend tests
-npm run test:frontend
+# Frontend tests
+cd ../frontend
+npm test
 ```
 
 ## Tài Liệu
 
-Xem thêm tài liệu chi tiết trong thư mục [`docs/`](./docs/README.md).
+Xem thêm tài liệu chi tiết trong thư mục `docs/`, đặc biệt `docs/dev-setup.md`, `docs/project-progress.md`, `docs/api-status.md`, `docs/web3-status.md`.
 
 ## Đóng Góp
 
