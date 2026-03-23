@@ -5,11 +5,32 @@ const { sendSuccess, sendError } = require("../utils/apiResponse");
 const parseIdentifier = (idOrCode) => {
   if (!idOrCode) return null;
   if (mongoose.Types.ObjectId.isValid(idOrCode)) return { _id: idOrCode };
-  return { productCode: idOrCode }; // fallback to productCode
+  return { productCode: idOrCode.trim() };
+};
+
+const normalizeProductCode = (value = "") => value.trim();
+
+const sanitizeProductPayload = (payload = {}) => {
+  const nextPayload = { ...payload };
+
+  [
+    "productName",
+    "brand",
+    "model",
+    "color",
+    "configuration",
+    "imageUrl",
+  ].forEach((field) => {
+    if (typeof nextPayload[field] === "string") {
+      nextPayload[field] = nextPayload[field].trim();
+    }
+  });
+
+  return nextPayload;
 };
 
 // POST /api/products
-const createProduct = async (req, res) => {
+const createProduct = async (req, res, next) => {
   try {
     const {
       productCode,
@@ -25,33 +46,45 @@ const createProduct = async (req, res) => {
     } = req.body;
 
     if (!productCode || !productName || !brand) {
+      const details = [];
+      if (!productCode) details.push("productCode");
+      if (!productName) details.push("productName");
+      if (!brand) details.push("brand");
+
       return sendError(res, {
         statusCode: 400,
-        error: "productCode, productName and brand are required",
+        errorCode: "E400_MISSING_FIELD",
+        message: "productCode, productName and brand are required",
+        details,
       });
     }
 
-    const existing = await Product.findOne({ productCode: productCode.trim() });
+    const normalizedCode = normalizeProductCode(productCode);
+    const existing = await Product.findOne({ productCode: normalizedCode });
     if (existing) {
       return sendError(res, {
         statusCode: 409,
-        error: "productCode already exists",
+        errorCode: "E409_DUPLICATE",
+        message: "productCode already exists",
+        details: ["productCode"],
       });
     }
 
-    const product = new Product({
-      productCode: productCode.trim(),
-      productName: productName.trim(),
-      brand: brand.trim(),
-      model: model ? model.trim() : undefined,
-      color: color ? color.trim() : undefined,
-      configuration: configuration ? configuration.trim() : undefined,
-      specifications: specifications || undefined,
-      imageUrl: imageUrl ? imageUrl.trim() : undefined,
-      price: typeof price === "number" ? price : undefined,
-      warrantyMonths:
-        typeof warrantyMonths === "number" ? warrantyMonths : undefined,
-    });
+    const product = new Product(
+      sanitizeProductPayload({
+        productCode: normalizedCode,
+        productName,
+        brand,
+        model,
+        color,
+        configuration,
+        specifications: specifications || undefined,
+        imageUrl,
+        price: typeof price === "number" ? price : undefined,
+        warrantyMonths:
+          typeof warrantyMonths === "number" ? warrantyMonths : undefined,
+      }),
+    );
 
     await product.save();
 
@@ -61,17 +94,24 @@ const createProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.error("[createProduct]", error);
-    return sendError(res, { statusCode: 500, error: error.message });
+    if (error.code === 11000) {
+      return sendError(res, {
+        statusCode: 409,
+        errorCode: "E409_DUPLICATE",
+        message: "productCode already exists",
+        details: ["productCode"],
+      });
+    }
+    return next(error);
   }
 };
 
 // GET /api/products
-const listProducts = async (req, res) => {
+const listProducts = async (req, res, next) => {
   try {
-    // const includeInactive = req.query.includeInactive === 'true';
-    // const filter = includeInactive ? {} : { isActive: true };
-    const products = await Product.find().select("-__v");
+    const includeInactive = req.query.includeInactive === "true";
+    const filter = includeInactive ? {} : { isActive: true };
+    const products = await Product.find(filter).select("-__v");
 
     return sendSuccess(res, {
       statusCode: 200,
@@ -79,20 +119,32 @@ const listProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    console.error("[listProducts]", error);
-    return sendError(res, { statusCode: 500, error: error.message });
+    return next(error);
   }
 };
 
 // GET /api/products/:idOrCode
-const getProduct = async (req, res) => {
+const getProduct = async (req, res, next) => {
   try {
     const identifier = req.params.idOrCode;
     const query = parseIdentifier(identifier);
 
+    if (!query) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "idOrCode is required",
+        details: ["idOrCode"],
+      });
+    }
+
     const product = await Product.findOne(query).select("-__v");
     if (!product) {
-      return sendError(res, { statusCode: 404, error: "Product not found" });
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Product not found",
+      });
     }
 
     return sendSuccess(res, {
@@ -101,16 +153,24 @@ const getProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.error("[getProduct]", error);
-    return sendError(res, { statusCode: 500, error: error.message });
+    return next(error);
   }
 };
 
 // PUT /api/products/:idOrCode
-const updateProduct = async (req, res) => {
+const updateProduct = async (req, res, next) => {
   try {
     const identifier = req.params.idOrCode;
     const query = parseIdentifier(identifier);
+
+    if (!query) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "idOrCode is required",
+        details: ["idOrCode"],
+      });
+    }
 
     const updates = {};
     const updatableFields = [
@@ -135,17 +195,18 @@ const updateProduct = async (req, res) => {
     if (Object.keys(updates).length === 0) {
       return sendError(res, {
         statusCode: 400,
-        error: "No fields to update",
+        errorCode: "E400_VALIDATION",
+        message: "No fields to update",
       });
     }
 
     if (updates.productCode) {
-      delete updates.productCode; // never update code via this endpoint
+      delete updates.productCode; // Contract: productCode is immutable in update endpoint.
     }
 
     const product = await Product.findOneAndUpdate(
       query,
-      { $set: updates },
+      { $set: sanitizeProductPayload(updates) },
       {
         new: true,
         runValidators: true,
@@ -153,7 +214,11 @@ const updateProduct = async (req, res) => {
     ).select("-__v");
 
     if (!product) {
-      return sendError(res, { statusCode: 404, error: "Product not found" });
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Product not found",
+      });
     }
 
     return sendSuccess(res, {
@@ -162,24 +227,35 @@ const updateProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.error("[updateProduct]", error);
-    return sendError(res, { statusCode: 500, error: error.message });
+    return next(error);
   }
 };
 
 // DELETE /api/products/:idOrCode
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res, next) => {
   try {
     const identifier = req.params.idOrCode;
     const query = parseIdentifier(identifier);
 
+    if (!query) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "idOrCode is required",
+        details: ["idOrCode"],
+      });
+    }
+
     const hard = req.query.hard === "true";
 
-    // Nếu muốn xóa hoàn toàn, thì sử dụng /api/products/:idOrCode?hard=true
     if (hard) {
       const result = await Product.findOneAndDelete(query);
       if (!result) {
-        return sendError(res, { statusCode: 404, error: "Product not found" });
+        return sendError(res, {
+          statusCode: 404,
+          errorCode: "E404_NOT_FOUND",
+          message: "Product not found",
+        });
       }
       return sendSuccess(res, {
         statusCode: 200,
@@ -187,7 +263,6 @@ const deleteProduct = async (req, res) => {
       });
     }
 
-    // Nếu muốn ẩn sản phẩm (soft delete), thì sử dụng /api/products/:idOrCode
     const product = await Product.findOneAndUpdate(
       query,
       { $set: { isActive: false } },
@@ -195,7 +270,11 @@ const deleteProduct = async (req, res) => {
     ).select("-__v");
 
     if (!product) {
-      return sendError(res, { statusCode: 404, error: "Product not found" });
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Product not found",
+      });
     }
 
     return sendSuccess(res, {
@@ -204,8 +283,7 @@ const deleteProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.error("[deleteProduct]", error);
-    return sendError(res, { statusCode: 500, error: error.message });
+    return next(error);
   }
 };
 

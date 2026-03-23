@@ -1,35 +1,64 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const { sendError } = require("../utils/apiResponse");
 
-exports.authenticate = async (req, res, next) => {
+const JWT_SECRET = process.env.JWT_SECRET || "dev-jwt-secret";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
+
+const extractBearerToken = (authorizationHeader = "") => {
+  if (!authorizationHeader.startsWith("Bearer ")) return null;
+  return authorizationHeader.slice(7).trim();
+};
+
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      userId: String(user._id),
+      walletAddress: user.walletAddress,
+      role: user.role,
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN },
+  );
+};
+
+const authenticate = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = extractBearerToken(req.headers.authorization || "");
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Không tìm thấy token xác thực'
+      return sendError(res, {
+        statusCode: 401,
+        errorCode: "E401_UNAUTHORIZED",
+        message: "Missing Bearer token",
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: 'Token không hợp lệ',
-      error: error.message
+    return next();
+  } catch (_error) {
+    return sendError(res, {
+      statusCode: 401,
+      errorCode: "E401_UNAUTHORIZED",
+      message: "Invalid or expired token",
     });
   }
 };
 
-exports.authorize = (roles) => {
+const authorize = (roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Bạn không có quyền thực hiện hành động này'
+    if (!req.user || !roles.includes(req.user.role)) {
+      return sendError(res, {
+        statusCode: 403,
+        errorCode: "E403_FORBIDDEN",
+        message: "You do not have permission to perform this action",
       });
     }
-    next();
+    return next();
   };
+};
+
+module.exports = {
+  authenticate,
+  authorize,
+  generateToken,
 };

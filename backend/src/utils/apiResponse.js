@@ -9,18 +9,49 @@ const sendSuccess = (
   });
 };
 
+const mapStatusToErrorCode = (statusCode) => {
+  switch (statusCode) {
+    case 400:
+      return "E400_VALIDATION";
+    case 401:
+      return "E401_UNAUTHORIZED";
+    case 403:
+      return "E403_FORBIDDEN";
+    case 404:
+      return "E404_NOT_FOUND";
+    case 409:
+      return "E409_DUPLICATE";
+    default:
+      return "E500_INTERNAL";
+  }
+};
+
 const sendError = (
   res,
-  { statusCode = 500, data = null, error = "Internal Server Error" } = {},
+  {
+    statusCode = 500,
+    errorCode,
+    message,
+    details = [],
+    // Backward compatibility for older callers using `error`.
+    error,
+  } = {},
 ) => {
+  const resolvedCode = errorCode || mapStatusToErrorCode(statusCode);
+  const resolvedMessage = message || error || "Internal Server Error";
+
   return res.status(statusCode).json({
     success: false,
-    data,
-    error,
+    error: {
+      code: resolvedCode,
+      message: resolvedMessage,
+      details: Array.isArray(details) ? details : [],
+    },
   });
 };
 
 module.exports = {
   sendSuccess,
   sendError,
+  mapStatusToErrorCode,
 };
