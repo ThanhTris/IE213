@@ -6,6 +6,7 @@ module.exports = defineConfig({
     environment: "node",
     include: [
       "../tests/backend/app.test.js",
+      "../tests/backend/product/**/*.test.js",
       "../tests/backend/user/**/*.test.js",
     ],
   },
