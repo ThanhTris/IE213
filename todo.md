@@ -1,6 +1,6 @@
 # Backlog triển khai E-Warranty
 
-Ngày cập nhật: 2026-03-23
+Ngày cập nhật: 2026-03-24
 
 ## Trạng thái nền tảng
 
@@ -17,7 +17,7 @@ Ngày cập nhật: 2026-03-23
 - [x] Soạn API docs cho User và Product tại docs/api/user-product.md.
 - [x] Chốt chuẩn JSON response: success, message, data, error.
 - [x] Chốt danh sách mã lỗi (Error Codes) cho từng endpoint.
-- [ ] Ghi testcase chuẩn để FE dùng mock data cùng cấu trúc.
+- [x] Ghi testcase chuẩn để FE dùng mock data cùng cấu trúc.
 
 ### UC-BE-UserController
 
@@ -34,7 +34,9 @@ Ngày cập nhật: 2026-03-23
 - [x] Hoàn thiện controller cho GET /api/products/:idOrCode.
 - [x] Hoàn thiện controller cho PUT /api/products/:idOrCode.
 - [x] Hoàn thiện controller cho DELETE /api/products/:idOrCode.
-- [ ] Cập nhật testcase bám sát API docs.
+- [x] Cập nhật testcase bám sát API docs.
+- [x] Việt hóa message response cho Product API.
+- [x] Chuẩn hóa response tạo mới: chỉ trả createdAt, không trả updatedAt.
 
 ### UC-BE-WarrantyController
 
@@ -52,6 +54,7 @@ Ngày cập nhật: 2026-03-23
 ### UC-BE-IntegrationReady
 
 - [x] Cập nhật docs/api-status.md theo endpoint đã chạy thật.
+- [x] Hoàn tất test backend cho Product API (13 test case pass).
 - [ ] Đóng gói danh sách endpoint sẵn sàng bàn giao FE.
 
 ## Task tuần này - Frontend (FE)
@@ -87,7 +90,7 @@ Ngày cập nhật: 2026-03-23
 - [x] Có API Docs.
 - [x] Có Error Codes.
 - [x] Có logic Controller (User/Product).
-- [ ] Có Testcase cập nhật.
+- [x] Có Testcase cập nhật (User/Product).
 
 ### Task FE chỉ được tick Done khi:
 

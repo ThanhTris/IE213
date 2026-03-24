@@ -1,10 +1,10 @@
 # Trạng thái API Backend
 
-Ngày cập nhật: 2026-03-23
+Ngày cập nhật: 2026-03-24
 
 ## 1) Tổng quan
 
-Mức hoàn thiện API backend hiện tại: 70%
+Mức hoàn thiện API backend hiện tại: 80%
 
 Backend đang có:
 
@@ -19,7 +19,7 @@ Backend đang có:
 Backend chưa có triển khai thực tế:
 
 - Repair Log API chưa sẵn sàng chạy do chưa được wire vào app và không đồng bộ tên file/module.
-- Chưa có bộ test đầy đủ cho Warranty và phần lớn Product API.
+- Chưa có bộ test đầy đủ cho Warranty API.
 
 ## 2) Bảng trạng thái endpoint
 
@@ -31,11 +31,11 @@ Backend chưa có triển khai thực tế:
 | GET /api/users/me                       | Done        | Chấp nhận được | Có auth, dùng walletAddress query/body                                    |
 | PUT /api/users/:walletAddress           | Done        | Đúng           | Có auth + kiểm tra quyền user/admin                                       |
 | GET /api/users                          | Done        | Đúng           | Chỉ admin truy cập                                                        |
-| POST /api/products                      | Done        | Đúng           | Có auth + authorize admin                                                 |
-| GET /api/products                       | Done        | Đúng           | Public list, hỗ trợ includeInactive                                       |
+| POST /api/products                      | Done        | Đúng           | Có auth + authorize admin, response tạo mới chỉ trả createdAt             |
+| GET /api/products                       | Done        | Đúng           | Public list mặc định active-only, includeInactive chỉ cho admin           |
 | GET /api/products/:idOrCode             | Done        | Đúng           | Hỗ trợ id hoặc productCode                                                |
 | PUT /api/products/:idOrCode             | Done        | Đúng           | Có auth + authorize admin                                                 |
-| DELETE /api/products/:idOrCode          | Done        | Đúng           | Có soft delete (mặc định) và hard delete qua query                        |
+| DELETE /api/products/:idOrCode          | Done        | Đúng           | Soft delete (isActive=false), không còn hard delete qua query             |
 | POST /api/warranties                    | In Progress | Đúng           | Đã có controller, chưa gắn auth/role                                      |
 | GET /api/warranties/:tokenId            | In Progress | Đúng           | Đã có controller cơ bản                                                   |
 | GET /api/warranties/owner/:ownerAddress | In Progress | Đúng           | Đã có controller cơ bản                                                   |
@@ -70,8 +70,8 @@ Backend chưa có triển khai thực tế:
 - [x] Tạo route/controller GET /api/products.
 - [x] Tạo route/controller GET /api/products/:idOrCode.
 - [x] Tạo route/controller PUT /api/products/:idOrCode.
-- [x] Tạo route/controller DELETE /api/products/:idOrCode (soft/hard delete).
-- [ ] Pass đầy đủ test backend cho product CRUD.
+- [x] Tạo route/controller DELETE /api/products/:idOrCode (soft delete).
+- [x] Pass đầy đủ test backend cho product CRUD.
 
 ### UC-RepairLog API
 
