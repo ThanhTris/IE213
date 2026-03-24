@@ -44,6 +44,20 @@ const authenticate = async (req, res, next) => {
   }
 };
 
+const optionalAuthenticate = async (req, _res, next) => {
+  try {
+    const token = extractBearerToken(req.headers.authorization || "");
+    if (!token) return next();
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    return next();
+  } catch (_error) {
+    // Ignore invalid token in optional mode and continue as anonymous.
+    return next();
+  }
+};
+
 const authorize = (roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
@@ -59,6 +73,7 @@ const authorize = (roles) => {
 
 module.exports = {
   authenticate,
+  optionalAuthenticate,
   authorize,
   generateToken,
 };
