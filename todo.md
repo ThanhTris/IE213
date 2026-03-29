@@ -1,6 +1,6 @@
 # Backlog triển khai E-Warranty
 
-Ngày cập nhật: 2026-03-24
+Ngày cập nhật: 2026-03-29
 
 ## Trạng thái nền tảng
 
@@ -25,7 +25,12 @@ Ngày cập nhật: 2026-03-24
 - [x] Hoàn thiện controller cho GET /api/users/me.
 - [x] Hoàn thiện controller cho PUT /api/users/:walletAddress.
 - [x] Hoàn thiện controller cho GET /api/users.
-- [ ] Cập nhật testcase bám sát API docs.
+- [x] Cập nhật testcase bám sát API docs.
+- [x] Tách luồng cập nhật profile cá nhân (`PUT /api/users/me`) và luồng quản trị (`PUT /api/users/:walletAddress`).
+- [x] Chuẩn hóa role enum: `admin`, `staff`, `technician`, `user`.
+- [x] Bổ sung API quản trị role riêng: `PATCH /api/users/:walletAddress/role` (admin only).
+- [x] Bổ sung API trạng thái hoạt động riêng: `PATCH /api/users/:walletAddress/is-active`.
+- [x] Khóa leo thang đặc quyền: endpoint user tự cập nhật không cho đổi `role`/`isActive`.
 
 ### UC-BE-ProductController
 
@@ -42,7 +47,7 @@ Ngày cập nhật: 2026-03-24
 
 - [x] Hoàn thiện controller cơ bản cho POST/GET/PUT warranty.
 - [x] Gắn route `/api/warranties` trong app.
-- [ ] Bổ sung auth + phân quyền cho warranty endpoints.
+- [x] Bổ sung auth + phân quyền cho warranty endpoints.
 - [ ] Viết test backend cho warranty endpoints.
 
 ### UC-BE-RepairLog

@@ -8,7 +8,9 @@ Trong hệ thống Quản lý và Cấp phát Phiếu Bảo hành Điện tử (
 
 - Guest (Khách vãng lai): người dùng chưa đăng nhập, có nhu cầu tra cứu thông tin chính hãng và lịch sử sửa chữa theo số serial.
 - User (Chủ sở hữu): khách hàng đã kết nối ví Web3 (MetaMask), có quyền xem tài sản số bảo hành và thực hiện chuyển nhượng.
-- Admin (Quản trị viên/Cửa hàng): nhân sự vận hành nghiệp vụ, có quyền quản lý danh mục sản phẩm, cấp phát bảo hành, ghi nhận sửa chữa và xử lý vi phạm.
+- Admin (Quản trị viên): có toàn quyền quản trị hệ thống, bao gồm phân quyền tài khoản và khóa/mở tài khoản người dùng.
+- Staff (Nhân viên vận hành): xử lý nghiệp vụ vận hành hàng ngày như cập nhật hồ sơ người dùng, cấp phát bảo hành, theo dõi danh sách bảo hành.
+- Technician (Kỹ thuật viên): xử lý nghiệp vụ kỹ thuật và hậu mãi, cập nhật hồ sơ nghiệp vụ liên quan bảo hành/sửa chữa theo phân quyền.
 
 Hệ thống được tổ chức theo bốn nhóm chức năng:
 
@@ -66,11 +68,13 @@ flowchart LR
 
 ### 2.5.2 Danh sách Actors
 
-| Actor | Mô tả                                                                                                  |
-| :---- | :----------------------------------------------------------------------------------------------------- |
-| Guest | Người dùng phổ thông sử dụng hệ thống để tra cứu nguồn gốc và lịch sử sửa chữa của máy.                |
-| User  | Khách hàng sở hữu máy, truy cập hệ thống bằng ví điện tử để quản lý tài sản số (NFT).                  |
-| Admin | Nhân viên cửa hàng hoặc kỹ thuật viên có quyền quản trị dữ liệu và thao tác nghiệp vụ trên Blockchain. |
+| Actor      | Mô tả                                                                                                   |
+| :--------- | :------------------------------------------------------------------------------------------------------ |
+| Guest      | Người dùng phổ thông sử dụng hệ thống để tra cứu nguồn gốc và lịch sử sửa chữa của máy.                 |
+| User       | Khách hàng sở hữu máy, truy cập hệ thống bằng ví điện tử để quản lý tài sản số (NFT).                   |
+| Admin      | Quản trị viên có toàn quyền hệ thống, bao gồm cập nhật role và bật/tắt trạng thái tài khoản người dùng. |
+| Staff      | Nhân viên vận hành có quyền xử lý các tác vụ nghiệp vụ thường nhật theo phạm vi được phân quyền.        |
+| Technician | Kỹ thuật viên có quyền xử lý các tác vụ kỹ thuật và hậu mãi theo phạm vi nghiệp vụ được cấp.            |
 
 ### 2.5.3 Danh sách Use Cases của hệ thống
 
