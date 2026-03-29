@@ -38,6 +38,30 @@ describe("User Endpoint", () => {
     vi.restoreAllMocks();
   });
 
+  const sampleUser = {
+    _id: "69c1480656dbeabb813aafc2",
+    walletAddress: existingWallet.toLowerCase(),
+    fullName: "User A",
+    email: "user.a@example.com",
+    phone: "0900000001",
+    role: "user",
+    isActive: true,
+    notificationSettings: { email: true, push: true },
+    createdAt: new Date("2026-03-01T10:00:00.000Z"),
+    updatedAt: new Date("2026-03-01T10:00:00.000Z"),
+    toObject: () => ({
+      _id: "69c1480656dbeabb813aafc2",
+      walletAddress: existingWallet.toLowerCase(),
+      fullName: "User A",
+      email: "user.a@example.com",
+      phone: "0900000001",
+      role: "user",
+      isActive: true,
+      notificationSettings: { email: true, push: true },
+      __v: 0,
+    }),
+  };
+
   it("POST /api/users/auth should return 400 when sending extra fields", async () => {
     const res = await request(app).post("/api/users/auth").send({
       walletAddress: existingWallet,
@@ -53,25 +77,7 @@ describe("User Endpoint", () => {
   });
 
   it("POST /api/users/auth should return 200 for existing wallet login", async () => {
-    const existingUser = {
-      _id: "507f1f77bcf86cd799439012",
-      walletAddress: existingWallet.toLowerCase(),
-      role: "user",
-      fullName: "User A",
-      email: "user.a@example.com",
-      phone: "0900000001",
-      toObject: () => ({
-        _id: "507f1f77bcf86cd799439012",
-        walletAddress: existingWallet.toLowerCase(),
-        role: "user",
-        fullName: "User A",
-        email: "user.a@example.com",
-        phone: "0900000001",
-        __v: 0,
-      }),
-    };
-
-    vi.spyOn(User, "findOne").mockResolvedValueOnce(existingUser);
+    vi.spyOn(User, "findOne").mockResolvedValueOnce(sampleUser);
 
     const res = await request(app).post("/api/users/auth").send({
       walletAddress: existingWallet,
@@ -104,9 +110,7 @@ describe("User Endpoint", () => {
   });
 
   it("GET /api/users/me should return 401 when missing bearer token", async () => {
-    const res = await request(app)
-      .get("/api/users/me")
-      .query({ walletAddress: otherWallet });
+    const res = await request(app).get("/api/users/me");
 
     expect(res.statusCode).toBe(401);
     expect(res.body.success).toBe(false);
@@ -117,8 +121,7 @@ describe("User Endpoint", () => {
   it("GET /api/users/me should return 401 for invalid token", async () => {
     const res = await request(app)
       .get("/api/users/me")
-      .set("Authorization", "Bearer invalid.token.value")
-      .query({ walletAddress: otherWallet });
+      .set("Authorization", "Bearer invalid.token.value");
 
     expect(res.statusCode).toBe(401);
     expect(res.body.success).toBe(false);
@@ -128,37 +131,16 @@ describe("User Endpoint", () => {
 
   it("GET /api/users/me should return 200 with user profile for matching wallet", async () => {
     const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase() });
-    vi.spyOn(User, "findOne").mockResolvedValueOnce({
-      _id: "69c1480656dbeabb813aafc2",
-      walletAddress: existingWallet.toLowerCase(),
-      fullName: "Test User",
-      email: "test.user@example.com",
-      phone: "0909999999",
-    });
+    vi.spyOn(User, "findOne").mockResolvedValueOnce(sampleUser);
 
     const res = await request(app)
       .get("/api/users/me")
-      .set("Authorization", `Bearer ${token}`)
-      .query({ walletAddress: existingWallet });
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.message).toBe("Lấy thông tin người dùng thành công");
     expect(res.body.data.walletAddress).toBe(existingWallet.toLowerCase());
-  });
-
-  it("GET /api/users/me should return 403 when user requests another wallet", async () => {
-    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase() });
-
-    const res = await request(app)
-      .get("/api/users/me")
-      .set("Authorization", `Bearer ${token}`)
-      .query({ walletAddress: otherWallet });
-
-    expect(res.statusCode).toBe(403);
-    expect(res.body.success).toBe(false);
-    expect(res.body.error.code).toBe("E403_FORBIDDEN");
-    expect(res.body.error.message).toBe("Bạn chỉ có thể xem hồ sơ của chính mình");
   });
 
   it("GET /api/users/me should return 404 when wallet does not exist", async () => {
@@ -167,12 +149,182 @@ describe("User Endpoint", () => {
 
     const res = await request(app)
       .get("/api/users/me")
-      .set("Authorization", `Bearer ${token}`)
-      .query({ walletAddress: existingWallet });
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(404);
     expect(res.body.success).toBe(false);
     expect(res.body.error.code).toBe("E404_NOT_FOUND");
     expect(res.body.error.message).toBe("Không tìm thấy người dùng");
+  });
+
+  it("PUT /api/users/me should update one or many profile fields", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase() });
+    vi.spyOn(User, "findOneAndUpdate").mockResolvedValueOnce({
+      ...sampleUser,
+      fullName: "Nguyen Van A",
+      phone: "0909123456",
+      updatedAt: new Date("2026-03-29T10:00:00.000Z"),
+    });
+
+    const res = await request(app)
+      .put("/api/users/me")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        fullname: "Nguyen Van A",
+        phone: "0909123456",
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.fullName).toBe("Nguyen Van A");
+    expect(res.body.data.phone).toBe("0909123456");
+  });
+
+  it("PUT /api/users/me should block privilege escalation fields", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase() });
+
+    const res = await request(app)
+      .put("/api/users/me")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ role: "admin" });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe("E400_VALIDATION");
+  });
+
+  it("PUT /api/users/:walletAddress should allow staff to update profile fields", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "staff" });
+    vi.spyOn(User, "findOneAndUpdate").mockResolvedValueOnce({
+      ...sampleUser,
+      fullName: "Updated By Staff",
+    });
+
+    const res = await request(app)
+      .put(`/api/users/${existingWallet}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ fullName: "Updated By Staff" });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.fullName).toBe("Updated By Staff");
+  });
+
+  it("PUT /api/users/:walletAddress should reject role updates", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "technician" });
+
+    const res = await request(app)
+      .put(`/api/users/${existingWallet}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ role: "admin" });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe("E400_VALIDATION");
+  });
+
+  it("PATCH /api/users/:walletAddress/role should allow admin", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "admin" });
+    vi.spyOn(User, "findOneAndUpdate").mockResolvedValueOnce({
+      ...sampleUser,
+      role: "technician",
+    });
+
+    const res = await request(app)
+      .patch(`/api/users/${existingWallet}/role`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ role: "technician" });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.role).toBe("technician");
+  });
+
+  it("PATCH /api/users/:walletAddress/role should forbid non-admin", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "staff" });
+
+    const res = await request(app)
+      .patch(`/api/users/${existingWallet}/role`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ role: "technician" });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe("E403_FORBIDDEN");
+  });
+
+  it("PATCH /api/users/:walletAddress/is-active should allow user to update self", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "user" });
+    vi.spyOn(User, "findOneAndUpdate").mockResolvedValueOnce({
+      ...sampleUser,
+      isActive: false,
+    });
+
+    const res = await request(app)
+      .patch(`/api/users/${existingWallet}/is-active`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ isActive: false });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.isActive).toBe(false);
+  });
+
+  it("PATCH /api/users/:walletAddress/is-active should reject user updating others", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "user" });
+
+    const res = await request(app)
+      .patch(`/api/users/${otherWallet}/is-active`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ isActive: false });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe("E403_FORBIDDEN");
+  });
+
+  it("PATCH /api/users/:walletAddress/is-active should allow staff to update others", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "staff" });
+    vi.spyOn(User, "findOneAndUpdate").mockResolvedValueOnce({
+      ...sampleUser,
+      walletAddress: otherWallet.toLowerCase(),
+      isActive: true,
+    });
+
+    const res = await request(app)
+      .patch(`/api/users/${otherWallet}/is-active`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ isActive: true });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.walletAddress).toBe(otherWallet.toLowerCase());
+  });
+
+  it("GET /api/users should allow privileged roles", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "technician" });
+    vi.spyOn(User, "find").mockResolvedValueOnce([sampleUser]);
+
+    const res = await request(app)
+      .get("/api/users")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data[0].role).toBe("user");
+  });
+
+  it("GET /api/users/:walletAddress should return single user for staff", async () => {
+    const token = makeAccessToken({ walletAddress: existingWallet.toLowerCase(), role: "staff" });
+    vi.spyOn(User, "findOne").mockResolvedValueOnce(sampleUser);
+
+    const res = await request(app)
+      .get(`/api/users/${existingWallet}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.walletAddress).toBe(existingWallet.toLowerCase());
   });
 });
