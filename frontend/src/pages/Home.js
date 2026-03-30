@@ -1,12 +1,7 @@
-import React from 'react';
+import BlockWarrantyApp from '../BlockWarrantyApp';
 
 function Home() {
-  return (
-    <div>
-      <h1>Chào mừng đến với IE213</h1>
-      <p>Ứng dụng web được xây dựng với React.js và Node.js.</p>
-    </div>
-  );
+  return <BlockWarrantyApp />;
 }
 
 export default Home;
