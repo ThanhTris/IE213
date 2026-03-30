@@ -1,10 +1,10 @@
 # Trạng thái API Backend
 
-Ngày cập nhật: 2026-03-24
+Ngày cập nhật: 2026-03-30
 
 ## 1) Tổng quan
 
-Mức hoàn thiện API backend hiện tại: 80%
+Mức hoàn thiện API backend hiện tại: 96%
 
 Backend đang có:
 
@@ -14,43 +14,48 @@ Backend đang có:
 - Endpoint hoạt động thực tế: GET /api/health.
 - User API: đã có route/controller + JWT auth + role cơ bản.
 - Product API: đã có CRUD route/controller.
-- Warranty API: đã có route/controller cơ bản.
+- Warranty API: đã có pre-mint/mint/admin flows + public verify.
+- Repair Log API: đã có create/list/public lookup/patch + phân quyền ownership.
 
 Backend chưa có triển khai thực tế:
 
-- Repair Log API chưa sẵn sàng chạy do chưa được wire vào app và không đồng bộ tên file/module.
-- Chưa có bộ test đầy đủ cho Warranty API.
+- Transfer History API chưa triển khai.
 
 ## 2) Bảng trạng thái endpoint
 
-| Endpoint                                | Trạng thái  | RESTful        | Ghi chú                                                                   |
-| --------------------------------------- | ----------- | -------------- | ------------------------------------------------------------------------- |
-| GET /api/health                         | Done        | Đúng           | Có controller + test health                                               |
-| GET /api                                | Done (404)  | Chấp nhận được | Không có resource root, trả Route not found                               |
-| POST /api/users/auth                    | Done        | Đúng           | Đã triển khai login/register theo wallet                                  |
-| GET /api/users/me                       | Done        | Chấp nhận được | Có auth, dùng walletAddress query/body                                    |
-| PUT /api/users/:walletAddress           | Done        | Đúng           | Có auth + kiểm tra quyền user/admin                                       |
-| GET /api/users                          | Done        | Đúng           | Chỉ admin truy cập                                                        |
-| POST /api/products                      | Done        | Đúng           | Có auth + authorize admin, response tạo mới chỉ trả createdAt             |
-| GET /api/products                       | Done        | Đúng           | Public list mặc định active-only, includeInactive chỉ cho admin           |
-| GET /api/products/:idOrCode             | Done        | Đúng           | Hỗ trợ id hoặc productCode                                                |
-| PUT /api/products/:idOrCode             | Done        | Đúng           | Có auth + authorize admin                                                 |
-| DELETE /api/products/:idOrCode          | Done        | Đúng           | Soft delete (isActive=false), không còn hard delete qua query             |
-| POST /api/warranties                    | In Progress | Đúng           | Đã có controller, chưa gắn auth/role                                      |
-| GET /api/warranties/:tokenId            | In Progress | Đúng           | Đã có controller cơ bản                                                   |
-| GET /api/warranties/owner/:ownerAddress | In Progress | Đúng           | Đã có controller cơ bản                                                   |
-| GET /api/warranties                     | In Progress | Chấp nhận được | Chưa giới hạn admin                                                       |
-| PUT /api/warranties/:tokenId            | In Progress | Đúng           | Đã có update cơ bản                                                       |
-| /api/repair-logs/\*                     | Blocked     | Chưa đánh giá  | File route/controller hiện chưa đồng bộ import path và chưa mount vào app |
+| Endpoint                                  | Trạng thái | RESTful        | Ghi chú                                                         |
+| ----------------------------------------- | ---------- | -------------- | --------------------------------------------------------------- |
+| GET /api/health                           | Done       | Đúng           | Có controller + test health                                     |
+| GET /api                                  | Done (404) | Chấp nhận được | Không có resource root, trả Route not found                     |
+| POST /api/users/auth                      | Done       | Đúng           | Đã triển khai login/register theo wallet                        |
+| GET /api/users/me                         | Done       | Chấp nhận được | Có auth, dùng walletAddress query/body                          |
+| PUT /api/users/:walletAddress             | Done       | Đúng           | Có auth + kiểm tra quyền user/admin                             |
+| GET /api/users                            | Done       | Đúng           | Chỉ admin truy cập                                              |
+| POST /api/products                        | Done       | Đúng           | Có auth + authorize admin, response tạo mới chỉ trả createdAt   |
+| GET /api/products                         | Done       | Đúng           | Public list mặc định active-only, includeInactive chỉ cho admin |
+| GET /api/products/:idOrCode               | Done       | Đúng           | Hỗ trợ id hoặc productCode                                      |
+| PUT /api/products/:idOrCode               | Done       | Đúng           | Có auth + authorize admin                                       |
+| DELETE /api/products/:idOrCode            | Done       | Đúng           | Soft delete (isActive=false), không còn hard delete qua query   |
+| POST /api/warranties                      | Done       | Đúng           | Có auth/role + pre-mint flow                                    |
+| PUT /api/warranties/:id/mint              | Done       | Đúng           | Cập nhật bằng chứng mint                                        |
+| PATCH /api/warranties/:id/status          | Done       | Đúng           | Quản trị trạng thái bảo hành                                    |
+| GET /api/warranties                       | Done       | Đúng           | Có auth + authorize                                             |
+| GET /api/warranties/:id                   | Done       | Đúng           | Xem chi tiết bảo hành admin/staff                               |
+| GET /api/warranties/my-warranties         | Done       | Đúng           | Danh sách bảo hành theo chủ sở hữu từ token                     |
+| GET /api/warranties/verify/:serialNumber  | Done       | Đúng           | Public verify, có mask ownerAddress                             |
+| POST /api/repair-logs                     | Done       | Đúng           | Chỉ admin/technician, create repair log                         |
+| GET /api/repair-logs                      | Done       | Đúng           | Admin/staff/technician xem toàn bộ                              |
+| GET /api/repair-logs/device/:serialNumber | Done       | Đúng           | Public lookup theo serialNumber, có check tồn tại warranty      |
+| PATCH /api/repair-logs/:id                | Done       | Đúng           | Admin sửa mọi log, technician chỉ sửa log của chính mình        |
 
 ## 3) Đánh giá RESTful sơ bộ
 
 - Phần đã triển khai:
   - Nhóm users và products theo chuẩn tài nguyên, nhìn chung RESTful.
-  - Warranty API đã có tài nguyên rõ nhưng thiếu auth/role.
+  - Warranty API đã hoàn thiện auth/role + public verify.
+  - Repair Log API đã có phân quyền theo ownership cho thao tác cập nhật.
 - Phần cần chuẩn hóa tiếp:
-  - Đồng bộ chuẩn response ở Warranty/RepairLog về cùng helper sendSuccess/sendError.
-  - Hoàn thiện và mount Repair Log route vào app sau khi đồng bộ tên file/module.
+  - Hoàn thiện Transfer History API để khép kín vòng đời bảo hành/chuyển nhượng.
 
 ## 4) Checklist để chuyển trạng thái Done
 
@@ -75,14 +80,14 @@ Backend chưa có triển khai thực tế:
 
 ### UC-RepairLog API
 
-- [ ] Đồng bộ tên file/controller/middleware theo cấu trúc hiện tại.
-- [ ] Mount route repair log vào app.
-- [ ] Chuẩn hóa phân quyền kỹ thuật viên/quản trị.
-- [ ] Viết test cho create/read/update/delete repair logs.
+- [x] Đồng bộ tên file/controller/middleware theo cấu trúc hiện tại.
+- [x] Mount route repair log vào app.
+- [x] Chuẩn hóa phân quyền kỹ thuật viên/quản trị + ownership.
+- [x] Viết test cho create/read/update repair logs.
 
 ### UC-Warranty API
 
 - [x] Tạo model Warranty.
 - [x] Tạo route/controller create/get/update warranty.
-- [ ] Bổ sung auth/role cho endpoint warranty.
-- [ ] Viết test cho warranty API.
+- [x] Bổ sung auth/role cho endpoint warranty.
+- [x] Viết test cho warranty API.

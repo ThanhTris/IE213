@@ -54,15 +54,18 @@ Ngày cập nhật: 2026-03-30
 
 ### UC-BE-RepairLog
 
-- [ ] Đồng bộ tên file/model/controller/middleware theo cấu trúc hiện tại.
-- [ ] Gắn route repair log vào app.
-- [ ] Viết test backend cho repair log.
+- [x] Đồng bộ tên file/model/controller/middleware theo cấu trúc hiện tại.
+- [x] Gắn route repair log vào app.
+- [x] Hoàn thiện API Repair Log: create/list/list-by-serial/patch.
+- [x] Bổ sung phân quyền PATCH: admin toàn quyền, technician chỉ sửa log của chính mình.
+- [x] Viết test backend cho repair log.
 
 ### UC-BE-IntegrationReady
 
 - [x] Cập nhật docs/api-status.md theo endpoint đã chạy thật.
 - [x] Hoàn tất test backend cho Product API (13 test case pass).
-- [ ] Đóng gói danh sách endpoint sẵn sàng bàn giao FE.
+- [x] Đóng gói danh sách endpoint sẵn sàng bàn giao FE (User/Product/Warranty/RepairLog).
+- [ ] Hoàn thiện module TransferHistory để chốt phase backend.
 
 ## Task tuần này - Frontend (FE)
 
