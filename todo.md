@@ -1,6 +1,6 @@
 # Backlog triển khai E-Warranty
 
-Ngày cập nhật: 2026-03-29
+Ngày cập nhật: 2026-03-30
 
 ## Trạng thái nền tảng
 
@@ -48,7 +48,9 @@ Ngày cập nhật: 2026-03-29
 - [x] Hoàn thiện controller cơ bản cho POST/GET/PUT warranty.
 - [x] Gắn route `/api/warranties` trong app.
 - [x] Bổ sung auth + phân quyền cho warranty endpoints.
-- [ ] Viết test backend cho warranty endpoints.
+- [x] Hoàn thiện luồng pre-mint/mint + admin management cho Warranty API.
+- [x] Bảo vệ riêng tư API public verify: mask `ownerAddress` dạng `0x1234...abcd`.
+- [x] Viết test backend cho warranty endpoints.
 
 ### UC-BE-RepairLog
 

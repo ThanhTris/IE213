@@ -1,19 +1,19 @@
 # Báo cáo tiến độ dự án E-Warranty (Hybrid Blockchain)
 
-Ngày cập nhật: 2026-03-29
+Ngày cập nhật: 2026-03-30
 
 ## 1) Tóm tắt trạng thái tổng quan (thực tế)
 
 - [x] Smart Contract (On-chain): hoàn thành 100% (đã viết ERC-721, deploy Sepolia, có Contract Address và ABI).
 - [x] Database (Off-chain): hoàn thành 100% khâu thiết kế (5 bảng: User, Product, Warranties, RepairLog, TransferHistory).
-- [ ] Backend API: User/Product đã ổn định và có test, Warranty gần hoàn thiện, RepairLog còn cần hoàn thiện.
+- [ ] Backend API: User/Product đã ổn định và có test, Warranty đã hoàn thiện pre-mint/mint + admin flows, còn thiếu RepairLog, TransferHistory.
 - [ ] Frontend UI: mới ở mức nền tảng.
 
 ## 2) Tiến độ theo mảng kỹ thuật
 
 - Web3 (Smart Contract + kết nối chain): 100%
 - Database (MongoDB Atlas schema): 100%
-- Backend API: 88%
+- Backend API: 91%
 - Frontend UI: 15%
 
 ## 3) Chiến lược tuần này (FE và BE chạy song song)
@@ -24,6 +24,8 @@ Ngày cập nhật: 2026-03-29
 - [x] BE đã chuẩn hóa Product API theo contract mới nhất (soft delete, role check, message Việt hóa).
 - [x] BE đã bổ sung và pass test backend cho Product API.
 - [x] BE đã có route/controller Warranty cơ bản.
+- [x] BE đã hoàn thiện Warranty API cho pre-mint/mint và admin management routes.
+- [x] BE đã cập nhật API public verify theo hướng bảo mật: trả `ownerAddress` đã mask.
 - [x] BE đã harden User API theo mô hình Zero Trust (tách self-update và admin-update).
 - [x] BE đã mở rộng role hệ thống: `admin`, `staff`, `technician`, `user`.
 - [x] BE đã tách API riêng cho role và isActive trong module User.
@@ -78,8 +80,10 @@ Ngày cập nhật: 2026-03-29
 - Definition of Done:
   - [x] Có model Warranty và controller cơ bản.
   - [x] Có route create/get/update cho Warranty.
-  - [ ] Chuẩn hóa auth/role cho endpoint Warranty.
-  - [ ] Có testcase backend cho Warranty API.
+  - [x] Chuẩn hóa auth/role cho endpoint Warranty.
+  - [x] Bổ sung luồng pre-mint/mint + admin management endpoints.
+  - [x] Endpoint verify public đã che một phần `ownerAddress` để bảo vệ quyền riêng tư.
+  - [x] Có testcase backend cho Warranty API.
 
 ### UC-FEFoundation (Frontend)
 
@@ -94,7 +98,7 @@ Ngày cập nhật: 2026-03-29
 ## 5) Top 5 ưu tiên cao nhất tuần này
 
 - [x] Ưu tiên 1: Hoàn tất docs/api/user-product.md (request/response/error codes/testcase) để FE dùng ngay.
-- [ ] Ưu tiên 2: Chuẩn hóa và gắn đầy đủ test cho Warranty.
+- [x] Ưu tiên 2: Chuẩn hóa và gắn đầy đủ test cho Warranty.
 - [ ] Ưu tiên 3: FE dựng UI trang User/Product và bind mock data theo docs/api.
 - [ ] Ưu tiên 4: FE tích hợp nút Connect MetaMask, hiển thị walletAddress và chain Sepolia.
 - [ ] Ưu tiên 5: Hoàn thiện Repair Log API (route wiring + đồng bộ tên file/module + test).
