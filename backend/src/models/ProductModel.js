@@ -40,6 +40,7 @@ const productSchema = new mongoose.Schema(
     toJSON: {
       transform: (_doc, ret) => {
         ret.id = ret._id;
+        delete ret._id;
         return ret;
       },
     },
