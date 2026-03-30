@@ -1,217 +1,409 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Warranty = require("../models/WarrantyModel");
+const Product = require("../models/ProductModel");
+const User = require("../models/UserModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 
-// POST /api/warranties - Tạo phiếu bảo hành mới
+const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const EVM_TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
+
 const createWarranty = async (req, res) => {
   try {
-    const {
-      tokenId,
-      serialNumber,
-      serialHash,
-      ownerAddress,
-      productCode,
-      productInfo,
-      expiryDate,
-      mintTxHash,
-      mintedAt,
-    } = req.body;
+    // Zero-trust whitelist: chỉ nhận đúng 3 field, bỏ qua phần còn lại từ client.
+    const { serialNumber, productCode, ownerAddress } = req.body || {};
 
-    if (
-      !tokenId ||
-      !serialNumber ||
-      !serialHash ||
-      !ownerAddress ||
-      !productCode
-    ) {
+    if (!serialNumber || !productCode || !ownerAddress) {
       return sendError(res, {
         statusCode: 400,
-        error:
-          "tokenId, serialNumber, serialHash, ownerAddress, and productCode are required",
+        message: "serialNumber, productCode, ownerAddress là bắt buộc",
       });
     }
 
-    // Kiểm tra tokenId hoặc serialNumber đã tồn tại
-    const existingToken = await Warranty.findOne({ tokenId: tokenId.trim() });
-    if (existingToken) {
+    const normalizedOwnerAddress = String(ownerAddress).trim().toLowerCase();
+    if (!EVM_ADDRESS_REGEX.test(normalizedOwnerAddress)) {
       return sendError(res, {
-        statusCode: 409,
-        error: "tokenId already exists",
+        statusCode: 400,
+        message: "ownerAddress không đúng định dạng ví EVM",
       });
     }
 
-    const existingSerial = await Warranty.findOne({
-      serialNumber: serialNumber.trim(),
-    });
-    if (existingSerial) {
+    const normalizedSerialNumber = String(serialNumber).trim();
+    const normalizedProductCode = String(productCode).trim().toUpperCase();
+
+    const customer = await User.findOne({
+      walletAddress: normalizedOwnerAddress,
+    }).lean();
+
+    if (!customer) {
       return sendError(res, {
-        statusCode: 409,
-        error: "serialNumber already exists",
+        statusCode: 404,
+        message:
+          "Khách hàng chưa có trong hệ thống. Vui lòng đăng ký tài khoản cho khách trước!",
       });
     }
+
+    const product = await Product.findOne({
+      productCode: normalizedProductCode,
+    }).lean();
+
+    if (!product) {
+      return sendError(res, {
+        statusCode: 404,
+        message: "Mã sản phẩm không tồn tại!",
+      });
+    }
+
+    const existedWarranty = await Warranty.findOne({
+      serialNumber: normalizedSerialNumber,
+    }).lean();
+    if (existedWarranty) {
+      return sendError(res, {
+        statusCode: 409,
+        message: "serialNumber đã tồn tại trong hệ thống bảo hành",
+      });
+    }
+
+    const serialHash = `0x${crypto
+      .createHash("sha256")
+      .update(normalizedSerialNumber)
+      .digest("hex")}`;
+
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    const warrantyMonths = Number(product.warrantyMonths) || 0;
+    const expiryDate = nowInSeconds + warrantyMonths * 30 * 24 * 60 * 60;
 
     const warranty = new Warranty({
-      tokenId: tokenId.trim(),
-      serialNumber: serialNumber.trim(),
-      serialHash: serialHash.trim(),
-      ownerAddress: ownerAddress.trim(),
-      productCode: productCode.trim(),
-      productInfo: productInfo || {},
-      expiryDate: expiryDate ? new Date(expiryDate) : undefined,
-      mintTxHash: mintTxHash ? mintTxHash.trim() : undefined,
-      mintedAt: mintedAt ? new Date(mintedAt) : undefined,
+      serialNumber: normalizedSerialNumber,
+      serialHash,
+      ownerAddress: normalizedOwnerAddress,
+      productCode: normalizedProductCode,
+      productInfo: {
+        productName: product.productName,
+        brand: product.brand,
+        color: product.color,
+        configuration: product.configuration,
+      },
+      expiryDate,
+      status: true,
     });
 
     const savedWarranty = await warranty.save();
 
-    sendSuccess(res, {
+    return sendSuccess(res, {
       statusCode: 201,
-      message: "Warranty created successfully",
+      message: "Tạo phiếu bảo hành Pre-mint thành công",
       data: savedWarranty,
     });
   } catch (error) {
-    console.error("Error creating warranty:", error);
-    sendError(res, {
-      statusCode: 500,
-      error: "Internal server error",
-    });
-  }
-};
+    if (error && error.code === 11000) {
+      return sendError(res, {
+        statusCode: 409,
+        message: "Dữ liệu bảo hành bị trùng lặp",
+      });
+    }
 
-// GET /api/warranties/:tokenId - Lấy chi tiết phiếu bảo hành theo tokenId
-const getWarrantyByTokenId = async (req, res) => {
-  try {
-    const { tokenId } = req.params;
-
-    if (!tokenId) {
+    if (error && error.name === "ValidationError") {
       return sendError(res, {
         statusCode: 400,
-        error: "tokenId is required",
+        message: "Dữ liệu đầu vào không hợp lệ",
+        details: Object.values(error.errors || {}).map((e) => e.message),
       });
     }
 
-    const warranty = await Warranty.findOne({ tokenId: tokenId.trim() });
-
-    if (!warranty) {
-      return sendError(res, {
-        statusCode: 404,
-        error: "Warranty not found",
-      });
-    }
-
-    sendSuccess(res, {
-      statusCode: 200,
-      message: "Warranty retrieved successfully",
-      data: warranty,
-    });
-  } catch (error) {
-    console.error("Error retrieving warranty:", error);
-    sendError(res, {
+    console.error("createWarranty error:", error);
+    return sendError(res, {
       statusCode: 500,
-      error: "Internal server error",
+      message: "Internal server error",
     });
   }
 };
 
-// GET /api/warranties/owner/:ownerAddress - Lấy danh sách phiếu bảo hành theo ownerAddress
-const getWarrantiesByOwner = async (req, res) => {
+const updateMintInfo = async (req, res) => {
   try {
-    const { ownerAddress } = req.params;
+    const { id } = req.params;
+    const { tokenId, mintTxHash } = req.body || {};
 
-    if (!ownerAddress) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendError(res, {
         statusCode: 400,
-        error: "ownerAddress is required",
+        message: "id không hợp lệ",
       });
     }
 
-    const warranties = await Warranty.find({
-      ownerAddress: ownerAddress.trim(),
-    });
-
-    sendSuccess(res, {
-      statusCode: 200,
-      message: "Warranties retrieved successfully",
-      data: warranties,
-    });
-  } catch (error) {
-    console.error("Error retrieving warranties:", error);
-    sendError(res, {
-      statusCode: 500,
-      error: "Internal server error",
-    });
-  }
-};
-
-// GET /api/warranties - Lấy tất cả phiếu bảo hành (cho Admin)
-const getAllWarranties = async (req, res) => {
-  try {
-    const warranties = await Warranty.find({});
-
-    sendSuccess(res, {
-      statusCode: 200,
-      message: "All warranties retrieved successfully",
-      data: warranties,
-    });
-  } catch (error) {
-    console.error("Error retrieving warranties:", error);
-    sendError(res, {
-      statusCode: 500,
-      error: "Internal server error",
-    });
-  }
-};
-
-// PUT /api/warranties/:tokenId - Cập nhật trạng thái phiếu bảo hành
-const updateWarranty = async (req, res) => {
-  try {
-    const { tokenId } = req.params;
-    const { status, ownerAddress, expiryDate, productInfo } = req.body;
-
-    if (!tokenId) {
+    if (!tokenId || !mintTxHash) {
       return sendError(res, {
         statusCode: 400,
-        error: "tokenId is required",
+        message: "tokenId và mintTxHash là bắt buộc",
       });
     }
 
-    const updateData = {};
-    if (status !== undefined) updateData.status = status;
-    if (ownerAddress) updateData.ownerAddress = ownerAddress.trim();
-    if (expiryDate) updateData.expiryDate = new Date(expiryDate);
-    if (productInfo) updateData.productInfo = productInfo;
+    const normalizedTokenId = String(tokenId).trim();
+    const normalizedTxHash = String(mintTxHash).trim().toLowerCase();
 
-    const warranty = await Warranty.findOneAndUpdate(
-      { tokenId: tokenId.trim() },
-      updateData,
-      { new: true, runValidators: true },
+    if (!EVM_TX_HASH_REGEX.test(normalizedTxHash)) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "mintTxHash không đúng định dạng tx hash",
+      });
+    }
+
+    const updatedWarranty = await Warranty.findByIdAndUpdate(
+      id,
+      {
+        tokenId: normalizedTokenId,
+        mintTxHash: normalizedTxHash,
+        mintedAt: new Date(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
 
-    if (!warranty) {
+    if (!updatedWarranty) {
       return sendError(res, {
         statusCode: 404,
-        error: "Warranty not found",
+        message: "Không tìm thấy phiếu bảo hành",
       });
     }
 
-    sendSuccess(res, {
+    return sendSuccess(res, {
       statusCode: 200,
-      message: "Warranty updated successfully",
+      message: "Cập nhật bằng chứng mint thành công",
+      data: updatedWarranty,
+    });
+  } catch (error) {
+    if (error && error.code === 11000) {
+      return sendError(res, {
+        statusCode: 409,
+        message: "tokenId hoặc mintTxHash đã tồn tại",
+      });
+    }
+
+    if (error && error.name === "ValidationError") {
+      return sendError(res, {
+        statusCode: 400,
+        message: "Dữ liệu cập nhật mint không hợp lệ",
+        details: Object.values(error.errors || {}).map((e) => e.message),
+      });
+    }
+
+    console.error("updateMintInfo error:", error);
+    return sendError(res, {
+      statusCode: 500,
+      message: "Internal server error",
+    });
+  }
+};
+
+const getAllWarranties = async (req, res) => {
+  try {
+    const { status } = req.query || {};
+    const filter = {};
+
+    if (status !== undefined) {
+      const normalizedStatus = String(status).trim().toLowerCase();
+
+      if (normalizedStatus === "pending") {
+        filter.tokenId = null;
+      } else if (normalizedStatus === "minted") {
+        filter.tokenId = { $type: "string" };
+      } else if (normalizedStatus === "true" || normalizedStatus === "false") {
+        filter.status = normalizedStatus === "true";
+      } else {
+        return sendError(res, {
+          statusCode: 400,
+          message: "status không hợp lệ. Hỗ trợ: pending, minted, true, false",
+        });
+      }
+    }
+
+    const warranties = await Warranty.find(filter)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy danh sách phiếu bảo hành thành công",
+      data: warranties,
+    });
+  } catch (error) {
+    console.error("getAllWarranties error:", error);
+    return sendError(res, {
+      statusCode: 500,
+      message: "Internal server error",
+    });
+  }
+};
+
+const getWarrantyByIdAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "id không hợp lệ",
+      });
+    }
+
+    const warranty = await Warranty.findById(id).lean();
+
+    if (!warranty) {
+      return sendError(res, {
+        statusCode: 404,
+        message: "Không tìm thấy phiếu bảo hành",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy chi tiết phiếu bảo hành thành công",
       data: warranty,
     });
   } catch (error) {
-    console.error("Error updating warranty:", error);
-    sendError(res, {
+    console.error("getWarrantyByIdAdmin error:", error);
+    return sendError(res, {
       statusCode: 500,
-      error: "Internal server error",
+      message: "Internal server error",
+    });
+  }
+};
+
+const updateWarrantyStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body || {};
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "id không hợp lệ",
+      });
+    }
+
+    if (typeof status !== "boolean") {
+      return sendError(res, {
+        statusCode: 400,
+        message: "status phải là boolean (true/false)",
+      });
+    }
+
+    const updatedWarranty = await Warranty.findByIdAndUpdate(
+      id,
+      { status },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).lean();
+
+    if (!updatedWarranty) {
+      return sendError(res, {
+        statusCode: 404,
+        message: "Không tìm thấy phiếu bảo hành",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Cập nhật trạng thái phiếu bảo hành thành công",
+      data: updatedWarranty,
+    });
+  } catch (error) {
+    console.error("updateWarrantyStatus error:", error);
+    return sendError(res, {
+      statusCode: 500,
+      message: "Internal server error",
+    });
+  }
+};
+
+const getMyWarranties = async (req, res) => {
+  try {
+    if (!req.user || !req.user.walletAddress) {
+      return sendError(res, {
+        statusCode: 401,
+        message: "Thiếu thông tin người dùng từ token",
+      });
+    }
+
+    const ownerAddress = String(req.user.walletAddress).trim().toLowerCase();
+
+    const warranties = await Warranty.find({ ownerAddress })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy danh sách bảo hành của bạn thành công",
+      data: warranties,
+    });
+  } catch (error) {
+    console.error("getMyWarranties error:", error);
+    return sendError(res, {
+      statusCode: 500,
+      message: "Internal server error",
+    });
+  }
+};
+
+const verifyWarrantyBySerialNumber = async (req, res) => {
+  try {
+    const { serialNumber } = req.params;
+    const normalizedSerialNumber = String(serialNumber || "").trim();
+
+    if (!normalizedSerialNumber) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "serialNumber là bắt buộc",
+      });
+    }
+
+    const warranty = await Warranty.findOne({
+      serialNumber: normalizedSerialNumber,
+    }).lean();
+
+    if (!warranty) {
+      return sendError(res, {
+        statusCode: 404,
+        message: "Không tìm thấy phiếu bảo hành cho serialNumber này",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Tra cứu bảo hành thành công",
+      data: {
+        serialNumber: warranty.serialNumber,
+        serialHash: warranty.serialHash,
+        ownerAddress: warranty.ownerAddress,
+        productCode: warranty.productCode,
+        productInfo: warranty.productInfo,
+        expiryDate: warranty.expiryDate,
+        status: warranty.status,
+        tokenId: warranty.tokenId,
+        mintTxHash: warranty.mintTxHash,
+        mintedAt: warranty.mintedAt,
+        isMinted: Boolean(warranty.tokenId && warranty.mintTxHash),
+      },
+    });
+  } catch (error) {
+    console.error("verifyWarrantyBySerialNumber error:", error);
+    return sendError(res, {
+      statusCode: 500,
+      message: "Internal server error",
     });
   }
 };
 
 module.exports = {
   createWarranty,
-  getWarrantyByTokenId,
-  getWarrantiesByOwner,
+  updateMintInfo,
   getAllWarranties,
-  updateWarranty,
+  getWarrantyByIdAdmin,
+  updateWarrantyStatus,
+  getMyWarranties,
+  verifyWarrantyBySerialNumber,
 };

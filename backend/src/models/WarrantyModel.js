@@ -4,11 +4,11 @@ const warrantySchema = new mongoose.Schema(
   {
     tokenId: {
       type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      index: true,
-      maxlength: 128,
+      default: null,
+      index: {
+        unique: true,
+        partialFilterExpression: { tokenId: { $type: "string" } },
+      },
     },
     serialNumber: {
       type: String,
@@ -44,22 +44,23 @@ const warrantySchema = new mongoose.Schema(
       maxlength: 64,
     },
     productInfo: {
-      productName: { type: String, trim: true, maxlength: 255 },
-      brand: { type: String, trim: true, maxlength: 100 },
-      color: { type: String, trim: true, maxlength: 100 },
-      configuration: { type: String, trim: true, maxlength: 255 },
+      type: {
+        productName: { type: String, trim: true, maxlength: 255 },
+        brand: { type: String, trim: true, maxlength: 100 },
+        color: { type: String, trim: true, maxlength: 100 },
+        configuration: { type: String, trim: true, maxlength: 255 },
+        _id: false,
+      },
+      required: true,
     },
     // Keep epoch-seconds to align with blockchain payload samples.
     expiryDate: { type: Number, required: true, min: 0, index: true },
     status: { type: Boolean, default: true, index: true },
     mintTxHash: {
       type: String,
-      trim: true,
-      lowercase: true,
-      index: true,
-      match: /^0x[a-f0-9]{64}$/,
+      default: null,
     },
-    mintedAt: { type: Date, required: true, index: true },
+    mintedAt: { type: Date, default: null },
     revokedAt: { type: Date },
     revokedReason: { type: String, trim: true, maxlength: 500 },
     isActive: { type: Boolean, default: true, index: true },
@@ -77,10 +78,6 @@ const warrantySchema = new mongoose.Schema(
   },
 );
 
-warrantySchema.index(
-  { tokenId: 1 },
-  { unique: true, name: "uq_warranty_token_id" },
-);
 warrantySchema.index(
   { serialNumber: 1 },
   { unique: true, name: "uq_warranty_serial_number" },

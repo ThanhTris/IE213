@@ -1,27 +1,50 @@
 const express = require("express");
 const {
   createWarranty,
-  getWarrantyByTokenId,
-  getWarrantiesByOwner,
+  updateMintInfo,
   getAllWarranties,
-  updateWarranty,
+  getWarrantyByIdAdmin,
+  updateWarrantyStatus,
+  getMyWarranties,
+  verifyWarrantyBySerialNumber,
 } = require("../controllers/warranty.controller");
+const { authenticate: verifyToken, authorize } = require("../middleware/auth");
 
 const router = express.Router();
 
-// POST /api/warranties - Tạo phiếu bảo hành mới
-router.post("/", createWarranty);
+const authorizeRoles = (...roles) => authorize(roles);
 
-// GET /api/warranties/:tokenId - Lấy chi tiết phiếu bảo hành theo tokenId
-router.get("/:tokenId", getWarrantyByTokenId);
+// Static routes must be defined before dynamic routes.
+router.get("/my-warranties", verifyToken, getMyWarranties);
+router.get("/verify/:serialNumber", verifyWarrantyBySerialNumber);
+router.get(
+  "/",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  getAllWarranties,
+);
 
-// GET /api/warranties/owner/:ownerAddress - Lấy danh sách phiếu bảo hành theo ownerAddress
-router.get("/owner/:ownerAddress", getWarrantiesByOwner);
+// POST /api/warranties - pre-mint record
+router.post("/", verifyToken, authorizeRoles("admin", "staff"), createWarranty);
 
-// GET /api/warranties - Lấy tất cả phiếu bảo hành (cho Admin)
-router.get("/", getAllWarranties);
-
-// PUT /api/warranties/:tokenId - Cập nhật trạng thái phiếu bảo hành
-router.put("/:tokenId", updateWarranty);
+// PUT /api/warranties/:id/mint - update on-chain mint proof
+router.put(
+  "/:id/mint",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  updateMintInfo,
+);
+router.patch(
+  "/:id/status",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  updateWarrantyStatus,
+);
+router.get(
+  "/:id",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  getWarrantyByIdAdmin,
+);
 
 module.exports = router;
