@@ -7,6 +7,7 @@ module.exports = defineConfig({
     include: [
       "../tests/backend/app.test.js",
       "../tests/backend/product/**/*.test.js",
+      "../tests/backend/repair-log/**/*.test.js",
       "../tests/backend/user/**/*.test.js",
       "../tests/backend/warranty/**/*.test.js",
     ],
