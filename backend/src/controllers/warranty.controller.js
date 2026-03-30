@@ -372,13 +372,19 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       });
     }
 
+    const owner = String(warranty.ownerAddress || "").trim();
+    const maskedOwnerAddress =
+      owner.length > 10
+        ? `${owner.substring(0, 6)}...${owner.substring(owner.length - 4)}`
+        : owner;
+
     return sendSuccess(res, {
       statusCode: 200,
       message: "Tra cứu bảo hành thành công",
       data: {
         serialNumber: warranty.serialNumber,
         serialHash: warranty.serialHash,
-        ownerAddress: warranty.ownerAddress,
+        ownerAddress: maskedOwnerAddress,
         productCode: warranty.productCode,
         productInfo: warranty.productInfo,
         expiryDate: warranty.expiryDate,
