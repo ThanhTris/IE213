@@ -23,30 +23,30 @@ Backend chưa có triển khai thực tế:
 
 ## 2) Bảng trạng thái endpoint
 
-| Endpoint                                  | Trạng thái | RESTful        | Ghi chú                                                         |
-| ----------------------------------------- | ---------- | -------------- | --------------------------------------------------------------- |
-| GET /api/health                           | Done       | Đúng           | Có controller + test health                                     |
-| GET /api                                  | Done (404) | Chấp nhận được | Không có resource root, trả Route not found                     |
-| POST /api/users/auth                      | Done       | Đúng           | Đã triển khai login/register theo wallet                        |
-| GET /api/users/me                         | Done       | Chấp nhận được | Có auth, dùng walletAddress query/body                          |
-| PUT /api/users/:walletAddress             | Done       | Đúng           | Có auth + kiểm tra quyền user/admin                             |
-| GET /api/users                            | Done       | Đúng           | Chỉ admin truy cập                                              |
-| POST /api/products                        | Done       | Đúng           | Có auth + authorize admin, response tạo mới chỉ trả createdAt   |
-| GET /api/products                         | Done       | Đúng           | Public list mặc định active-only, includeInactive chỉ cho admin |
-| GET /api/products/:idOrCode               | Done       | Đúng           | Hỗ trợ id hoặc productCode                                      |
-| PUT /api/products/:idOrCode               | Done       | Đúng           | Có auth + authorize admin                                       |
-| DELETE /api/products/:idOrCode            | Done       | Đúng           | Soft delete (isActive=false), không còn hard delete qua query   |
-| POST /api/warranties                      | Done       | Đúng           | Có auth/role + pre-mint flow                                    |
-| PUT /api/warranties/:id/mint              | Done       | Đúng           | Cập nhật bằng chứng mint                                        |
-| PATCH /api/warranties/:id/status          | Done       | Đúng           | Quản trị trạng thái bảo hành                                    |
-| GET /api/warranties                       | Done       | Đúng           | Có auth + authorize                                             |
-| GET /api/warranties/:id                   | Done       | Đúng           | Xem chi tiết bảo hành admin/staff                               |
-| GET /api/warranties/my-warranties         | Done       | Đúng           | Danh sách bảo hành theo chủ sở hữu từ token                     |
-| GET /api/warranties/verify/:serialNumber  | Done       | Đúng           | Public verify, có mask ownerAddress                             |
-| POST /api/repair-logs                     | Done       | Đúng           | Chỉ admin/technician, create repair log                         |
-| GET /api/repair-logs                      | Done       | Đúng           | Admin/staff/technician xem toàn bộ                              |
-| GET /api/repair-logs/device/:serialNumber | Done       | Đúng           | Public lookup theo serialNumber, có check tồn tại warranty      |
-| PATCH /api/repair-logs/:id                | Done       | Đúng           | Admin sửa mọi log, technician chỉ sửa log của chính mình        |
+| Endpoint                                  | Trạng thái | RESTful        | Ghi chú                                                                |
+| ----------------------------------------- | ---------- | -------------- | ---------------------------------------------------------------------- |
+| GET /api/health                           | Done       | Đúng           | Có controller + test health                                            |
+| GET /api                                  | Done (404) | Chấp nhận được | Không có resource root, trả Route not found                            |
+| POST /api/users/auth                      | Done       | Đúng           | Đã triển khai login/register theo wallet                               |
+| GET /api/users/me                         | Done       | Chấp nhận được | Có auth, dùng walletAddress query/body                                 |
+| PUT /api/users/:walletAddress             | Done       | Đúng           | Có auth + kiểm tra quyền user/admin                                    |
+| GET /api/users                            | Done       | Đúng           | Chỉ admin truy cập                                                     |
+| POST /api/products                        | Done       | Đúng           | Có auth + authorize admin, response tạo mới chỉ trả createdAt          |
+| GET /api/products                         | Done       | Đúng           | Public list mặc định active-only, includeInactive chỉ cho admin        |
+| GET /api/products/:idOrCode               | Done       | Đúng           | Hỗ trợ id hoặc productCode                                             |
+| PUT /api/products/:idOrCode               | Done       | Đúng           | Có auth + authorize admin                                              |
+| DELETE /api/products/:idOrCode            | Done       | Đúng           | Soft delete (isActive=false), không còn hard delete qua query          |
+| POST /api/warranties                      | Done       | Đúng           | Có auth/role + pre-mint flow                                           |
+| PUT /api/warranties/:id/mint              | Removed    | Deprecated     | Đã loại bỏ: dùng `PATCH /api/warranties/:id` để gắn `tokenId`/`txHash` |
+| PATCH /api/warranties/:id/status          | Done       | Đúng           | Quản trị trạng thái bảo hành                                           |
+| GET /api/warranties                       | Done       | Đúng           | Có auth + authorize                                                    |
+| GET /api/warranties/:id                   | Done       | Đúng           | Xem chi tiết bảo hành admin/staff                                      |
+| GET /api/warranties/my-warranties         | Done       | Đúng           | Danh sách bảo hành theo chủ sở hữu từ token                            |
+| GET /api/warranties/verify/:serialNumber  | Done       | Đúng           | Public verify, có mask ownerAddress                                    |
+| POST /api/repair-logs                     | Done       | Đúng           | Chỉ admin/technician, create repair log                                |
+| GET /api/repair-logs                      | Done       | Đúng           | Admin/staff/technician xem toàn bộ                                     |
+| GET /api/repair-logs/device/:serialNumber | Done       | Đúng           | Public lookup theo serialNumber, có check tồn tại warranty             |
+| PATCH /api/repair-logs/:id                | Done       | Đúng           | Admin sửa mọi log, technician chỉ sửa log của chính mình               |
 
 ## 3) Đánh giá RESTful sơ bộ
 
