@@ -26,14 +26,15 @@ router.get(
 
 // POST /api/warranties - pre-mint record
 router.post("/", verifyToken, authorizeRoles("admin", "staff"), createWarranty);
-
-// PUT /api/warranties/:id/mint - update on-chain mint proof
-router.put(
-  "/:id/mint",
+// PATCH /api/warranties/:id - update on-chain mint proof (admin/staff)
+router.patch(
+  "/:id",
   verifyToken,
   authorizeRoles("admin", "staff"),
   updateMintInfo,
 );
+
+// Note: Only PATCH /:id is supported for setting mint proof (tokenId, txHash).
 router.patch(
   "/:id/status",
   verifyToken,

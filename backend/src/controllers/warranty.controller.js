@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Warranty = require("../models/WarrantyModel");
 const Product = require("../models/ProductModel");
 const User = require("../models/UserModel");
+const TransferHistory = require("../models/TranferHistoryModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 
 const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
@@ -10,8 +11,8 @@ const EVM_TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
 
 const createWarranty = async (req, res) => {
   try {
-    // Zero-trust whitelist: chỉ nhận đúng 3 field, bỏ qua phần còn lại từ client.
-    const { serialNumber, productCode, ownerAddress } = req.body || {};
+    // Zero-trust whitelist: chỉ nhận đúng các field được phép từ client.
+    const { serialNumber, productCode, ownerAddress, warrantyMonths } = req.body || {};
 
     if (!serialNumber || !productCode || !ownerAddress) {
       return sendError(res, {
@@ -70,8 +71,17 @@ const createWarranty = async (req, res) => {
       .digest("hex")}`;
 
     const nowInSeconds = Math.floor(Date.now() / 1000);
-    const warrantyMonths = Number(product.warrantyMonths) || 0;
-    const expiryDate = nowInSeconds + warrantyMonths * 30 * 24 * 60 * 60;
+    // Allow overriding warranty months via request (optional). Fall back to product config.
+    const monthsFromProduct = Number(product.warrantyMonths) || 0;
+    const requestedMonths = typeof warrantyMonths !== "undefined" ? Number(warrantyMonths) : monthsFromProduct;
+    if (Number.isNaN(requestedMonths) || requestedMonths < 0) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "warrantyMonths không hợp lệ",
+      });
+    }
+
+    const expiryDate = nowInSeconds + requestedMonths * 30 * 24 * 60 * 60;
 
     const warranty = new Warranty({
       serialNumber: normalizedSerialNumber,
@@ -111,10 +121,9 @@ const createWarranty = async (req, res) => {
       });
     }
 
-    console.error("createWarranty error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -122,7 +131,8 @@ const createWarranty = async (req, res) => {
 const updateMintInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { tokenId, mintTxHash } = req.body || {};
+    // Accept tokenId and txHash per API spec
+    const { tokenId, txHash } = req.body || {};
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendError(res, {
@@ -131,29 +141,31 @@ const updateMintInfo = async (req, res) => {
       });
     }
 
-    if (!tokenId || !mintTxHash) {
+    if (!tokenId || !txHash) {
       return sendError(res, {
         statusCode: 400,
-        message: "tokenId và mintTxHash là bắt buộc",
+        message: "tokenId và txHash là bắt buộc",
       });
     }
 
     const normalizedTokenId = String(tokenId).trim();
-    const normalizedTxHash = String(mintTxHash).trim().toLowerCase();
+    const normalizedTxHash = String(txHash).trim().toLowerCase();
 
     if (!EVM_TX_HASH_REGEX.test(normalizedTxHash)) {
       return sendError(res, {
         statusCode: 400,
-        message: "mintTxHash không đúng định dạng tx hash",
+        message: "txHash không đúng định dạng tx hash",
       });
     }
 
+    // Update Warranty first
     const updatedWarranty = await Warranty.findByIdAndUpdate(
       id,
       {
         tokenId: normalizedTokenId,
         mintTxHash: normalizedTxHash,
         mintedAt: new Date(),
+        status: true,
       },
       {
         new: true,
@@ -168,16 +180,36 @@ const updateMintInfo = async (req, res) => {
       });
     }
 
+    // Create transfer history for mint (zero address -> customer)
+    try {
+      await TransferHistory.create({
+        tokenId: normalizedTokenId,
+        serialNumber: updatedWarranty.serialNumber,
+        fromAddress: "0x0000000000000000000000000000000000000000",
+        toAddress: updatedWarranty.ownerAddress,
+        txHash: normalizedTxHash,
+        transferType: "mint",
+      });
+    } catch (err) {
+      // If creating transfer history fails, do NOT remove mintTxHash (birth record).
+      // Warranty remains minted; transfer history must be created manually or retried.
+      return sendError(res, {
+        statusCode: 500,
+        message:
+          "Đã cập nhật mint (mintTxHash được giữ nguyên) nhưng tạo lịch sử chuyển nhượng thất bại",
+      });
+    }
+
     return sendSuccess(res, {
       statusCode: 200,
-      message: "Cập nhật bằng chứng mint thành công",
+      message: "Cập nhật mint và tạo lịch sử chuyển nhượng (mint) thành công",
       data: updatedWarranty,
     });
   } catch (error) {
     if (error && error.code === 11000) {
       return sendError(res, {
         statusCode: 409,
-        message: "tokenId hoặc mintTxHash đã tồn tại",
+        message: "tokenId hoặc txHash đã tồn tại",
       });
     }
 
@@ -189,10 +221,9 @@ const updateMintInfo = async (req, res) => {
       });
     }
 
-    console.error("updateMintInfo error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -229,10 +260,9 @@ const getAllWarranties = async (req, res) => {
       data: warranties,
     });
   } catch (error) {
-    console.error("getAllWarranties error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -263,10 +293,9 @@ const getWarrantyByIdAdmin = async (req, res) => {
       data: warranty,
     });
   } catch (error) {
-    console.error("getWarrantyByIdAdmin error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -312,10 +341,9 @@ const updateWarrantyStatus = async (req, res) => {
       data: updatedWarranty,
     });
   } catch (error) {
-    console.error("updateWarrantyStatus error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -341,10 +369,9 @@ const getMyWarranties = async (req, res) => {
       data: warranties,
     });
   } catch (error) {
-    console.error("getMyWarranties error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -396,10 +423,9 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("verifyWarrantyBySerialNumber error:", error);
     return sendError(res, {
       statusCode: 500,
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
