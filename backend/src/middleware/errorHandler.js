@@ -10,7 +10,7 @@ const errorHandler = (err, req, res, _next) => {
   const errorCode = err.errorCode || mapStatusToErrorCode(statusCode);
   const details = Array.isArray(err.details) ? err.details : [];
 
-  console.error(err.stack || err);
+  // Do not print stack traces to console in production environment here
   return sendError(res, {
     statusCode,
     errorCode,

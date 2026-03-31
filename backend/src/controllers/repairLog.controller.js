@@ -168,11 +168,10 @@ const createRepairLog = async (req, res) => {
       });
     }
 
-    console.error("createRepairLog error:", error);
     return sendError(res, {
       statusCode: 500,
       errorCode: "E500_INTERNAL",
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -215,11 +214,10 @@ const getRepairLogsBySerialNumber = async (req, res) => {
       data: repairLogs,
     });
   } catch (error) {
-    console.error("getRepairLogsBySerialNumber error:", error);
     return sendError(res, {
       statusCode: 500,
       errorCode: "E500_INTERNAL",
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -239,11 +237,10 @@ const getAllRepairLogs = async (req, res) => {
       data: repairLogs,
     });
   } catch (error) {
-    console.error("getAllRepairLogs error:", error);
     return sendError(res, {
       statusCode: 500,
       errorCode: "E500_INTERNAL",
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
@@ -395,11 +392,10 @@ const updateRepairLog = async (req, res) => {
       });
     }
 
-    console.error("updateRepairLog error:", error);
     return sendError(res, {
       statusCode: 500,
       errorCode: "E500_INTERNAL",
-      message: "Internal server error",
+      message: "Lỗi nội bộ máy chủ",
     });
   }
 };
