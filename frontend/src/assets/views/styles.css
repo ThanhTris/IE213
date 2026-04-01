@@ -1,0 +1,56 @@
+:root {
+  --navy-primary: #2955ce;
+  --navy-primary-dark: #172554;
+  --navy-900: #1e293b;
+  --navy-800: #334155;
+  --grey-50: #f8fafc;
+  --grey-100: #f1f5f9;
+  --grey-200: #e2e8f0;
+  --grey-400: #94a3b8;
+  --grey-600: #64748b;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-100: #d1fae5;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(30, 58, 138, 0.06);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 20px 40px rgba(30, 58, 138, 0.12);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--navy-900);
+  background: var(--white);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn-login,
+.btn,
+.search-submit,
+.btn-hero-emerald,
+.btn-hero-outline {
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--navy-primary);
+  color: var(--white);
+}
