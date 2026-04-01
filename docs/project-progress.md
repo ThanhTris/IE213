@@ -6,7 +6,7 @@ Ngày cập nhật: 2026-03-30
 
 - [x] Smart Contract (On-chain): hoàn thành 100% (đã viết ERC-721, deploy Sepolia, có Contract Address và ABI).
 - [x] Database (Off-chain): hoàn thành 100% khâu thiết kế (5 bảng: User, Product, Warranties, RepairLog, TransferHistory).
-- [ ] Backend API: User/Product/Warranty/RepairLog đã ổn định và có test, còn thiếu TransferHistory.
+- [x] Backend API: User/Product/Warranty/RepairLog/TransferHistory đã ổn định.
 - [ ] Frontend UI: mới ở mức nền tảng.
 
 ## 2) Tiến độ theo mảng kỹ thuật

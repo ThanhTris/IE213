@@ -340,3 +340,111 @@ Success (200)
 - [ ] Tạo file mock users/products theo đúng cấu trúc data ở tài liệu này.
 - [ ] Render UI không hardcode key khác schema đã chốt.
 - [ ] Service layer FE giữ nguyên shape response để chuyển API thật không phải sửa UI lớn.
+
+## 7) Warranty & Transfer (mint/transfer)
+
+FE cần mock thêm các endpoint liên quan workflow mint và chuyển nhượng.
+
+7.1 POST /api/warranties
+
+Mục đích: Tạo bản ghi bảo hành (pre-mint). Hỗ trợ truyền `warrantyMonths` để tính `expiryDate`.
+
+Request
+
+```json
+{
+  "productId": "prd_001",
+  "serialNumber": "SN-001",
+  "ownerAddress": "0x1234...abcd",
+  "warrantyMonths": 12
+}
+```
+
+Success (201)
+
+```json
+{
+  "success": true,
+  "message": "Warranty created",
+  "data": {
+    "_id": "wty_001",
+    "productId": "prd_001",
+    "serialNumber": "SN-001",
+    "ownerAddress": "0x1234...abcd",
+    "warrantyMonths": 12,
+    "expiryDate": "2027-03-30T00:00:00.000Z",
+    "status": false
+  }
+}
+```
+
+7.2 PATCH /api/warranties/:id (mint)
+
+Mục đích: Ghi nhận thông tin mint từ on-chain indexer hoặc admin — cập nhật `tokenId`, `mintTxHash`, `mintedAt` và set `status` active; kèm tạo `TransferHistory` với `transferType: "mint"` (from zero address).
+
+Request
+
+```json
+{
+  "tokenId": "1234",
+  "txHash": "0xabc...123"
+}
+```
+
+Success (200)
+
+```json
+{
+  "success": true,
+  "message": "Warranty minted",
+  "data": {
+    "_id": "wty_001",
+    "tokenId": "1234",
+    "mintTxHash": "0xabc...123",
+    "mintedAt": "2026-03-30T12:00:00.000Z",
+    "status": true
+  }
+}
+```
+
+7.3 POST /api/transfers
+
+Mục đích: Ghi nhận giao dịch chuyển nhượng off-chain (hoặc từ indexer) — endpoint yêu cầu `Authorization` (JWT) và chỉ cho phép chủ sở hữu hiện tại (`req.user.walletAddress`) thực hiện.
+
+Request
+
+```json
+{
+  "warrantyId": "wty_001",
+  "from": "0xOldOwner",
+  "to": "0xNewOwner",
+  "tokenId": "1234",
+  "txHash": "0xdef...456"
+}
+```
+
+Success (201)
+
+```json
+{
+  "success": true,
+  "message": "Transfer recorded",
+  "data": {
+    "_id": "th_001",
+    "warrantyId": "wty_001",
+    "from": "0xOldOwner",
+    "to": "0xNewOwner",
+    "tokenId": "1234",
+    "txHash": "0xdef...456",
+    "transferType": "transfer",
+    "createdAt": "2026-03-30T13:00:00.000Z"
+  }
+}
+```
+
+7.4 Public GET history endpoints (no auth)
+
+- GET `/api/transfers/tx/:txHash` — trả chi tiết transfer theo `txHash`.
+- GET `/api/transfers/token/:tokenId` — trả danh sách `TransferHistory` theo `tokenId`.
+
+FE note: sử dụng cấu trúc envelope `success/message/data` như phần còn lại để dễ chuyển từ mock sang API thật.

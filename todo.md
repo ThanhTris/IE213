@@ -65,7 +65,7 @@ Ngày cập nhật: 2026-03-30
 - [x] Cập nhật docs/api-status.md theo endpoint đã chạy thật.
 - [x] Hoàn tất test backend cho Product API (13 test case pass).
 - [x] Đóng gói danh sách endpoint sẵn sàng bàn giao FE (User/Product/Warranty/RepairLog).
-- [ ] Hoàn thiện module TransferHistory để chốt phase backend.
+  - [x] Hoàn thiện module TransferHistory để chốt phase backend.
 
 ## Task tuần này - Frontend (FE)
 

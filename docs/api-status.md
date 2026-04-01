@@ -1,10 +1,10 @@
 # Trạng thái API Backend
 
-Ngày cập nhật: 2026-03-30
+Ngày cập nhật: 2026-03-31
 
 ## 1) Tổng quan
 
-Mức hoàn thiện API backend hiện tại: 96%
+Mức hoàn thiện API backend hiện tại: 100%
 
 Backend đang có:
 
@@ -16,10 +16,7 @@ Backend đang có:
 - Product API: đã có CRUD route/controller.
 - Warranty API: đã có pre-mint/mint/admin flows + public verify.
 - Repair Log API: đã có create/list/public lookup/patch + phân quyền ownership.
-
-Backend chưa có triển khai thực tế:
-
-- Transfer History API chưa triển khai.
+- Transfer History API: đã có routes/controller + unit tests; hỗ trợ `POST /api/transfers` (yêu cầu JWT, kiểm tra chủ sở hữu) và public `GET /api/transfers/tx/:txHash`, `GET /api/transfers/token/:tokenId`.
 
 ## 2) Bảng trạng thái endpoint
 
@@ -47,6 +44,10 @@ Backend chưa có triển khai thực tế:
 | GET /api/repair-logs                      | Done       | Đúng           | Admin/staff/technician xem toàn bộ                                     |
 | GET /api/repair-logs/device/:serialNumber | Done       | Đúng           | Public lookup theo serialNumber, có check tồn tại warranty             |
 | PATCH /api/repair-logs/:id                | Done       | Đúng           | Admin sửa mọi log, technician chỉ sửa log của chính mình               |
+
+| POST /api/transfers | Done | Đúng | Ghi nhận transfer, bảo mật ownership (JWT) |
+| GET /api/transfers/tx/:txHash | Done | Đúng | Public lookup transfer detail theo txHash |
+| GET /api/transfers/token/:tokenId | Done | Đúng | Public lịch sử transfer theo tokenId |
 
 ## 3) Đánh giá RESTful sơ bộ
 
