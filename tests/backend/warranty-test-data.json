@@ -1,0 +1,155 @@
+{
+  "createWarranty": {
+    "description": "Sample request body for POST /api/warranties (Create new warranty)",
+    "data": {
+      "tokenId": "123456789",
+      "serialNumber": "SN123456789",
+      "serialHash": "hash1234567890abcdef",
+      "ownerAddress": "0x1234567890abcdef1234567890abcdef12345678",
+      "productCode": "DELL-XPS-13",
+      "productInfo": {
+        "productName": "Laptop Dell XPS 13",
+        "brand": "Dell",
+        "color": "Silver",
+        "configuration": "i7, 16GB RAM, 512GB SSD"
+      },
+      "expiryDate": "2027-03-21T00:00:00.000Z",
+      "mintTxHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "mintedAt": "2026-03-21T10:00:00.000Z"
+    }
+  },
+  "getWarrantyDetail": {
+    "description": "Sample response for GET /api/warranties/:tokenId (Get warranty detail)",
+    "data": {
+      "_id": "507f1f77bcf86cd799439011",
+      "tokenId": "123456789",
+      "serialNumber": "SN123456789",
+      "serialHash": "hash1234567890abcdef",
+      "ownerAddress": "0x1234567890abcdef1234567890abcdef12345678",
+      "productCode": "DELL-XPS-13",
+      "productInfo": {
+        "productName": "Laptop Dell XPS 13",
+        "brand": "Dell",
+        "color": "Silver",
+        "configuration": "i7, 16GB RAM, 512GB SSD"
+      },
+      "expiryDate": "2027-03-21T00:00:00.000Z",
+      "status": true,
+      "mintTxHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "mintedAt": "2026-03-21T10:00:00.000Z",
+      "createdAt": "2026-03-21T10:00:00.000Z",
+      "updatedAt": "2026-03-21T10:00:00.000Z"
+    }
+  },
+  "getUserWarranties": {
+    "description": "Sample response for GET /api/warranties/user/:ownerAddress (Get user's warranties)",
+    "data": [
+      {
+        "_id": "507f1f77bcf86cd799439011",
+        "tokenId": "123456789",
+        "serialNumber": "SN123456789",
+        "serialHash": "hash1234567890abcdef",
+        "ownerAddress": "0x1234567890abcdef1234567890abcdef12345678",
+        "productCode": "DELL-XPS-13",
+        "productInfo": {
+          "productName": "Laptop Dell XPS 13",
+          "brand": "Dell",
+          "color": "Silver",
+          "configuration": "i7, 16GB RAM, 512GB SSD"
+        },
+        "expiryDate": "2027-03-21T00:00:00.000Z",
+        "status": true,
+        "mintTxHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+        "mintedAt": "2026-03-21T10:00:00.000Z",
+        "createdAt": "2026-03-21T10:00:00.000Z",
+        "updatedAt": "2026-03-21T10:00:00.000Z"
+      },
+      {
+        "_id": "507f1f77bcf86cd799439012",
+        "tokenId": "987654321",
+        "serialNumber": "SN987654321",
+        "serialHash": "hash9876543210fedcba",
+        "ownerAddress": "0x1234567890abcdef1234567890abcdef12345678",
+        "productCode": "SAMSUNG-S23",
+        "productInfo": {
+          "productName": "Smartphone Samsung Galaxy S23",
+          "brand": "Samsung",
+          "color": "Black",
+          "configuration": "8GB RAM, 256GB Storage"
+        },
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "status": false,
+        "mintTxHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "mintedAt": "2025-12-01T10:00:00.000Z",
+        "createdAt": "2025-12-01T10:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z"
+      }
+    ]
+  },
+  "getAllWarranties": {
+    "description": "Sample response for GET /api/warranties (Get all warranties - admin)",
+    "data": [
+      {
+        "_id": "507f1f77bcf86cd799439011",
+        "tokenId": "123456789",
+        "serialNumber": "SN123456789",
+        "serialHash": "hash1234567890abcdef",
+        "ownerAddress": "0x1234567890abcdef1234567890abcdef12345678",
+        "productCode": "DELL-XPS-13",
+        "productInfo": {
+          "productName": "Laptop Dell XPS 13",
+          "brand": "Dell",
+          "color": "Silver",
+          "configuration": "i7, 16GB RAM, 512GB SSD"
+        },
+        "expiryDate": "2027-03-21T00:00:00.000Z",
+        "status": true,
+        "mintTxHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+        "mintedAt": "2026-03-21T10:00:00.000Z",
+        "createdAt": "2026-03-21T10:00:00.000Z",
+        "updatedAt": "2026-03-21T10:00:00.000Z"
+      },
+      {
+        "_id": "507f1f77bcf86cd799439012",
+        "tokenId": "987654321",
+        "serialNumber": "SN987654321",
+        "serialHash": "hash9876543210fedcba",
+        "ownerAddress": "0x876543210fedcba09876543210fedcba098765432",
+        "productCode": "SAMSUNG-S23",
+        "productInfo": {
+          "productName": "Smartphone Samsung Galaxy S23",
+          "brand": "Samsung",
+          "color": "Black",
+          "configuration": "8GB RAM, 256GB Storage"
+        },
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "status": false,
+        "mintTxHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "mintedAt": "2025-12-01T10:00:00.000Z",
+        "createdAt": "2025-12-01T10:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z"
+      }
+    ]
+  },
+  "updateWarranty": {
+    "description": "Sample request body for PUT /api/warranties/:tokenId (Update warranty status)",
+    "data": {
+      "status": false,
+      "ownerAddress": "0x876543210fedcba09876543210fedcba098765432",
+      "productInfo": {
+        "productName": "Updated Laptop Model",
+        "brand": "Dell Updated",
+        "color": "Black",
+        "configuration": "i7, 16GB RAM, 512GB SSD"
+      }
+    }
+  },
+  "errorResponse": {
+    "description": "Sample error response",
+    "data": {
+      "success": false,
+      "message": "Warranty not found",
+      "error": "Not Found"
+    }
+  }
+}

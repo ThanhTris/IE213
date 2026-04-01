@@ -6,19 +6,21 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest ../tests/backend"
+    "test": "NODE_PATH=./node_modules vitest run --config ./vitest.config.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.2",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8"
   },
   "keywords": [],
   "author": "",
