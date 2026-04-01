@@ -59,7 +59,7 @@ Request
 
 Success (201 hoặc 200)
 
-```json
+````json
 {
   "success": true,
   "message": "User authenticated",
@@ -69,11 +69,88 @@ Success (201 hoặc 200)
     "fullName": "Nguyen Van A",
     "email": "a@example.com",
     "phone": "0909000999",
-    "createdAt": "2026-03-22T10:00:00.000Z",
-    "updatedAt": "2026-03-22T10:00:00.000Z"
+
+### 3.5 GET /api/users/:walletAddress
+
+Mục đích: Admin/privileged roles lấy chi tiết user theo địa chỉ ví.
+
+Success (200)
+
+```json
+{
+  "success": true,
+  "message": "User found",
+  "data": {
+    "_id": "usr_001",
+    "walletAddress": "0x1234...abcd",
+    "fullName": "Nguyen Van A",
+    "email": "a@example.com",
+    "phone": "0909000999",
+    "role": "user",
+    "isActive": true
+  }
+}
+````
+
+### 3.6 PATCH /api/users/:walletAddress/role
+
+Mục đích: Admin cập nhật role của user (ví dụ: staff, technician, admin).
+
+Request
+
+```json
+{
+  "role": "technician"
+}
+```
+
+Success (200)
+
+```json
+{
+  "success": true,
+  "message": "User role updated",
+  "data": {
+    "_id": "usr_001",
+    "walletAddress": "0x1234...abcd",
+    "role": "technician"
   }
 }
 ```
+
+### 3.7 PATCH /api/users/:walletAddress/is-active
+
+Mục đích: Bật/tắt trạng thái hoạt động của người dùng.
+
+Request
+
+```json
+{
+  "isActive": false
+}
+```
+
+Success (200)
+
+```json
+{
+  "success": true,
+  "message": "User active state updated",
+  "data": {
+    "_id": "usr_001",
+    "walletAddress": "0x1234...abcd",
+    "isActive": false
+  }
+}
+```
+
+    "createdAt": "2026-03-22T10:00:00.000Z",
+    "updatedAt": "2026-03-22T10:00:00.000Z"
+
+}
+}
+
+````
 
 Error mẫu
 
@@ -86,7 +163,7 @@ Error mẫu
     "details": ["walletAddress"]
   }
 }
-```
+````
 
 ### 3.2 GET /api/users/me?walletAddress=0x...
 
