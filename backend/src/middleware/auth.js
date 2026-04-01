@@ -28,7 +28,7 @@ const authenticate = async (req, res, next) => {
       return sendError(res, {
         statusCode: 401,
         errorCode: "E401_UNAUTHORIZED",
-        message: "Missing Bearer token",
+        message: "Thiếu Bearer token",
       });
     }
 
@@ -39,8 +39,22 @@ const authenticate = async (req, res, next) => {
     return sendError(res, {
       statusCode: 401,
       errorCode: "E401_UNAUTHORIZED",
-      message: "Invalid or expired token",
+      message: "Token không hợp lệ hoặc đã hết hạn",
     });
+  }
+};
+
+const optionalAuthenticate = async (req, _res, next) => {
+  try {
+    const token = extractBearerToken(req.headers.authorization || "");
+    if (!token) return next();
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    return next();
+  } catch (_error) {
+    // Ignore invalid token in optional mode and continue as anonymous.
+    return next();
   }
 };
 
@@ -50,7 +64,7 @@ const authorize = (roles) => {
       return sendError(res, {
         statusCode: 403,
         errorCode: "E403_FORBIDDEN",
-        message: "You do not have permission to perform this action",
+        message: "Bạn không có quyền thực hiện hành động này",
       });
     }
     return next();
@@ -59,6 +73,7 @@ const authorize = (roles) => {
 
 module.exports = {
   authenticate,
+  optionalAuthenticate,
   authorize,
   generateToken,
 };

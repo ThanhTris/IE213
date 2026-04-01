@@ -8,7 +8,9 @@ Trong hệ thống Quản lý và Cấp phát Phiếu Bảo hành Điện tử (
 
 - Guest (Khách vãng lai): người dùng chưa đăng nhập, có nhu cầu tra cứu thông tin chính hãng và lịch sử sửa chữa theo số serial.
 - User (Chủ sở hữu): khách hàng đã kết nối ví Web3 (MetaMask), có quyền xem tài sản số bảo hành và thực hiện chuyển nhượng.
-- Admin (Quản trị viên/Cửa hàng): nhân sự vận hành nghiệp vụ, có quyền quản lý danh mục sản phẩm, cấp phát bảo hành, ghi nhận sửa chữa và xử lý vi phạm.
+- Admin (Quản trị viên): có toàn quyền quản trị hệ thống, bao gồm phân quyền tài khoản và khóa/mở tài khoản người dùng.
+- Staff (Nhân viên vận hành): xử lý nghiệp vụ vận hành hàng ngày như cập nhật hồ sơ người dùng, cấp phát bảo hành, theo dõi danh sách bảo hành.
+- Technician (Kỹ thuật viên): xử lý nghiệp vụ kỹ thuật và hậu mãi, cập nhật hồ sơ nghiệp vụ liên quan bảo hành/sửa chữa theo phân quyền.
 
 Hệ thống được tổ chức theo bốn nhóm chức năng:
 
@@ -66,11 +68,13 @@ flowchart LR
 
 ### 2.5.2 Danh sách Actors
 
-| Actor | Mô tả                                                                                                  |
-| :---- | :----------------------------------------------------------------------------------------------------- |
-| Guest | Người dùng phổ thông sử dụng hệ thống để tra cứu nguồn gốc và lịch sử sửa chữa của máy.                |
-| User  | Khách hàng sở hữu máy, truy cập hệ thống bằng ví điện tử để quản lý tài sản số (NFT).                  |
-| Admin | Nhân viên cửa hàng hoặc kỹ thuật viên có quyền quản trị dữ liệu và thao tác nghiệp vụ trên Blockchain. |
+| Actor      | Mô tả                                                                                                   |
+| :--------- | :------------------------------------------------------------------------------------------------------ |
+| Guest      | Người dùng phổ thông sử dụng hệ thống để tra cứu nguồn gốc và lịch sử sửa chữa của máy.                 |
+| User       | Khách hàng sở hữu máy, truy cập hệ thống bằng ví điện tử để quản lý tài sản số (NFT).                   |
+| Admin      | Quản trị viên có toàn quyền hệ thống, bao gồm cập nhật role và bật/tắt trạng thái tài khoản người dùng. |
+| Staff      | Nhân viên vận hành có quyền xử lý các tác vụ nghiệp vụ thường nhật theo phạm vi được phân quyền.        |
+| Technician | Kỹ thuật viên có quyền xử lý các tác vụ kỹ thuật và hậu mãi theo phạm vi nghiệp vụ được cấp.            |
 
 ### 2.5.3 Danh sách Use Cases của hệ thống
 
@@ -129,6 +133,7 @@ Luồng chính
 3. Hệ thống (Backend) thực hiện băm (Hash) số Serial.
 4. Hệ thống truy vấn cơ sở dữ liệu để kiểm tra trạng thái phiếu bảo hành tương ứng.
 5. Hệ thống hiển thị thông tin chi tiết (thời hạn, trạng thái, dòng máy) lên màn hình.
+6. Để bảo vệ quyền riêng tư của khách hàng trên hệ thống Public, địa chỉ ví của chủ sở hữu (ownerAddress) sẽ được hệ thống tự động che đi một phần (masking) dưới định dạng 0x1234...abcd.
 
 Use Case 2: Xem lịch sử sửa chữa (View Repair History)
 
@@ -316,33 +321,33 @@ Use Case 11: Cấp phát phiếu bảo hành (Mint Warranty NFT)
 Luồng chính
 
 1. Admin chọn chức năng Cấp phát bảo hành mới.
-2. Admin nhập Số Serial của thiết bị, chọn dòng máy và nhập địa chỉ ví MetaMask của khách hàng.
-3. Admin nhấn Xác nhận cấp phát.
-4. Giao diện gọi MetaMask yêu cầu Admin ký giao dịch đúc NFT (Mint).
-5. Admin xác nhận và trả phí Gas trên mạng lưới Blockchain.
-6. Smart Contract xử lý và trả về TokenID cùng mã băm giao dịch (txHash).
-7. Hệ thống Backend băm số Serial, lưu TokenID, SerialHash và các thông tin liên quan vào cơ sở dữ liệu.
-8. Hệ thống hiển thị thông báo cấp phát hoàn tất.
+2. (Pre-mint) Staff nhập thông tin máy bán ra: Serial, Dòng máy, và địa chỉ ví khách hàng. Backend lưu bản ghi phiếu bảo hành ở trạng thái "Nháp/Pending" (POST /api/warranties) để đảm bảo dữ liệu off-chain được ghi nhận trước khi tương tác với chuỗi.
+3. (Mint & Confirm) Khi thông tin đã xác thực, Admin/Staff kích hoạt chức năng Mint trên giao diện. MetaMask sẽ yêu cầu ký giao dịch đúc NFT (mint()).
+4. Sau khi giao dịch được gửi và có `txHash`, Frontend gọi API cập nhật bằng chứng lên Backend (PATCH /api/warranties/:id) kèm `txHash` và `tokenId` khi có.
+5. Backend lưu `tokenId`, `txHash` và tạo tự động một bản ghi lịch sử Mint gốc (Mint history). Backend chỉ chấp nhận ghi on-chain khi có bản ghi off-chain ở trạng thái Pending, tránh việc đúc rác khi dữ liệu người nhập sai.
+6. Hệ thống hiển thị thông báo cấp phát hoàn tất.
 
 Use Case 12: Ghi nhận lịch sử sửa chữa (Add Repair Log)
 
-| Thuộc tính      | Mô tả                                                                                                        |
-| --------------- | ------------------------------------------------------------------------------------------------------------ |
-| Mã Use Case     | UC12                                                                                                         |
-| Tên Use Case    | Ghi nhận lịch sử sửa chữa                                                                                    |
-| Tác nhân        | Admin                                                                                                        |
-| Mô tả           | Cho phép kỹ thuật viên cập nhật thông tin lỗi, linh kiện thay thế và chi phí mỗi khi thiết bị được sửa chữa. |
-| Điều kiện trước | Admin đã đăng nhập; Thiết bị đang có trạng thái bảo hành hợp lệ.                                             |
-| Điều kiện sau   | Bản ghi lịch sử sửa chữa được thêm mới vào hệ thống.                                                         |
+| Thuộc tính      | Mô tả                                                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Mã Use Case     | UC12                                                                                                                               |
+| Tên Use Case    | Ghi nhận lịch sử sửa chữa                                                                                                          |
+| Tác nhân        | Admin                                                                                                                              |
+| Mô tả           | Cho phép Technician (Kỹ thuật viên) và Admin ghi nhận thông tin lỗi, linh kiện thay thế và chi phí mỗi khi thiết bị được sửa chữa. |
+| Điều kiện trước | Technician/Admin đã đăng nhập; Thiết bị đang có trạng thái bảo hành hợp lệ.                                                        |
+| Điều kiện sau   | Bản ghi lịch sử sửa chữa được thêm mới vào hệ thống.                                                                               |
 
 Luồng chính
 
-1. Admin tra cứu thiết bị cần ghi log thông qua số Serial.
-2. Admin chọn chức năng Thêm lịch sử sửa chữa.
-3. Admin nhập các thông tin: Nội dung lỗi, Linh kiện thay thế, Chi phí, Tên kỹ thuật viên.
-4. Admin nhấn nút Lưu thông tin.
+1. Technician hoặc Admin tra cứu thiết bị cần ghi log thông qua số Serial.
+2. Technician/Admin chọn chức năng Thêm lịch sử sửa chữa.
+3. Người được phân quyền nhập các thông tin: Nội dung lỗi, Linh kiện thay thế, Chi phí.
+4. Người tạo log (Technician hoặc Admin) nhấn nút Lưu thông tin -> Hệ thống lưu bản ghi kèm `createdBy`.
 5. Hệ thống kiểm tra và lưu bản ghi vào bảng lịch sử sửa chữa (Repair Log Database).
 6. Hệ thống hiển thị thông báo ghi nhận thành công.
+
+Chú ý bảo mật (Zero-Trust): Technician chỉ được phép chỉnh sửa (Update) những bản ghi lịch sửa do chính họ tạo ra (matching `createdBy`). Admin có toàn quyền chỉnh sửa mọi log. (Quy tắc này khớp 100% với kiểm thử `repair-log.test.js` trong bộ test của dự án.)
 
 Use Case 13: Hủy phiếu bảo hành (Revoke Warranty)
 
