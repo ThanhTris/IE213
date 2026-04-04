@@ -1,6 +1,6 @@
 const sendSuccess = (
   res,
-  { statusCode = 200, data = null, message = "Success" } = {},
+  { statusCode = 200, data = null, message = "Thành công" } = {},
 ) => {
   return res.status(statusCode).json({
     success: true,
@@ -38,7 +38,7 @@ const sendError = (
   } = {},
 ) => {
   const resolvedCode = errorCode || mapStatusToErrorCode(statusCode);
-  const resolvedMessage = message || error || "Internal Server Error";
+  const resolvedMessage = message || error || "Lỗi nội bộ máy chủ";
 
   return res.status(statusCode).json({
     success: false,

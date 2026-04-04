@@ -6,13 +6,17 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/product.controller");
-const { authenticate, authorize } = require("../middleware/auth");
+const {
+  authenticate,
+  optionalAuthenticate,
+  authorize,
+} = require("../middleware/auth");
 
 const router = express.Router();
 
 // CRUD for products
 router.post("/", authenticate, authorize(["admin"]), createProduct);
-router.get("/", listProducts);
+router.get("/", optionalAuthenticate, listProducts);
 router.get("/:idOrCode", getProduct);
 router.put("/:idOrCode", authenticate, authorize(["admin"]), updateProduct);
 router.delete("/:idOrCode", authenticate, authorize(["admin"]), deleteProduct);

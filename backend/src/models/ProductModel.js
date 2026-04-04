@@ -5,7 +5,6 @@ const productSchema = new mongoose.Schema(
     productCode: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       uppercase: true,
       minlength: 3,
@@ -41,6 +40,7 @@ const productSchema = new mongoose.Schema(
     toJSON: {
       transform: (_doc, ret) => {
         ret.id = ret._id;
+        delete ret._id;
         return ret;
       },
     },

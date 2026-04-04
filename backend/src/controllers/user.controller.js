@@ -10,9 +10,9 @@ const toUserResponse = (user, options = {}) => {
   const safeUser = {
     _id: user._id,
     walletAddress: user.walletAddress,
-    fullName: user.fullName || "",
+    fullName: user.fullName,
     email: user.email,
-    phone: user.phone || "",
+    phone: user.phone,
   };
 
   // Contract sample includes timestamps only in selected endpoints.
@@ -22,100 +22,101 @@ const toUserResponse = (user, options = {}) => {
   return safeUser;
 };
 
+const toPrivilegedUserResponse = (user, options = {}) => {
+  const safeUser = toUserResponse(user, options);
+  safeUser.role = user.role;
+  safeUser.isActive = user.isActive;
+  safeUser.notificationSettings = user.notificationSettings;
+  return safeUser;
+};
+
+const normalizeEmail = (email = "") => String(email).trim().toLowerCase();
+const normalizeText = (value = "") => String(value).trim();
+
 // POST /api/users/auth
 const upsertUserByWallet = async (req, res, next) => {
   try {
-    const { walletAddress, fullName, email, phone } = req.body;
+    const { walletAddress } = req.body || {};
+    const bodyKeys = Object.keys(req.body || {});
 
     if (!walletAddress) {
       return sendError(res, {
         statusCode: 400,
         errorCode: "E400_MISSING_FIELD",
-        message: "walletAddress is required",
+        message: "walletAddress là trường bắt buộc",
         details: ["walletAddress"],
+      });
+    }
+
+    const invalidFields = bodyKeys.filter((key) => key !== "walletAddress");
+    if (invalidFields.length > 0) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: "Chỉ được gửi walletAddress",
+        details: invalidFields,
       });
     }
 
     const wallet = normalizeWallet(walletAddress);
 
     let user = await User.findOne({ walletAddress: wallet });
+    let message = "Đăng nhập thành công";
     let statusCode = 200;
 
     if (!user) {
       user = new User({
         walletAddress: wallet,
-        fullName: fullName ? fullName.trim() : "",
-        email: email ? email.trim().toLowerCase() : undefined,
-        phone: phone ? phone.trim() : "",
+        role: "user",
       });
       await user.save();
+      message = "Đăng ký tài khoản thành công";
       statusCode = 201;
     }
 
-    // Security hardening: issue JWT via header while keeping body shape per contract.
-    const token = generateToken(user);
-    res.setHeader("Authorization", `Bearer ${token}`);
-    res.setHeader("x-access-token", token);
+    const accessToken = generateToken(user);
+    const safeUser = user.toObject();
+    delete safeUser.__v;
 
-    return sendSuccess(res, {
-      statusCode,
-      message: "User authenticated",
-      data: toUserResponse(user, {
-        includeCreatedAt: true,
-        includeUpdatedAt: true,
-      }),
+    return res.status(statusCode).json({
+      success: true,
+      message,
+      data: {
+        user: safeUser,
+        accessToken,
+      },
     });
   } catch (error) {
-    if (error.code === 11000) {
-      return sendError(res, {
-        statusCode: 409,
-        errorCode: "E409_DUPLICATE",
-        message: "walletAddress or email already exists",
-      });
-    }
     return next(error);
   }
 };
 
-// GET /api/users/me?walletAddress=...  (also supports JSON body)
+// GET /api/users/me
 const getUserByWallet = async (req, res, next) => {
   try {
-    const walletAddress = req.query.walletAddress || req.body.walletAddress;
+    const walletAddress = normalizeWallet(req.user?.walletAddress || "");
+
     if (!walletAddress) {
       return sendError(res, {
-        statusCode: 400,
-        errorCode: "E400_MISSING_FIELD",
-        message: "walletAddress is required",
+        statusCode: 401,
+        errorCode: "E401_UNAUTHORIZED",
+        message: "Không tìm thấy thông tin người dùng trong token",
         details: ["walletAddress"],
       });
     }
 
-    const wallet = normalizeWallet(walletAddress);
-
-    if (
-      req.user &&
-      req.user.role !== "admin" &&
-      normalizeWallet(req.user.walletAddress || "") !== wallet
-    ) {
-      return sendError(res, {
-        statusCode: 403,
-        errorCode: "E403_FORBIDDEN",
-        message: "You can only access your own profile",
-      });
-    }
-
-    const user = await User.findOne({ walletAddress: wallet });
+    const user = await User.findOne({ walletAddress });
     if (!user) {
       return sendError(res, {
         statusCode: 404,
         errorCode: "E404_NOT_FOUND",
-        message: "User not found",
+        message: "Không tìm thấy người dùng",
       });
     }
 
     return sendSuccess(res, {
       statusCode: 200,
-      message: "User found",
+      message: "Lấy thông tin người dùng thành công",
       data: toUserResponse(user),
     });
   } catch (error) {
@@ -123,52 +124,61 @@ const getUserByWallet = async (req, res, next) => {
   }
 };
 
-// PUT /api/users/:walletAddress
-const updateUserByWallet = async (req, res, next) => {
+// PUT /api/users/me
+const updateMyProfile = async (req, res, next) => {
   try {
-    const walletAddress = req.params.walletAddress;
-    if (!walletAddress) {
+    const payload = req.body || {};
+    const walletAddress = normalizeWallet(req.user?.walletAddress || "");
+
+    const forbiddenProfileFields = ["role", "isactive", "isactiver"];
+    const forbiddenField = Object.keys(payload).find((key) =>
+      forbiddenProfileFields.includes(String(key).toLowerCase()),
+    );
+
+    if (forbiddenField) {
       return sendError(res, {
         statusCode: 400,
-        errorCode: "E400_MISSING_FIELD",
-        message: "walletAddress is required",
+        errorCode: "E400_VALIDATION",
+        message: "Không được phép cập nhật role hoặc isActive ở endpoint này",
+        details: [forbiddenField],
+      });
+    }
+
+    if (!walletAddress) {
+      return sendError(res, {
+        statusCode: 401,
+        errorCode: "E401_UNAUTHORIZED",
+        message: "Không tìm thấy thông tin người dùng trong token",
         details: ["walletAddress"],
       });
     }
 
-    const wallet = normalizeWallet(walletAddress);
-    if (
-      req.user &&
-      req.user.role !== "admin" &&
-      normalizeWallet(req.user.walletAddress || "") !== wallet
-    ) {
-      return sendError(res, {
-        statusCode: 403,
-        errorCode: "E403_FORBIDDEN",
-        message: "You can only update your own profile",
-      });
+    const updates = {};
+
+    const fullNameValue =
+      payload.fullName !== undefined ? payload.fullName : payload.fullname;
+    if (fullNameValue !== undefined && fullNameValue !== null) {
+      updates.fullName = normalizeText(fullNameValue);
     }
 
-    const updates = {};
-    const fields = ["fullName", "email", "phone"];
+    if (payload.email !== undefined && payload.email !== null) {
+      updates.email = normalizeEmail(payload.email);
+    }
 
-    fields.forEach((f) => {
-      if (req.body[f] !== undefined && req.body[f] !== null) {
-        updates[f] =
-          f === "email" ? req.body[f].trim().toLowerCase() : req.body[f].trim();
-      }
-    });
+    if (payload.phone !== undefined && payload.phone !== null) {
+      updates.phone = normalizeText(payload.phone);
+    }
 
     if (Object.keys(updates).length === 0) {
       return sendError(res, {
         statusCode: 400,
         errorCode: "E400_VALIDATION",
-        message: "No fields to update",
+        message: "Không có dữ liệu để cập nhật",
       });
     }
 
     const user = await User.findOneAndUpdate(
-      { walletAddress: wallet },
+      { walletAddress },
       { $set: updates },
       { new: true, runValidators: true },
     );
@@ -177,13 +187,13 @@ const updateUserByWallet = async (req, res, next) => {
       return sendError(res, {
         statusCode: 404,
         errorCode: "E404_NOT_FOUND",
-        message: "User not found",
+        message: "Không tìm thấy người dùng",
       });
     }
 
     return sendSuccess(res, {
       statusCode: 200,
-      message: "User updated",
+      message: "Cập nhật người dùng thành công",
       data: toUserResponse(user, { includeUpdatedAt: true }),
     });
   } catch (error) {
@@ -191,10 +201,249 @@ const updateUserByWallet = async (req, res, next) => {
       return sendError(res, {
         statusCode: 409,
         errorCode: "E409_DUPLICATE",
-        message: "email already exists",
+        message: "Email đã tồn tại",
         details: ["email"],
       });
     }
+    return next(error);
+  }
+};
+
+// PUT /api/users/:walletAddress (Admin/Staff/Technician)
+const updateUserByWallet = async (req, res, next) => {
+  try {
+    const payload = req.body || {};
+    const walletAddress = normalizeWallet(req.params.walletAddress || "");
+
+    if (!walletAddress) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "walletAddress là trường bắt buộc",
+        details: ["walletAddress"],
+      });
+    }
+
+    const updates = {};
+
+    if (payload.role !== undefined) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: "Không được phép cập nhật role ở endpoint này",
+        details: ["role"],
+      });
+    }
+
+    const fullNameValue =
+      payload.fullName !== undefined ? payload.fullName : payload.fullname;
+    if (fullNameValue !== undefined && fullNameValue !== null) {
+      updates.fullName = normalizeText(fullNameValue);
+    }
+
+    if (payload.email !== undefined && payload.email !== null) {
+      updates.email = normalizeEmail(payload.email);
+    }
+
+    if (payload.phone !== undefined && payload.phone !== null) {
+      updates.phone = normalizeText(payload.phone);
+    }
+
+    if (payload.isActive !== undefined || payload.isactive !== undefined) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: "isActive phải cập nhật qua API riêng",
+        details: ["isActive"],
+      });
+    }
+
+    if (payload.notificationSettings !== undefined) {
+      updates.notificationSettings = payload.notificationSettings;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: "Không có dữ liệu để cập nhật",
+      });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { walletAddress },
+      { $set: updates },
+      { new: true, runValidators: true },
+    );
+
+    if (!user) {
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Cập nhật người dùng thành công",
+      data: toPrivilegedUserResponse(user, { includeUpdatedAt: true }),
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return sendError(res, {
+        statusCode: 409,
+        errorCode: "E409_DUPLICATE",
+        message: "Email đã tồn tại",
+        details: ["email"],
+      });
+    }
+    return next(error);
+  }
+};
+
+// PATCH /api/users/:walletAddress/role (Admin only)
+const updateUserRole = async (req, res, next) => {
+  try {
+    const walletAddress = normalizeWallet(req.params.walletAddress || "");
+    const role = String(req.body?.role || "").trim().toLowerCase();
+
+    if (!walletAddress) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "walletAddress là trường bắt buộc",
+        details: ["walletAddress"],
+      });
+    }
+
+    if (!role) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "role là trường bắt buộc",
+        details: ["role"],
+      });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { walletAddress },
+      { $set: { role } },
+      { new: true, runValidators: true },
+    );
+
+    if (!user) {
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Cập nhật role thành công",
+      data: toPrivilegedUserResponse(user, { includeUpdatedAt: true }),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// PATCH /api/users/:walletAddress/is-active
+const updateUserIsActive = async (req, res, next) => {
+  try {
+    const walletAddress = normalizeWallet(req.params.walletAddress || "");
+    const { isActive } = req.body || {};
+    const actorRole = req.user?.role;
+    const actorWallet = normalizeWallet(req.user?.walletAddress || "");
+
+    if (!walletAddress) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "walletAddress là trường bắt buộc",
+        details: ["walletAddress"],
+      });
+    }
+
+    if (typeof isActive !== "boolean") {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: "isActive phải là boolean",
+        details: ["isActive"],
+      });
+    }
+
+    const privilegedRoles = ["admin", "staff", "technician"];
+    const isPrivileged = privilegedRoles.includes(actorRole);
+    const isSelfAction = actorWallet && actorWallet === walletAddress;
+
+    if (!isPrivileged && !(actorRole === "user" && isSelfAction)) {
+      return sendError(res, {
+        statusCode: 403,
+        errorCode: "E403_FORBIDDEN",
+        message: "Bạn không có quyền cập nhật isActive cho người dùng này",
+      });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { walletAddress },
+      { $set: { isActive } },
+      { new: true, runValidators: true },
+    );
+
+    if (!user) {
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Cập nhật trạng thái isActive thành công",
+      data: toPrivilegedUserResponse(user, { includeUpdatedAt: true }),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// GET /api/users/:walletAddress (Admin only)
+const getUserByWalletAddressForAdmin = async (req, res, next) => {
+  try {
+    const walletAddress = normalizeWallet(req.params.walletAddress || "");
+
+    if (!walletAddress) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "walletAddress là trường bắt buộc",
+        details: ["walletAddress"],
+      });
+    }
+
+    const user = await User.findOne({ walletAddress });
+    if (!user) {
+      return sendError(res, {
+        statusCode: 404,
+        errorCode: "E404_NOT_FOUND",
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy thông tin người dùng thành công",
+      data: toPrivilegedUserResponse(user, {
+        includeCreatedAt: true,
+        includeUpdatedAt: true,
+      }),
+    });
+  } catch (error) {
     return next(error);
   }
 };
@@ -205,8 +454,13 @@ const getAllUsers = async (req, res, next) => {
     const users = await User.find();
     return sendSuccess(res, {
       statusCode: 200,
-      message: "Users retrieved",
-      data: users.map((user) => toUserResponse(user)),
+      message: "Lấy danh sách người dùng thành công",
+      data: users.map((user) =>
+        toPrivilegedUserResponse(user, {
+          includeCreatedAt: true,
+          includeUpdatedAt: true,
+        }),
+      ),
     });
   } catch (error) {
     return next(error);
@@ -216,6 +470,10 @@ const getAllUsers = async (req, res, next) => {
 module.exports = {
   upsertUserByWallet,
   getUserByWallet,
+  updateMyProfile,
   updateUserByWallet,
+  updateUserRole,
+  updateUserIsActive,
+  getUserByWalletAddressForAdmin,
   getAllUsers,
 };

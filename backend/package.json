@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest ../tests/backend"
+    "test": "NODE_PATH=./node_modules vitest run --config ./vitest.config.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -19,7 +19,8 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,6 @@
 # IE213
 
-Dự án web full-stack sử dụng React.js (Frontend) và Node.js + Express (Backend).
+Dự án E-Warranty theo mô hình Hybrid Blockchain, sử dụng React.js (Frontend), Node.js + Express (Backend) và smart contract ERC-721 trên Sepolia.
 
 ## Cấu Trúc Dự Án
 

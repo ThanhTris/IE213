@@ -1,0 +1,15 @@
+const { defineConfig } = require("vitest/config");
+
+module.exports = defineConfig({
+  test: {
+    globals: true,
+    environment: "node",
+    include: [
+      "../tests/backend/app.test.js",
+      "../tests/backend/product/**/*.test.js",
+      "../tests/backend/repair-log/**/*.test.js",
+      "../tests/backend/user/**/*.test.js",
+      "../tests/backend/warranty/**/*.test.js",
+    ],
+  },
+});
