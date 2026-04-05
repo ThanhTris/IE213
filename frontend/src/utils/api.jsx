@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export async function apiPostUserAuth(payload) {
   const res = await fetch(`${API_BASE_URL}/api/users/auth`, {
