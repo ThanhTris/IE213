@@ -1,96 +1,137 @@
-# Repair Logs API (Mock Data)
+# API Contract - Repair Logs
 
-## POST /api/repair-logs
+Ngay cap nhat: 2026-04-05
 
-- Description: Technician or Admin creates a repair log. `createdBy` should be set to the performer's wallet/id.
-- Request example:
+## 1) Data model dung cho FE
 
-```
-POST /api/repair-logs
-Content-Type: application/json
+RepairLog object:
+
+```json
 {
-  "warrantyId": "643a1f...",
-  "serialNumber": "SN-2026-0001",
-  "description": "Replace motherboard",
-  "parts": ["MB-XYZ-01"],
-  "cost": 120.50,
-  "performedAt": "2026-04-02T09:30:00Z",
-  "createdBy": "technician_wallet_address"
+  "_id": "661100aa22bb33cc44dd8811",
+  "warrantyId": "661100aa22bb33cc44dd7711",
+  "serialNumber": "SN-7K2M-2024-X9",
+  "tokenId": "12345",
+  "description": "Replace battery and test charging",
+  "parts": ["BAT-02"],
+  "cost": 0,
+  "performedAt": "2026-04-03T09:30:00.000Z",
+  "createdBy": "0xTechnicianWallet...",
+  "createdAt": "2026-04-03T09:30:00.000Z",
+  "updatedAt": "2026-04-03T09:30:00.000Z"
 }
 ```
 
-- Response example:
+## 2) Endpoints
 
+### 2.1 POST /api/repair-logs (Technician, Admin)
+
+Header:
+
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
+
+```json
+{
+  "warrantyId": "661100aa22bb33cc44dd7711",
+  "serialNumber": "SN-7K2M-2024-X9",
+  "tokenId": "12345",
+  "description": "Replace battery and test charging",
+  "parts": ["BAT-02"],
+  "cost": 0,
+  "performedAt": "2026-04-03T09:30:00.000Z"
+}
 ```
-201 Created
+
+Success 201:
+
+```json
 {
   "success": true,
   "message": "Repair log created",
   "data": {
-    "_id": "644b2f...",
-    "warrantyId": "643a1f...",
-    "serialNumber": "SN-2026-0001",
-    "description": "Replace motherboard",
-    "parts": ["MB-XYZ-01"],
-    "cost": 120.50,
-    "performedAt": "2026-04-02T09:30:00Z",
-    "createdBy": "technician_wallet_address",
-    "createdAt": "2026-04-02T09:32:00Z"
+    "_id": "661100aa22bb33cc44dd8811",
+    "serialNumber": "SN-7K2M-2024-X9",
+    "description": "Replace battery and test charging",
+    "parts": ["BAT-02"],
+    "cost": 0,
+    "createdBy": "0xTechnicianWallet..."
   }
 }
 ```
 
-## PATCH /api/repair-logs/:id
+### 2.2 GET /api/repair-logs/:serialNumber (Public)
 
-- Description: Update a repair log. Policy: Technician may only update logs they created; Admin can update any log.
-- Request example:
+Muc dich:
 
-```
-PATCH /api/repair-logs/644b2f...
-Content-Type: application/json
-{
-  "description": "Replace motherboard and battery",
-  "parts": ["MB-XYZ-01","BAT-100"],
-  "cost": 150.00
-}
-```
+- Khach vang lai tra cuu lich su sua chua theo serial.
 
-- Response example:
+Success 200:
 
-```
-200 OK
-{
-  "success": true,
-  "message": "Repair log updated",
-  "data": {
-    "_id": "644b2f...",
-    "description": "Replace motherboard and battery",
-    "parts": ["MB-XYZ-01","BAT-100"],
-    "cost": 150.00,
-    "updatedBy": "technician_wallet_address_or_admin",
-    "updatedAt": "2026-04-02T10:00:00Z"
-  }
-}
-```
-
-## GET /api/repair-logs/device/:serialNumber
-
-- Response example:
-
-```
-200 OK
+```json
 {
   "success": true,
   "message": "Repair logs retrieved",
   "data": [
     {
-      "_id": "644b2f...",
-      "serialNumber": "SN-2026-0001",
-      "description": "Replace motherboard",
-      "cost": 120.50,
-      "performedAt": "2026-04-02T09:30:00Z",
-      "createdBy": "technician_wallet_address"
+      "_id": "661100aa22bb33cc44dd8811",
+      "serialNumber": "SN-7K2M-2024-X9",
+      "description": "Replace battery and test charging",
+      "parts": ["BAT-02"],
+      "cost": 0,
+      "performedAt": "2026-04-03T09:30:00.000Z"
     }
   ]
+}
+```
+
+### 2.3 PATCH /api/repair-logs/:id (Technician, Admin)
+
+Header:
+
+- Authorization: Bearer <JWT_TOKEN>
+
+Quyen:
+
+- Admin: sua moi log.
+- Technician: chi sua log do chinh minh tao.
+
+Request:
+
+```json
+{
+  "description": "Replace battery, clean charging port",
+  "parts": ["BAT-02", "PORT-CLEAN"],
+  "cost": 10
+}
+```
+
+Success 200:
+
+```json
+{
+  "success": true,
+  "message": "Repair log updated",
+  "data": {
+    "_id": "661100aa22bb33cc44dd8811",
+    "description": "Replace battery, clean charging port",
+    "parts": ["BAT-02", "PORT-CLEAN"],
+    "cost": 10,
+    "updatedAt": "2026-04-05T12:10:00.000Z"
+  }
+}
+```
+
+## 3) Error mau
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "E403_FORBIDDEN",
+    "message": "Technician can only update own repair logs",
+    "details": []
+  }
 }
 ```
