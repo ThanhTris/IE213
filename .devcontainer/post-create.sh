@@ -1,38 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /workspaces/IE213
+WORKSPACE_ROOT="/workspaces/IE213"
 
 # Ensure mounted volumes are writable by the non-root devcontainer user.
 MOUNTED_PATHS=(
-  /workspaces/IE213/backend/node_modules
-  /workspaces/IE213/frontend/node_modules
+  "${WORKSPACE_ROOT}/backend/node_modules"
+  "${WORKSPACE_ROOT}/frontend/node_modules"
   /home/node/.npm
 )
 sudo mkdir -p "${MOUNTED_PATHS[@]}"
 sudo chown -R node:node "${MOUNTED_PATHS[@]}"
 
-install_deps() {
-  local app_dir="$1"
+if [[ ! -f "${WORKSPACE_ROOT}/backend/package.json" ]]; then
+  echo "[post-create] Missing backend/package.json"
+  exit 1
+fi
 
-  if [[ ! -f "${app_dir}/package.json" ]]; then
-    echo "[post-create] Skip ${app_dir}: missing package.json"
-    return
-  fi
+if [[ ! -f "${WORKSPACE_ROOT}/frontend/package.json" ]]; then
+  echo "[post-create] Missing frontend/package.json"
+  exit 1
+fi
 
-  echo "[post-create] Installing ${app_dir} dependencies"
-  cd "/workspaces/IE213/${app_dir}"
+echo "[post-create] Installing backend dependencies"
+cd "${WORKSPACE_ROOT}/backend"
+npm install --no-audit --no-fund
 
-  if [[ -f package-lock.json ]]; then
-    npm ci --no-audit --no-fund
-  else
-    npm install --no-audit --no-fund
-  fi
-
-  cd /workspaces/IE213
-}
-
-install_deps backend
-install_deps frontend
+echo "[post-create] Installing frontend dependencies"
+cd "${WORKSPACE_ROOT}/frontend"
+npm install --no-audit --no-fund
 
 echo "[post-create] Done"
