@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { connectMetaMask, isValidWalletAddress } from "../utils/web3";
 import { API_ROOT } from "../utils/api";
-import { persistAuthToken, shortAddress } from "../utils/auth";
+import { persistAuthToken } from "../utils/auth";
 
 function extractBearerToken(headerValue = "") {
   const v = String(headerValue || "");
@@ -10,88 +10,35 @@ function extractBearerToken(headerValue = "") {
 }
 
 function SignInUpPage({ onAuthSuccess, onCancel }) {
-  const [mode, setMode] = useState("signin"); // "signin" | "signup"
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const [walletAddress, setWalletAddress] = useState("");
-
-  const heading = useMemo(
-    () => (mode === "signin" ? "Welcome Back" : "Welcome"),
-    [mode],
-  );
-
-  const connectWallet = async () => {
+  const connectAndSignIn = async () => {
     setError("");
     setBusy(true);
     try {
       const addr = await connectMetaMask();
-      setWalletAddress(addr);
-      return addr;
-    } catch (e) {
-      setError(e?.message || "Failed to connect wallet.");
-      return "";
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleSubmit = async () => {
-    setError("");
-
-    let addr = walletAddress;
-    if (!addr) {
-      // Try to connect first.
-      addr = await connectWallet();
-      if (!addr) return;
-    }
-
-    const trimmedEmail = String(email || "")
-      .trim()
-      .toLowerCase();
-    const trimmedFullName = String(fullName || "").trim();
-    const trimmedPhone = String(phone || "").trim();
-
-    if (mode === "signup" && password) {
-      if (password !== confirmPassword) {
-        setError("Password confirmation does not match.");
+      
+      if (!isValidWalletAddress(addr)) {
+        setError("Invalid wallet address.");
         return;
       }
-    }
 
-    if (!isValidWalletAddress(addr)) {
-      setError("Invalid wallet address.");
-      return;
-    }
-
-    setBusy(true);
-    try {
       const res = await fetch(`${API_ROOT}/users/auth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          walletAddress: addr,
-          fullName: trimmedFullName || undefined,
-          email: trimmedEmail || undefined,
-          phone: trimmedPhone || undefined,
-        }),
+        body: JSON.stringify({ walletAddress: addr }),
       });
 
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        const msg =
-          json?.error?.message || json?.message || "Sign in/up failed.";
+        const msg = json?.error?.message || json?.message || "Authentication failed.";
         setError(msg);
         return;
       }
 
       const token =
+        json?.data?.accessToken ||
         extractBearerToken(res.headers.get("authorization")) ||
         extractBearerToken(res.headers.get("x-access-token")) ||
         "";
@@ -108,199 +55,104 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
       }
       onAuthSuccess?.(auth);
     } catch (e) {
-      setError(e?.message || "Unexpected error.");
+      setError(e?.message || "Failed to connect wallet.");
     } finally {
       setBusy(false);
     }
   };
 
-  const onKeySubmit = (e) => {
-    if (e.key === "Enter") handleSubmit();
-  };
-
   return (
     <div className="auth-wrap">
-      <div
-        className="auth-card"
-        onKeyDown={onKeySubmit}
-        role="region"
-        aria-label="Sign in/up"
-      >
-        <div className="auth-brand">
-          <span className="brand-mini">BlockWarranty</span>
-        </div>
-        <h2 className="auth-heading">{heading}</h2>
-        <p className="auth-sub">
-          Sign in to access your warranty dashboard
-          {mode === "signup" ? " and create your profile" : ""}.
-        </p>
-
-        <div
-          className="auth-mode-tabs"
-          role="tablist"
-          aria-label="Sign in/up mode"
+      <div className="auth-logo">
+        <svg
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+          style={{ color: "#10b981" }}
         >
-          <button
-            type="button"
-            className={`auth-mode-btn ${mode === "signin" ? "active" : ""}`}
-            onClick={() => setMode("signin")}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            className={`auth-mode-btn ${mode === "signup" ? "active" : ""}`}
-            onClick={() => setMode("signup")}
-          >
-            Sign Up
-          </button>
-        </div>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      </div>
+      <h1 className="auth-title">Welcome to BlockWarranty</h1>
+      <p className="auth-subtitle">Connect your wallet to access your digital warranty passport</p>
 
-        <div className="wallet-connect-section">
-          <div className="wallet-connect-title">Web3 Wallet</div>
-          <div className="wallet-connect-row">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={connectWallet}
-              disabled={busy}
-            >
-              Connect MetaMask
-            </button>
-            <button type="button" className="btn" disabled>
-              WalletConnect (coming soon)
-            </button>
-            <button type="button" className="btn" disabled>
-              Coinbase Wallet (coming soon)
-            </button>
-          </div>
-          <div className="wallet-connected">
-            <span className="muted">Connected:</span>{" "}
-            <span className="mono">
-              {walletAddress ? shortAddress(walletAddress) : "Not connected"}
-            </span>
-          </div>
-
-          <div className="field">
-            <label htmlFor="walletAddress">Or enter wallet address</label>
-            <input
-              id="walletAddress"
-              type="text"
-              value={walletAddress}
-              onChange={(e) => setWalletAddress(e.target.value.trim())}
-              placeholder="0x..."
-              disabled={busy}
-            />
-          </div>
-        </div>
-
-        <div className="auth-form">
-          <div className="field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              autoComplete="email"
-              disabled={busy}
-            />
-          </div>
-
-          {mode === "signup" && (
-            <div className="field">
-              <label htmlFor="fullName">Name</label>
-              <input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your Name"
-                autoComplete="name"
-                disabled={busy}
-              />
-            </div>
-          )}
-
-          {mode === "signup" && (
-            <div className="field">
-              <label htmlFor="phone">Phone (optional)</label>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+84..."
-                autoComplete="tel"
-                disabled={busy}
-              />
-            </div>
-          )}
-
-          <div className="field">
-            <label htmlFor="password">
-              {mode === "signin" ? "Password" : "Password"}
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              autoComplete={
-                mode === "signin" ? "current-password" : "new-password"
-              }
-              disabled={busy}
-            />
-          </div>
-
-          {mode === "signup" && (
-            <div className="field">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                disabled={busy}
-              />
-            </div>
-          )}
-
-          {error && (
-            <div className="auth-error" role="alert">
-              {error}
-            </div>
-          )}
+      <div className="auth-card">
+        <div className="wallet-section">
+          <h3 className="wallet-section-title">Connect Wallet</h3>
+          <p className="wallet-section-subtitle">Secure authentication via Web3 wallet</p>
 
           <button
             type="button"
-            className="btn btn-primary auth-submit"
-            onClick={handleSubmit}
+            className="btn btn-primary btn-connect-wallet"
+            onClick={connectAndSignIn}
             disabled={busy}
           >
-            {busy
-              ? "Working..."
-              : mode === "signin"
-                ? "Sign In"
-                : "Create Account"}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "8px" }}>
+              <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg>
+            {busy ? "Connecting..." : "Connect with MetaMask"}
           </button>
 
-          <div className="auth-footer-actions">
-            <button
-              type="button"
-              className="btn auth-cancel"
-              onClick={onCancel}
-              disabled={busy}
-            >
-              Cancel
-            </button>
+          <p className="coming-soon">Other wallets coming soon</p>
+          <div className="other-wallets">
+            <div className="wallet-option disabled">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1" />
+              </svg>
+              <span>WalletConnect</span>
+            </div>
+            <div className="wallet-option disabled">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1" />
+              </svg>
+              <span>Coinbase Wallet</span>
+            </div>
           </div>
         </div>
+
+        {error && <div className="auth-error" role="alert">{error}</div>}
+
+        <div className="why-metamask">
+          <h4>Why MetaMask?</h4>
+          <div className="benefit">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path d="M7 10L9 12L13 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>Your wallet, your keys – complete ownership</span>
+          </div>
+          <div className="benefit">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path d="M7 10L9 12L13 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>No passwords to remember or accounts to create</span>
+          </div>
+          <div className="benefit">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path d="M7 10L9 12L13 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>Blockchain-verified secure authentication</span>
+          </div>
+        </div>
+
+        <div className="no-wallet-prompt">
+          <p>Don't have MetaMask installed?</p>
+          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="link">
+            Download MetaMask →
+          </a>
+        </div>
       </div>
+
+      <button type="button" className="link-cancel" onClick={onCancel} disabled={busy}>
+        ← Back to Home
+      </button>
     </div>
   );
 }

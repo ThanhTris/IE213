@@ -1,156 +1,206 @@
 .auth-wrap {
-  min-height: calc(100vh - 64px);
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 3rem 1.5rem 4rem;
-  background: linear-gradient(165deg, rgba(41, 85, 206, 0.18) 0%, rgba(30, 64, 175, 0.12) 40%, rgba(23, 37, 84, 0.08) 100%);
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+  background: linear-gradient(165deg, #1f55d9 0%, #153cb5 40%, #0d2857 100%);
 }
 
+/* Header Section */
+.auth-wrap .auth-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem 2rem;
+  width: 100%;
+  margin: 0;
+}
+
+.auth-wrap .auth-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--white);
+  padding: 0 2rem 1rem;
+  width: 100%;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.auth-wrap .auth-subtitle {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  padding: 0 2rem 3.5rem;
+  width: 100%;
+  max-width: 700px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Card Section */
 .auth-card {
   width: 100%;
-  max-width: 460px;
+  max-width: 520px;
   background: var(--white);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--grey-100);
-  padding: 2rem 1.75rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  margin: 0 1.5rem 4rem;
 }
 
-.auth-brand {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.25rem;
+.wallet-section {
+  background: var(--grey-50);
+  border: 1px solid var(--grey-200);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  margin-bottom: 2rem;
 }
 
-.brand-mini {
+.wallet-section-title {
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--navy-primary);
+  margin: 0 0 0.4rem;
 }
 
-.auth-heading {
-  text-align: center;
-  margin: 0.25rem 0 0.35rem;
-}
-
-.auth-sub {
-  text-align: center;
-  margin: 0 0 1.25rem;
-  color: var(--grey-600);
-  font-size: 0.9rem;
-}
-
-.auth-mode-tabs {
-  display: flex;
-  gap: 0.5rem;
-  background: var(--grey-50);
-  border: 1px solid var(--grey-100);
-  border-radius: 999px;
-  padding: 0.25rem;
-  margin-bottom: 1.25rem;
-}
-
-.auth-mode-btn {
-  flex: 1;
-  border: none;
-  cursor: pointer;
-  background: transparent;
-  padding: 0.6rem 0.85rem;
-  border-radius: 999px;
-  font-weight: 700;
-  color: var(--grey-600);
-}
-
-.auth-mode-btn.active {
-  background: var(--navy-primary);
-  color: var(--white);
-}
-
-.wallet-connect-section {
-  border: 1px solid var(--grey-100);
-  background: var(--grey-50);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.wallet-connect-title {
-  font-weight: 800;
-  margin-bottom: 0.75rem;
-  color: var(--navy-primary);
-}
-
-.wallet-connect-row {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.wallet-connected {
+.wallet-section-subtitle {
   font-size: 0.85rem;
-  margin-bottom: 0.75rem;
+  color: var(--grey-600);
+  margin: 0 0 1.25rem;
 }
 
-.muted {
-  color: var(--grey-600);
+.btn-connect-wallet {
+  width: 100%;
+  padding: 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.coming-soon {
+  font-size: 0.8rem;
+  color: var(--grey-500);
+  margin: 0 0 0.85rem;
   font-weight: 600;
 }
 
-.mono {
-  font-family: ui-monospace, monospace;
+.other-wallets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.field {
-  margin-bottom: 1rem;
+.wallet-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--grey-400);
+  cursor: not-allowed;
 }
 
-.field label {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--grey-600);
-  margin-bottom: 0.4rem;
-  font-weight: 700;
-}
-
-.field input {
-  width: 100%;
-  padding: 0.7rem 0.85rem;
-  border: 1px solid var(--grey-200);
-  border-radius: var(--radius-sm);
-}
-
-.auth-form .field:last-of-type {
-  margin-bottom: 0.5rem;
+.wallet-option.disabled {
+  opacity: 0.5;
 }
 
 .auth-error {
-  margin: 0.5rem 0 1rem;
+  margin-bottom: 1.25rem;
   background: rgba(232, 93, 76, 0.12);
   border: 1px solid rgba(232, 93, 76, 0.35);
   color: #b42318;
-  padding: 0.7rem 0.85rem;
-  border-radius: var(--radius-sm);
+  padding: 1rem;
+  border-radius: 0.75rem;
   font-weight: 700;
   font-size: 0.9rem;
 }
 
-.auth-submit {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  border-radius: var(--radius-sm);
+.why-metamask {
+  background: rgba(31, 85, 217, 0.08);
+  border: 1px solid rgba(31, 85, 217, 0.15);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
 }
 
-.auth-footer-actions {
+.why-metamask h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--navy-primary);
+  margin: 0 0 1rem;
+}
+
+.benefit {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 0.85rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--grey-700);
+  line-height: 1.4;
 }
 
-.btn.auth-cancel {
-  background: transparent;
-  border: 2px solid var(--grey-200);
+.benefit:last-child {
+  margin-bottom: 0;
+}
+
+.benefit svg {
+  flex-shrink: 0;
+  color: #00d67e;
+}
+
+.no-wallet-prompt {
+  margin-bottom: 1.5rem;
+}
+
+.no-wallet-prompt p {
+  font-size: 0.9rem;
   color: var(--grey-600);
+  margin: 0 0 0.5rem;
+}
+
+.link {
+  color: #00d67e;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.link:hover {
+  color: #00c270;
+  text-decoration: underline;
+}
+
+.link-cancel {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  padding: 1rem 0;
+  margin-top: 1rem;
+}
+
+.link-cancel:hover:not(:disabled) {
+  color: var(--white);
+}
+
+.link-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 

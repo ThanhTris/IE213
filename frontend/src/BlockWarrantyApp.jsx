@@ -19,7 +19,19 @@ function BlockWarrantyApp() {
   const [activeView, setActiveView] = useState("home");
   const [sideTab, setSideTab] = useState("devices");
   const [modalOpen, setModalOpen] = useState(false);
-  const [auth, setAuth] = useState(() => loadAuthFromStorage());
+  const [auth, setAuth] = useState(() => {
+    // Sử dụng biến môi trường để quyết định có cho phép debug hay không
+    if (import.meta.env.VITE_ENABLE_DEV_ROLE === 'true') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const devRole = urlParams.get('devRole');
+      if (devRole === 'admin' || devRole === 'user') {
+        console.warn(`[DEV MODE] Đang chạy với quyền giả lập: ${devRole}`);
+        return { token: `DUMMY_TOKEN_FOR_${devRole.toUpperCase()}`, walletAddress: `0xDev${devRole}WalletAddress`, role: devRole };
+      }
+    }
+
+    return loadAuthFromStorage(); 
+  });
 
   const isAuthenticated = Boolean(auth?.token);
 
@@ -28,15 +40,18 @@ function BlockWarrantyApp() {
       setActiveView("auth");
       return;
     }
-
-    if (nextView === "admin" && isAuthenticated && auth?.role !== "admin") {
-      setActiveView("user");
-      return;
-    }
-
-    if (nextView === "user" && isAuthenticated && auth?.role === "admin") {
-      setActiveView("admin");
-      return;
+    
+    const isDevAllowed = import.meta.env.VITE_ENABLE_DEV_ROLE === 'true' && new URLSearchParams(window.location.search).get('devRole');
+    
+    if (!isDevAllowed) {
+      if (nextView === "admin" && isAuthenticated && auth?.role !== "admin") {
+        setActiveView("user");
+        return;
+      }
+      if (nextView === "user" && isAuthenticated && auth?.role === "admin") {
+        setActiveView("admin");
+        return;
+      }
     }
 
     if (nextView === "auth" && isAuthenticated) {
@@ -59,13 +74,17 @@ function BlockWarrantyApp() {
       return;
     }
 
-    if (activeView === "admin" && auth?.role !== "admin") {
-      setActiveView("user");
-      return;
-    }
+    const isDevAllowed = import.meta.env.VITE_ENABLE_DEV_ROLE === 'true' && new URLSearchParams(window.location.search).get('devRole');
+    
+    if (!isDevAllowed) {
+      if (activeView === "admin" && auth?.role !== "admin") {
+        setActiveView("user");
+        return;
+      }
 
-    if (activeView === "user" && auth?.role === "admin") {
-      setActiveView("admin");
+      if (activeView === "user" && auth?.role === "admin") {
+        setActiveView("admin");
+      }
     }
   }, [auth, isAuthenticated, activeView]);
 
@@ -77,7 +96,9 @@ function BlockWarrantyApp() {
 
   return (
     <div>
-      <HeaderTabs activeView={activeView} onChangeView={handleChangeView} auth={auth} onLogout={handleLogout} />
+      {activeView !== "auth" && (
+        <HeaderTabs activeView={activeView} onChangeView={handleChangeView} auth={auth} onLogout={handleLogout} />
+      )}
       <main>
         {activeView === "home" && (
           <HomePage onChangeView={handleChangeView} isAuthenticated={isAuthenticated} role={auth?.role} />
