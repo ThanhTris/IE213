@@ -1,224 +1,170 @@
-# Warranties API (Mock Data)
+# API Contract - Warranties
 
-## POST /api/warranties (Pre-mint)
+Ngay cap nhat: 2026-04-05
 
-- Description: Staff creates a pending warranty record off-chain. Backend stores status `pending`.
-- Request example:
+## 1) Data model dung cho FE
 
-```
-POST /api/warranties
-Content-Type: application/json
+Warranty object:
+
+```json
 {
-  "serialNumber": "SN-2026-0001",
-  "productModel": "Model X",
+  "_id": "661100aa22bb33cc44dd7711",
+  "serialNumber": "SN-7K2M-2024-X9",
+  "serialHash": "0x7fa0...",
+  "productModel": "IP15-PRO-256",
   "ownerAddress": "0xA1b2C3d4E5f6...",
-  "soldAt": "2026-04-01T10:00:00Z",
-  "notes": "Sold at Store A",
-  "status": "pending"
+  "tokenId": "12345",
+  "txHash": "0xabcde...",
+  "status": "active",
+  "soldAt": "2026-04-01T10:00:00.000Z",
+  "mintedAt": "2026-04-01T10:05:00.000Z",
+  "notes": "Sold at HCM Store",
+  "createdBy": "0xStaffWallet...",
+  "createdAt": "2026-04-01T10:00:00.000Z",
+  "updatedAt": "2026-04-01T10:05:00.000Z"
 }
 ```
 
-- Response example:
+## 2) Endpoints
 
+### 2.1 POST /api/warranties (Admin, Staff)
+
+Muc dich:
+
+- Pre-mint tao so bao hanh voi status pending.
+
+Header:
+
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
+
+```json
+{
+  "serialNumber": "SN-7K2M-2024-X9",
+  "productModel": "IP15-PRO-256",
+  "ownerAddress": "0xA1b2C3d4E5f6...",
+  "soldAt": "2026-04-01T10:00:00.000Z",
+  "notes": "Sold at HCM Store"
+}
 ```
-201 Created
+
+Success 201:
+
+```json
 {
   "success": true,
   "message": "Warranty created",
   "data": {
-    "_id": "643a1f...",
-    "serialNumber": "SN-2026-0001",
-    "serialHash": "0xabc123...",
-    "productModel": "Model X",
-    "ownerAddress": "0xA1b2...",
-    "status": "pending",
-    "createdBy": "staff_wallet_address",
-    "createdAt": "2026-04-01T10:00:00Z"
+    "_id": "661100aa22bb33cc44dd7711",
+    "serialNumber": "SN-7K2M-2024-X9",
+    "serialHash": "0x7fa0...",
+    "productModel": "IP15-PRO-256",
+    "ownerAddress": "0xA1b2C3d4E5f6...",
+    "tokenId": "",
+    "txHash": "",
+    "status": "pending"
   }
 }
 ```
 
-## PATCH /api/warranties/:id (Attach on-chain proof after mint)
+### 2.2 PATCH /api/warranties/:id (Admin, Staff)
 
-- Description: Called after mint transaction to attach `txHash` and `tokenId`.
-- Request example:
+Muc dich:
 
-```
-PATCH /api/warranties/643a1f...
-Content-Type: application/json
+- Post-mint cap nhat txHash va tokenId sau khi mint NFT thanh cong.
+
+Header:
+
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
+
+```json
 {
-  "txHash": "0xdeadbeef...",
-  "tokenId": "1234"
+  "tokenId": "12345",
+  "txHash": "0xabcde...",
+  "mintedAt": "2026-04-01T10:05:00.000Z"
 }
 ```
 
-- Response example:
+Success 200:
 
-```
-200 OK
+```json
 {
   "success": true,
-  "message": "Warranty updated with mint info",
+  "message": "Warranty updated",
   "data": {
-    "_id": "643a1f...",
-    "tokenId": "1234",
-    "txHash": "0xdeadbeef...",
+    "_id": "661100aa22bb33cc44dd7711",
+    "tokenId": "12345",
+    "txHash": "0xabcde...",
     "status": "active",
-    "mintedAt": "2026-04-01T10:05:00Z"
+    "mintedAt": "2026-04-01T10:05:00.000Z"
   }
 }
 ```
 
-## GET /api/warranties/verify/:serialNumber
+### 2.3 GET /api/warranties/my-warranties (User)
 
-- Description: Public lookup by serial. Backend hashes serial and finds warranty. `ownerAddress` is masked for public views.
-- Response example:
+Header:
 
-```
-200 OK
-{
-  "success": true,
-  "message": "Warranty found",
-  "data": {
-    "serialNumber": "SN-2026-0001",
-    "productModel": "Model X",
-    "warrantyStatus": "active",
-    "issuedAt": "2026-04-01",
-    "ownerAddress": "0xA1b2...9fF3"  // masked: 0xA1b2...9fF3
-  }
-}
-```
+- Authorization: Bearer <JWT_TOKEN>
 
-## GET /api/warranties
+Success 200:
 
-- Description: Admin endpoint — list warranties with pagination and filters (status, productModel).
-- Request example:
-
-```
-GET /api/warranties?page=1&limit=20&status=active
-Authorization: Bearer <jwt>
-```
-
-- Response example:
-
-```
-200 OK
-{
-  "success": true,
-  "message": "Warranties retrieved",
-  "data": {
-    "items": [
-      {
-        "_id": "643a1f...",
-        "serialNumber": "SN-2026-0001",
-        "productModel": "Model X",
-        "tokenId": "1234",
-        "status": "active",
-        "ownerAddress": "0xA1b2...9fF3"
-      }
-    ],
-    "meta": {"page":1,"limit":20,"total":100}
-  }
-}
-```
-
-## GET /api/warranties/:id
-
-```
-GET /api/warranties/643a1f...
-Authorization: Bearer <jwt>
-```
-
-```
-200 OK
-{
-  "success": true,
-  "message": "Warranty detail",
-  "data": {
-    "_id": "643a1f...",
-    "serialNumber": "SN-2026-0001",
-    "serialHash": "0xabc123...",
-    "productModel": "Model X",
-    "tokenId": "1234",
-    "txHash": "0xdeadbeef...",
-    "status": "active",
-    "ownerAddress": "0xA1b2...9fF3",
-    "mintedAt": "2026-04-01T10:05:00Z"
-  }
-}
-```
-
-Placeholder for future updates or changes
-This section may be updated to include additional details or examples.
-
-## Error example (standard envelope)
-
-```
-401 Unauthorized
-{
-  "success": false,
-  "error": {
-    "code": "E401_UNAUTHORIZED",
-    "message": "Authorization token missing or invalid",
-    "details": []
-  }
-}
-```
-
-## GET /api/warranties/my-warranties
-
-- Description: Authenticated user retrieves warranties owned by their connected wallet.
-- Request example:
-
-```
-GET /api/warranties/my-warranties
-Authorization: Bearer <jwt>
-```
-
-- Response example:
-
-```
-200 OK
+```json
 {
   "success": true,
   "message": "My warranties retrieved",
   "data": [
     {
-      "_id": "643a1f...",
-      "serialNumber": "SN-2026-0001",
-      "productModel": "Model X",
-      "tokenId": "1234",
+      "_id": "661100aa22bb33cc44dd7711",
+      "serialNumber": "SN-7K2M-2024-X9",
+      "productModel": "IP15-PRO-256",
+      "tokenId": "12345",
       "status": "active"
     }
   ]
 }
 ```
 
-## PATCH /api/warranties/:id/status
+### 2.4 PATCH /api/warranties/:id/status (Admin)
 
-- Description: Update warranty status (e.g., revoke, reactivate). Admin/Staff only.
-- Request example:
+Header:
 
-```
-PATCH /api/warranties/643a1f.../status
-Authorization: Bearer <jwt>
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
+
+```json
 {
-  "status": "revoked",
-  "reason": "Policy violation"
+  "status": "revoked"
 }
 ```
 
-- Response example:
+Success 200:
 
-```
-200 OK
+```json
 {
   "success": true,
   "message": "Warranty status updated",
   "data": {
-    "_id": "643a1f...",
+    "_id": "661100aa22bb33cc44dd7711",
     "status": "revoked",
-    "updatedAt": "2026-04-01T11:00:00Z"
+    "updatedAt": "2026-04-05T12:00:00.000Z"
+  }
+}
+```
+
+## 3) Error mau
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "E403_FORBIDDEN",
+    "message": "Insufficient permission",
+    "details": []
   }
 }
 ```

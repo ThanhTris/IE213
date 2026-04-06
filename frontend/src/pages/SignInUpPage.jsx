@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { connectMetaMask, isValidWalletAddress } from "../utils/web3";
-import { API_BASE_URL } from "../utils/api";
+import { API_ROOT } from "../utils/api";
 import { persistAuthToken, shortAddress } from "../utils/auth";
 
 function extractBearerToken(headerValue = "") {
@@ -22,7 +22,10 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 
   const [walletAddress, setWalletAddress] = useState("");
 
-  const heading = useMemo(() => (mode === "signin" ? "Welcome Back" : "Welcome"), [mode]);
+  const heading = useMemo(
+    () => (mode === "signin" ? "Welcome Back" : "Welcome"),
+    [mode],
+  );
 
   const connectWallet = async () => {
     setError("");
@@ -49,7 +52,9 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
       if (!addr) return;
     }
 
-    const trimmedEmail = String(email || "").trim().toLowerCase();
+    const trimmedEmail = String(email || "")
+      .trim()
+      .toLowerCase();
     const trimmedFullName = String(fullName || "").trim();
     const trimmedPhone = String(phone || "").trim();
 
@@ -67,7 +72,7 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 
     setBusy(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/users/auth`, {
+      const res = await fetch(`${API_ROOT}/users/auth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,7 +85,8 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        const msg = json?.error?.message || json?.message || "Sign in/up failed.";
+        const msg =
+          json?.error?.message || json?.message || "Sign in/up failed.";
         setError(msg);
         return;
       }
@@ -114,7 +120,12 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card" onKeyDown={onKeySubmit} role="region" aria-label="Sign in/up">
+      <div
+        className="auth-card"
+        onKeyDown={onKeySubmit}
+        role="region"
+        aria-label="Sign in/up"
+      >
         <div className="auth-brand">
           <span className="brand-mini">BlockWarranty</span>
         </div>
@@ -124,7 +135,11 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
           {mode === "signup" ? " and create your profile" : ""}.
         </p>
 
-        <div className="auth-mode-tabs" role="tablist" aria-label="Sign in/up mode">
+        <div
+          className="auth-mode-tabs"
+          role="tablist"
+          aria-label="Sign in/up mode"
+        >
           <button
             type="button"
             className={`auth-mode-btn ${mode === "signin" ? "active" : ""}`}
@@ -161,7 +176,9 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
           </div>
           <div className="wallet-connected">
             <span className="muted">Connected:</span>{" "}
-            <span className="mono">{walletAddress ? shortAddress(walletAddress) : "Not connected"}</span>
+            <span className="mono">
+              {walletAddress ? shortAddress(walletAddress) : "Not connected"}
+            </span>
           </div>
 
           <div className="field">
@@ -222,14 +239,18 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
           )}
 
           <div className="field">
-            <label htmlFor="password">{mode === "signin" ? "Password" : "Password"}</label>
+            <label htmlFor="password">
+              {mode === "signin" ? "Password" : "Password"}
+            </label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              autoComplete={
+                mode === "signin" ? "current-password" : "new-password"
+              }
               disabled={busy}
             />
           </div>
@@ -249,7 +270,11 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
             </div>
           )}
 
-          {error && <div className="auth-error" role="alert">{error}</div>}
+          {error && (
+            <div className="auth-error" role="alert">
+              {error}
+            </div>
+          )}
 
           <button
             type="button"
@@ -257,11 +282,20 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
             onClick={handleSubmit}
             disabled={busy}
           >
-            {busy ? "Working..." : mode === "signin" ? "Sign In" : "Create Account"}
+            {busy
+              ? "Working..."
+              : mode === "signin"
+                ? "Sign In"
+                : "Create Account"}
           </button>
 
           <div className="auth-footer-actions">
-            <button type="button" className="btn auth-cancel" onClick={onCancel} disabled={busy}>
+            <button
+              type="button"
+              className="btn auth-cancel"
+              onClick={onCancel}
+              disabled={busy}
+            >
               Cancel
             </button>
           </div>
@@ -272,4 +306,3 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 }
 
 export default SignInUpPage;
-

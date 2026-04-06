@@ -28,10 +28,12 @@ function BlockWarrantyApp() {
       setActiveView("auth");
       return;
     }
+
     if (nextView === "admin" && isAuthenticated && auth?.role !== "admin") {
       setActiveView("user");
       return;
     }
+
     if (nextView === "user" && isAuthenticated && auth?.role === "admin") {
       setActiveView("admin");
       return;
@@ -46,7 +48,7 @@ function BlockWarrantyApp() {
   };
 
   useEffect(() => {
-    // After loading auth from storage, normalize the default landing view.
+    // Keep active view aligned with auth status and role.
     if (!isAuthenticated) {
       setActiveView((v) => (v === "user" || v === "admin" ? "home" : v));
       return;
@@ -77,7 +79,9 @@ function BlockWarrantyApp() {
     <div>
       <HeaderTabs activeView={activeView} onChangeView={handleChangeView} auth={auth} onLogout={handleLogout} />
       <main>
-        {activeView === "home" && <HomePage onChangeView={handleChangeView} isAuthenticated={isAuthenticated} role={auth?.role} />}
+        {activeView === "home" && (
+          <HomePage onChangeView={handleChangeView} isAuthenticated={isAuthenticated} role={auth?.role} />
+        )}
         {activeView === "guest" && <GuestPage onChangeView={handleChangeView} isAuthenticated={isAuthenticated} />}
         {activeView === "user" && (
           <UserPage sideTab={sideTab} onChangeSideTab={setSideTab} onOpenModal={() => setModalOpen(true)} />
