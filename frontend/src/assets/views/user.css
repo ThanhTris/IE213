@@ -506,14 +506,6 @@
   gap: 8px;
 }
 
-.card-header-sep svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-  flex-shrink: 0;
-  vertical-align: middle;
-}
-
 .section-title h3,
 .info-card h4,
 .specs-card h4,
