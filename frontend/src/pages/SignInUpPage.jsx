@@ -144,15 +144,16 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 
         <div className="no-wallet-prompt">
           <p>Don't have MetaMask installed?</p>
-          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="link">
-            Download MetaMask →
-          </a>
+          <div className="auth-footer-actions">
+            <button type="button" className="link-cancel" onClick={onCancel} disabled={busy}>
+              ← Back to Home
+            </button>
+            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="link">
+              Download MetaMask →
+            </a>
+          </div>
         </div>
       </div>
-
-      <button type="button" className="link-cancel" onClick={onCancel} disabled={busy}>
-        ← Back to Home
-      </button>
     </div>
   );
 }
