@@ -76,13 +76,13 @@ function UserPage({ sideTab, onChangeSideTab }) {
             >
               My Devices
             </button>
-            <button
+            {/* <button
               type="button"
               className={`side-link ${sideTab === "transfer" ? "active" : ""}`}
               onClick={() => onChangeSideTab("transfer")}
             >
               Transfer History
-            </button>
+            </button> */}
 
             <div className="wallet-summary-card">
               <p className="summary-title">Wallet Status</p>
@@ -375,7 +375,7 @@ function UserPage({ sideTab, onChangeSideTab }) {
                       </div>
                     </div>
 
-                    <div className="detail-grid-two">
+                    {/* <div className="detail-grid-two">
                       <div className="detail-overview-card">
                         <div className="detail-image" aria-hidden="true">
                           <svg
@@ -466,9 +466,99 @@ function UserPage({ sideTab, onChangeSideTab }) {
                           </div>
                         </div>
                       </aside>
-                    </div>
+                    </div> */}
 
                     <div className="detail-content-grid">
+                      <div className="detail-overview-card">
+                        <div className="detail-image" aria-hidden="true">
+                          <svg
+                            width="48"
+                            height="48"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#1e40af"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect
+                              x="5"
+                              y="2"
+                              width="14"
+                              height="20"
+                              rx="2"
+                              ry="2"
+                            ></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                          </svg>
+                        </div>
+                        <div className="detail-summary">
+                          <h3>Product Information</h3>
+                          <div className="info-row">
+                            <span>Model</span>
+                            <strong>{selected.tokenId.slice(0, 8)}...</strong>
+                          </div>
+                          <div className="info-row">
+                            <span>Color</span>
+                            <strong>{selected.color}</strong>
+                          </div>
+                          <div className="info-row">
+                            <span>Storage</span>
+                            <strong>{selected.storage}</strong>
+                          </div>
+                          <div className="info-row">
+                            <span>Device Condition</span>
+                            <strong>{selected.status}</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      <aside className="detail-owner-card">
+                        <div className="info-card">
+                          <div className="card-header-sep">
+                            <div className="title-group">
+                              <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#1e40af"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                              </svg>
+                              <h4>Owner Information</h4>
+                            </div>
+                          </div>
+                          <div className="info-row">
+                            <span>Name</span>
+                            <strong>{selected.ownerName}</strong>
+                          </div>
+                          <div className="info-row">
+                            <span>Wallet Address</span>
+                            <strong
+                              className="mono"
+                              title={selected.walletAddress}
+                            >
+                              {selected.walletAddress &&
+                              selected.walletAddress.length > 12
+                                ? `${selected.walletAddress.slice(0, 6)}...${selected.walletAddress.slice(-4)}`
+                                : selected.walletAddress}
+                            </strong>
+                          </div>
+                          <div className="info-row">
+                            <span>Email</span>
+                            <strong>{selected.ownerEmail}</strong>
+                          </div>
+                          <div className="info-row">
+                            <span>Phone</span>
+                            <strong>{selected.ownerPhone}</strong>
+                          </div>
+                        </div>
+                      </aside>
                       <div className="detail-left-column">
                         <div className="warranty-details-card">
                           <div className="section-title">
@@ -489,29 +579,135 @@ function UserPage({ sideTab, onChangeSideTab }) {
                             </div>
                           </div>
                           <div className="warranty-grid">
-                            <div className="info-row compact">
-                              <span>Purchase Date</span>
-                              <strong>{formatDate(selected.purchased)}</strong>
+                            <div className="warranty-item">
+                              <div className="warranty-item-icon">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#1e40af"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <rect
+                                    x="3"
+                                    y="4"
+                                    width="18"
+                                    height="18"
+                                    rx="2"
+                                    ry="2"
+                                  ></rect>
+                                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                              </div>
+                              <div className="warranty-item-text">
+                                <span className="warranty-item-label">
+                                  Purchase Date
+                                </span>
+                                <strong className="warranty-item-value">
+                                  {formatDate(selected.purchased)}
+                                </strong>
+                              </div>
                             </div>
-                            <div className="info-row compact">
-                              <span>Warranty Period</span>
-                              <strong>{selected.warrantyPeriod}</strong>
+                            <div className="warranty-item">
+                              <div className="warranty-item-icon">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#1e40af"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M21 21H3V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16z"></path>
+                                  <line x1="7" y1="10" x2="7" y2="16"></line>
+                                  <line x1="11" y1="10" x2="11" y2="16"></line>
+                                  <line x1="15" y1="10" x2="15" y2="16"></line>
+                                </svg>
+                              </div>
+                              <div className="warranty-item-text">
+                                <span className="warranty-item-label">
+                                  Warranty Period
+                                </span>
+                                <strong className="warranty-item-value">
+                                  {selected.warrantyPeriod}
+                                </strong>
+                              </div>
                             </div>
-                            <div className="info-row compact">
-                              <span>Expiry Date</span>
-                              <strong>{formatDate(selected.expires)}</strong>
+                            <div className="warranty-item">
+                              <div className="warranty-item-icon">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#10b981"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <circle cx="12" cy="12" r="10"></circle>
+                                  <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                              </div>
+                              <div className="warranty-item-text">
+                                <span className="warranty-item-label">
+                                  Expiry Date
+                                </span>
+                                <strong className="warranty-item-value">
+                                  {formatDate(selected.expires)}
+                                </strong>
+                              </div>
                             </div>
-                            <div className="info-row compact">
-                              <span>Days Remaining</span>
-                              <strong>
-                                {getDaysRemaining(selected.expires)}
-                              </strong>
+                            <div className="warranty-item">
+                              <div className="warranty-item-icon">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#1e40af"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <circle cx="18" cy="6" r="3"></circle>
+                                  <circle cx="6" cy="6" r="3"></circle>
+                                  <circle cx="12" cy="18" r="3"></circle>
+                                </svg>
+                              </div>
+                              <div className="warranty-item-text">
+                                <span className="warranty-item-label">
+                                  Days Remaining
+                                </span>
+                                <strong className="warranty-item-value">
+                                  {getDaysRemaining(selected.expires)}
+                                </strong>
+                              </div>
                             </div>
                           </div>
                           <div className="status-banner">
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
                             <span>
-                              <span className="status-dot"></span>
-                              Verified and secured on Sepolia Blockchain
+                              Warranty verified and secured on Sepolia
+                              Blockchain
                             </span>
                           </div>
                         </div>

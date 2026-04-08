@@ -501,6 +501,7 @@
   grid-column: 1;
   grid-row: 1;
   justify-self: stretch;
+  width: fit-content;
 }
 
 .detail-header-panel > .status-pill {
@@ -527,6 +528,7 @@
   margin: 0;
   font-size: 2.65rem;
   line-height: 1.05;
+  color: #ffffff;
 }
 
 .detail-sub.thin {
@@ -616,7 +618,56 @@
 .warranty-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
+}
+
+.warranty-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(30, 64, 175, 0.02);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(30, 64, 175, 0.08);
+}
+
+.warranty-item-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(30, 64, 175, 0.12);
+}
+
+.warranty-item-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.warranty-item-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.warranty-item-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.warranty-item-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--navy-primary);
+  word-break: break-word;
 }
 
 .info-row.compact {
@@ -771,6 +822,22 @@
   background: #ecfdf5;
   color: #166534;
   border: 1px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.status-banner svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  stroke: #10b981;
+}
+
+.status-dot {
+  display: none;
 }
 
 .repair-list {
