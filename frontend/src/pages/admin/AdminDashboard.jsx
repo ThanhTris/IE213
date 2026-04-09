@@ -1,13 +1,117 @@
-import { adminMetrics } from "../../data/mockData";
+import { useState } from "react";
+import ProductList from "./ProductList";
+import RepairHistory from "./RepairHistory";
 
-function AdminDashboard() {
+function AdminDashboard({ onReturnToPortal }) {
+  const [activeTab, setActiveTab] = useState("products");
+
+  const tabs = [
+    {
+      id: "products",
+      label: "Product List",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+          <path d="m3.3 7 8.7 5 8.7-5"></path>
+          <path d="M12 22V12"></path>
+        </svg>
+      ),
+    },
+    {
+      id: "repair-history",
+      label: "Repair History",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        </svg>
+      ),
+    },
+  ];
+
   return (
-    <div className="admin-dashboard">
+    <div className="admin-page-wrapper">
+      <div className="admin-header">
+        <div className="admin-header-content">
+          <h1>Admin Dashboard</h1>
+          <p>Monitor products, warranties, and repair activities</p>
+        </div>
+        <div className="admin-header-actions">
+          <button
+            type="button"
+            className="header-action secondary"
+            onClick={onReturnToPortal}
+          >
+            <span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 12h18"></path>
+                <path d="M3 6h18"></path>
+                <path d="M3 18h18"></path>
+              </svg>
+            </span>
+            Admin Portal
+          </button>
+          <button type="button" className="header-action primary">
+            <span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14"></path>
+                <path d="M5 12h14"></path>
+              </svg>
+            </span>
+            Create New Product
+          </button>
+        </div>
+      </div>
+
       {/* Metrics Cards */}
       <div className="dashboard-metrics">
         <div className="metric-card">
           <div className="metric-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#1e40af"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
               <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -21,10 +125,19 @@ function AdminDashboard() {
           </div>
           <div className="metric-trend">↑ trend</div>
         </div>
-        
+
         <div className="metric-card">
           <div className="metric-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#10b981"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               <path d="m9 12 2 2 4-4"></path>
             </svg>
@@ -38,7 +151,16 @@ function AdminDashboard() {
 
         <div className="metric-card">
           <div className="metric-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#6366f1"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
             </svg>
           </div>
@@ -51,7 +173,16 @@ function AdminDashboard() {
 
         <div className="metric-card">
           <div className="metric-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#f59e0b"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="16" y1="2" x2="16" y2="6"></line>
               <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -102,6 +233,28 @@ function AdminDashboard() {
           <h4>Customer Satisfaction</h4>
           <p className="stat-value">4.8/5.0 ⭐</p>
         </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="admin-tabs-container">
+        <div className="admin-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`admin-tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="tab-icon">{tab.icon}</span>
+              <span className="tab-label">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="admin-content">
+        {activeTab === "products" && <ProductList />}
+        {activeTab === "repair-history" && <RepairHistory />}
       </div>
     </div>
   );
