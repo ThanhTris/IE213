@@ -17,6 +17,7 @@ import { clearAuthStorage, loadAuthFromStorage } from "./utils/auth";
 
 function BlockWarrantyApp() {
   const [activeView, setActiveView] = useState("home");
+  const [adminTab, setAdminTab] = useState("create");
   const [sideTab, setSideTab] = useState("devices");
   const [modalOpen, setModalOpen] = useState(false);
   const [auth, setAuth] = useState(() => {
@@ -97,7 +98,14 @@ function BlockWarrantyApp() {
   return (
     <div>
       {activeView !== "auth" && (
-        <HeaderTabs activeView={activeView} onChangeView={handleChangeView} auth={auth} onLogout={handleLogout} />
+        <HeaderTabs
+          activeView={activeView}
+          onChangeView={handleChangeView}
+          auth={auth}
+          onLogout={handleLogout}
+          adminActiveTab={adminTab}
+          onAdminAction={(tab) => setAdminTab(tab)}
+        />
       )}
       <main>
         {activeView === "home" && (
@@ -107,7 +115,7 @@ function BlockWarrantyApp() {
         {activeView === "user" && (
           <UserPage sideTab={sideTab} onChangeSideTab={setSideTab} onOpenModal={() => setModalOpen(true)} />
         )}
-        {activeView === "admin" && <AdminPage />}
+        {activeView === "admin" && <AdminPage adminActiveTab={adminTab} onSetAdminTab={setAdminTab} />}
         {activeView === "auth" && (
           <SignInUpPage
             onAuthSuccess={(nextAuth) => {

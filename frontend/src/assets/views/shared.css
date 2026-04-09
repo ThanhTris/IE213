@@ -116,3 +116,21 @@
   text-align: center;
   margin-bottom: 1rem;
 }
+
+/* Dashboard tab — follows the same pill style as nav-tabs */
+.nav-tab-dashboard {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--grey-600);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-tab-dashboard[aria-selected="true"] {
+  background: var(--navy-primary);
+  color: var(--white);
+}
