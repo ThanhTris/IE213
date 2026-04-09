@@ -1,4 +1,51 @@
+import { useState } from "react";
+import ProductList from "./ProductList";
+import RepairHistory from "./RepairHistory";
+
 function AdminDashboard({ onReturnToPortal }) {
+  const [activeTab, setActiveTab] = useState("products");
+
+  const tabs = [
+    {
+      id: "products",
+      label: "Product List",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+          <path d="m3.3 7 8.7 5 8.7-5"></path>
+          <path d="M12 22V12"></path>
+        </svg>
+      ),
+    },
+    {
+      id: "repair-history",
+      label: "Repair History",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <div className="admin-page-wrapper">
       <div className="admin-header">
@@ -186,6 +233,28 @@ function AdminDashboard({ onReturnToPortal }) {
           <h4>Customer Satisfaction</h4>
           <p className="stat-value">4.8/5.0 ⭐</p>
         </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="admin-tabs-container">
+        <div className="admin-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`admin-tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="tab-icon">{tab.icon}</span>
+              <span className="tab-label">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="admin-content">
+        {activeTab === "products" && <ProductList />}
+        {activeTab === "repair-history" && <RepairHistory />}
       </div>
     </div>
   );

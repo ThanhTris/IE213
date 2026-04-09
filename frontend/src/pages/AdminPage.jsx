@@ -1,6 +1,5 @@
 import { useState } from "react";
 import AdminDashboard from "./admin/AdminDashboard";
-import ProductList from "./admin/ProductList";
 import CreateWarranty from "./admin/CreateWarranty";
 import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
@@ -10,27 +9,6 @@ function AdminPage() {
   const [activeTab, setActiveTab] = useState("create");
 
   const tabs = [
-    // {
-    //   id: "dashboard",
-    //   label: "Dashboard",
-    //   icon: (
-    //     <svg
-    //       width="20"
-    //       height="20"
-    //       viewBox="0 0 24 24"
-    //       fill="none"
-    //       stroke="currentColor"
-    //       strokeWidth="2"
-    //       strokeLinecap="round"
-    //       strokeLinejoin="round"
-    //     >
-    //       <rect x="3" y="3" width="7" height="7"></rect>
-    //       <rect x="14" y="3" width="7" height="7"></rect>
-    //       <rect x="14" y="14" width="7" height="7"></rect>
-    //       <rect x="3" y="14" width="7" height="7"></rect>
-    //     </svg>
-    //   ),
-    // },
     {
       id: "create",
       label: "Create Warranty",
@@ -46,26 +24,6 @@ function AdminPage() {
           strokeLinejoin="round"
         >
           <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"></path>
-        </svg>
-      ),
-    },
-    {
-      id: "products",
-      label: "Product List",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
-          <path d="m3.3 7 8.7 5 8.7-5"></path>
-          <path d="M12 22V12"></path>
         </svg>
       ),
     },
@@ -167,7 +125,6 @@ function AdminPage() {
             {/* Tab Content */}
             <div className="admin-content">
               {activeTab === "create" && <CreateWarranty />}
-              {activeTab === "products" && <ProductList />}
               {activeTab === "log-repairs" && <LogRepairs />}
             </div>
           </div>
