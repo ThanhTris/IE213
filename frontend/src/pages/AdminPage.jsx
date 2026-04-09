@@ -1,12 +1,13 @@
-import { useState } from "react";
 import AdminDashboard from "./admin/AdminDashboard";
 import CreateWarranty from "./admin/CreateWarranty";
+import CreateNewProduct from "./admin/CreateNewProduct";
 import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
 import "../assets/views/admin-portal.css";
 
-function AdminPage() {
-  const [activeTab, setActiveTab] = useState("create");
+function AdminPage({ adminActiveTab, onSetAdminTab }) {
+  const activeTab = adminActiveTab ?? "create";
+  const setActiveTab = onSetAdminTab ?? (() => {});
 
   const tabs = [
     {
@@ -58,51 +59,17 @@ function AdminPage() {
             <div className="admin-header">
               <div className="admin-header-content">
                 <h1>Admin Management Portal</h1>
-                <p>
-                  Issue warranties, log repairs, and manage your warranty
-                  program
-                </p>
+                <p>Issue warranties, log repairs, and manage your warranty program</p>
               </div>
               <div className="admin-header-actions">
-                <button
-                  type="button"
-                  className={`header-action secondary ${activeTab === "dashboard" ? "active" : ""}`}
-                  onClick={() => setActiveTab("dashboard")}
-                >
-                  <span>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M21 15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4l2-3h4a2 2 0 0 1 2 2v3h4a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                  </span>
-                  Dashboard
-                </button>
-                <button type="button" className="header-action primary">
-                  <span>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 5v14"></path>
-                      <path d="M5 12h14"></path>
-                    </svg>
-                  </span>
+                <a href="/create-new-product" className="header-action primary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                  </svg>
                   Create New Product
-                </button>
+                </a>
               </div>
             </div>
 
