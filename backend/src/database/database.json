@@ -1,0 +1,454 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "product_type": "iPhone",
+      "model_name": "iPhone 14",
+      "brand": "Apple",
+      "color": "Đen",
+      "config": "128GB, 6GB RAM, A15 Bionic",
+      "image_url": "/images/ID1.jpg"
+    },
+    {
+      "id": 2,
+      "product_type": "iPhone",
+      "model_name": "iPhone 14 Pro",
+      "brand": "Apple",
+      "color": "Tím",
+      "config": "256GB, 6GB RAM, A16 Bionic",
+      "image_url": "/images/ID2.jpg"
+    },
+    {
+      "id": 3,
+      "product_type": "iPhone",
+      "model_name": "iPhone 15",
+      "brand": "Apple",
+      "color": "Hồng",
+      "config": "128GB, 6GB RAM, A16 Bionic",
+      "image_url": "/images/ID3.jpg"
+    },
+    {
+      "id": 4,
+      "product_type": "iPhone",
+      "model_name": "iPhone 15 Pro",
+      "brand": "Apple",
+      "color": "Xanh dương",
+      "config": "256GB, 8GB RAM, A17 Pro",
+      "image_url": "/images/ID4.jpg"
+    },
+    {
+      "id": 5,
+      "product_type": "iPhone",
+      "model_name": "iPhone 15 Pro Max",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "512GB, 8GB RAM, A17 Pro",
+      "image_url": "/images/ID5.jpg"
+    },
+    {
+      "id": 6,
+      "product_type": "iPhone",
+      "model_name": "iPhone 16",
+      "brand": "Apple",
+      "color": "Xanh lá",
+      "config": "128GB, 8GB RAM, A18 Bionic",
+      "image_url": "/images/ID6.jpg"
+    },
+    {
+      "id": 7,
+      "product_type": "iPhone",
+      "model_name": "iPhone 16 Plus",
+      "brand": "Apple",
+      "color": "Hồng",
+      "config": "256GB, 8GB RAM, A18 Bionic",
+      "image_url": "/images/ID7.jpg"
+    },
+    {
+      "id": 8,
+      "product_type": "iPhone",
+      "model_name": "iPhone 16 Pro",
+      "brand": "Apple",
+      "color": "Đen Titan",
+      "config": "256GB, 8GB RAM, A18 Pro",
+      "image_url": "/images/ID8.jpg"
+    },
+    {
+      "id": 9,
+      "product_type": "iPhone",
+      "model_name": "iPhone 16 Pro Max",
+      "brand": "Apple",
+      "color": "Vàng sa mạc",
+      "config": "512GB, 8GB RAM, A18 Pro",
+      "image_url": "/images/ID9.jpg"
+    },
+    {
+      "id": 10,
+      "product_type": "iPhone",
+      "model_name": "iPhone SE (2025)",
+      "brand": "Apple",
+      "color": "Midnight",
+      "config": "64GB, 4GB RAM, A15 Bionic",
+      "image_url": "/images/ID10.jpg"
+    },
+    {
+      "id": 11,
+      "product_type": "MacBook",
+      "model_name": "MacBook Air M2",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "8GB RAM, 256GB SSD, M2",
+      "image_url": "/images/ID11.jpg"
+    },
+    {
+      "id": 12,
+      "product_type": "MacBook",
+      "model_name": "MacBook Air M3",
+      "brand": "Apple",
+      "color": "Midnight",
+      "config": "8GB RAM, 512GB SSD, M3",
+      "image_url": "/images/ID12.jpg"
+    },
+    {
+      "id": 13,
+      "product_type": "MacBook",
+      "model_name": "MacBook Pro 14 M3 Pro",
+      "brand": "Apple",
+      "color": "Space Gray",
+      "config": "18GB RAM, 512GB SSD, M3 Pro",
+      "image_url": "/images/ID13.jpg"
+    },
+    {
+      "id": 14,
+      "product_type": "MacBook",
+      "model_name": "MacBook Pro 14 M3 Max",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "36GB RAM, 1TB SSD, M3 Max",
+      "image_url": "/images/ID14.jpg"
+    },
+    {
+      "id": 15,
+      "product_type": "MacBook",
+      "model_name": "MacBook Pro 16 M3 Pro",
+      "brand": "Apple",
+      "color": "Space Black",
+      "config": "18GB RAM, 512GB SSD, M3 Pro",
+      "image_url": "/images/ID15.jpg"
+    },
+    {
+      "id": 16,
+      "product_type": "MacBook",
+      "model_name": "MacBook Pro 16 M3 Max",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "48GB RAM, 1TB SSD, M3 Max",
+      "image_url": "/images/ID16.jpg"
+    },
+    {
+      "id": 17,
+      "product_type": "MacBook",
+      "model_name": "MacBook Air 15 M3",
+      "brand": "Apple",
+      "color": "Vàng",
+      "config": "8GB RAM, 256GB SSD, M3",
+      "image_url": "/images/ID17.jpg"
+    },
+    {
+      "id": 18,
+      "product_type": "MacBook",
+      "model_name": "MacBook Pro 14 M4",
+      "brand": "Apple",
+      "color": "Space Black",
+      "config": "16GB RAM, 512GB SSD, M4",
+      "image_url": "/images/ID18.jpg"
+    },
+    {
+      "id": 19,
+      "product_type": "MacBook",
+      "model_name": "MacBook Pro 16 M4 Pro",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "24GB RAM, 1TB SSD, M4 Pro",
+      "image_url": "/images/ID19.jpg"
+    },
+    {
+      "id": 20,
+      "product_type": "MacBook",
+      "model_name": "MacBook Air M4",
+      "brand": "Apple",
+      "color": "Xanh dương",
+      "config": "8GB RAM, 256GB SSD, M4",
+      "image_url": "/images/ID20.jpg"
+    },
+    {
+      "id": 21,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 6",
+      "brand": "Samsung",
+      "color": "Đen",
+      "config": "40mm, Bluetooth, GPS",
+      "image_url": "/images/ID21.jpg"
+    },
+    {
+      "id": 22,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 6 Classic",
+      "brand": "Samsung",
+      "color": "Bạc",
+      "config": "43mm, LTE, xoay bezel",
+      "image_url": "/images/ID22.jpg"
+    },
+    {
+      "id": 23,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 7",
+      "brand": "Samsung",
+      "color": "Xanh lá",
+      "config": "44mm, BioActive Sensor",
+      "image_url": "/images/ID23.jpg"
+    },
+    {
+      "id": 24,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch Ultra",
+      "brand": "Samsung",
+      "color": "Titanium",
+      "config": "47mm, Titan, lặn sâu",
+      "image_url": "/images/ID24.jpg"
+    },
+    {
+      "id": 25,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch FE",
+      "brand": "Samsung",
+      "color": "Hồng",
+      "config": "40mm, phiên bản giá rẻ",
+      "image_url": "/images/ID25.jpg"
+    },
+    {
+      "id": 26,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 5 Pro",
+      "brand": "Samsung",
+      "color": "Đen Titan",
+      "config": "45mm, pin trâu, GPS",
+      "image_url": "/images/ID26.jpg"
+    },
+    {
+      "id": 27,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 6",
+      "brand": "Samsung",
+      "color": "Vàng hồng",
+      "config": "44mm, LTE, sapphire",
+      "image_url": "/images/ID27.jpg"
+    },
+    {
+      "id": 28,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 7 Classic",
+      "brand": "Samsung",
+      "color": "Đen",
+      "config": "47mm, xoay bezel vật lý",
+      "image_url": "/images/ID28.jpg"
+    },
+    {
+      "id": 29,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 5",
+      "brand": "Samsung",
+      "color": "Bạc",
+      "config": "44mm, sapphire crystal",
+      "image_url": "/images/ID29.jpg"
+    },
+    {
+      "id": 30,
+      "product_type": "Samsung Galaxy Watch",
+      "model_name": "Galaxy Watch 4 Classic",
+      "brand": "Samsung",
+      "color": "Đen",
+      "config": "46mm, Wear OS",
+      "image_url": "/images/ID30.jpg"
+    },
+    {
+      "id": 31,
+      "product_type": "AirPods",
+      "model_name": "AirPods Pro 2",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Chống ồn chủ động, H2 chip",
+      "image_url": "/images/ID31.jpg"
+    },
+    {
+      "id": 32,
+      "product_type": "AirPods",
+      "model_name": "AirPods 4",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Chống ồn, USB-C",
+      "image_url": "/images/ID32.jpg"
+    },
+    {
+      "id": 33,
+      "product_type": "AirPods",
+      "model_name": "AirPods 4 ANC",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Chống ồn chủ động, tìm kiếm chính xác",
+      "image_url": "/images/ID33.jpg"
+    },
+    {
+      "id": 34,
+      "product_type": "AirPods",
+      "model_name": "AirPods Max",
+      "brand": "Apple",
+      "color": "Xanh dương",
+      "config": "Over-ear, Spatial Audio",
+      "image_url": "/images/ID34.jpg"
+    },
+    {
+      "id": 35,
+      "product_type": "AirPods",
+      "model_name": "AirPods 3",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Kháng nước, Spatial Audio",
+      "image_url": "/images/ID35.jpg"
+    },
+    {
+      "id": 36,
+      "product_type": "AirPods",
+      "model_name": "AirPods Pro 2 USB-C",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Sạc USB-C, chống ồn",
+      "image_url": "/images/ID36.jpg"
+    },
+    {
+      "id": 37,
+      "product_type": "AirPods",
+      "model_name": "AirPods 2",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "H1 chip, giá rẻ",
+      "image_url": "/images/ID37.jpg"
+    },
+    {
+      "id": 38,
+      "product_type": "AirPods",
+      "model_name": "AirPods Pro 2 Lightning",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Sạc Lightning, chống ồn",
+      "image_url": "/images/ID38.jpg"
+    },
+    {
+      "id": 39,
+      "product_type": "AirPods",
+      "model_name": "AirPods Max USB-C",
+      "brand": "Apple",
+      "color": "Đen",
+      "config": "Over-ear, USB-C, Lossless",
+      "image_url": "/images/ID39.jpg"
+    },
+    {
+      "id": 40,
+      "product_type": "AirPods",
+      "model_name": "AirPods 4 với hộp sạc thường",
+      "brand": "Apple",
+      "color": "Trắng",
+      "config": "Không chống ồn, hộp sạc USB-C",
+      "image_url": "/images/ID40.jpg"
+    },
+    {
+      "id": 41,
+      "product_type": "iPad",
+      "model_name": "iPad Pro 11 M4",
+      "brand": "Apple",
+      "color": "Space Gray",
+      "config": "256GB, 8GB RAM, M4, OLED",
+      "image_url": "/images/ID41.jpg"
+    },
+    {
+      "id": 42,
+      "product_type": "iPad",
+      "model_name": "iPad Pro 13 M4",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "512GB, 8GB RAM, M4, Ultra Retina XDR",
+      "image_url": "/images/ID42.jpg"
+    },
+    {
+      "id": 43,
+      "product_type": "iPad",
+      "model_name": "iPad Air 13 M2",
+      "brand": "Apple",
+      "color": "Xanh dương",
+      "config": "128GB, 8GB RAM, M2",
+      "image_url": "/images/ID43.jpg"
+    },
+    {
+      "id": 44,
+      "product_type": "iPad",
+      "model_name": "iPad Air 11 M2",
+      "brand": "Apple",
+      "color": "Tím",
+      "config": "64GB, 8GB RAM, M2",
+      "image_url": "/images/ID44.jpg"
+    },
+    {
+      "id": 45,
+      "product_type": "iPad",
+      "model_name": "iPad 10.9 (Gen 10)",
+      "brand": "Apple",
+      "color": "Vàng",
+      "config": "64GB, 4GB RAM, A14 Bionic",
+      "image_url": "/images/ID45.jpg"
+    },
+    {
+      "id": 46,
+      "product_type": "iPad",
+      "model_name": "iPad mini 7",
+      "brand": "Apple",
+      "color": "Xám",
+      "config": "128GB, 6GB RAM, A17 Pro",
+      "image_url": "/images/ID46.jpg"
+    },
+    {
+      "id": 47,
+      "product_type": "iPad",
+      "model_name": "iPad Pro 12.9 M2",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "256GB, 8GB RAM, M2, mini-LED",
+      "image_url": "/images/ID47.jpg"
+    },
+    {
+      "id": 48,
+      "product_type": "iPad",
+      "model_name": "iPad Pro 11 M2",
+      "brand": "Apple",
+      "color": "Space Gray",
+      "config": "128GB, 8GB RAM, M2",
+      "image_url": "/images/ID48.jpg"
+    },
+    {
+      "id": 49,
+      "product_type": "iPad",
+      "model_name": "iPad 10.2 (Gen 9)",
+      "brand": "Apple",
+      "color": "Bạc",
+      "config": "64GB, 3GB RAM, A13 Bionic",
+      "image_url": "/images/ID49.jpg"
+    },
+    {
+      "id": 50,
+      "product_type": "iPad",
+      "model_name": "iPad Air 10.9 M1",
+      "brand": "Apple",
+      "color": "Xanh lá",
+      "config": "64GB, 8GB RAM, M1",
+      "image_url": "/images/ID50.jpg"
+    }
+  ]
+}
