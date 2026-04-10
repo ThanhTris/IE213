@@ -46,12 +46,13 @@ Index khuyen nghi:
 - \_id: ObjectId
 - serialNumber: String (required, unique, index)
 - serialHash: String (required)
-- productModel: String (required; map voi products.productCode)
+- productCode: String (required; map voi products.productCode)
 - ownerAddress: String (required)
-- tokenId: String (default: "")
-- txHash: String (default: "")
-- status: String (enum: pending, active, revoked; default: pending)
-- soldAt: Date
+- tokenId: String (default: null)
+- tokenURI: String (Chua link IPFS, tao tu dong tai api POST)
+- mintTxHash: String (default: null)
+- expiryDate: Number (epoch seconds)
+- status: Boolean (enum: true/false; default: true)
 - mintedAt: Date
 - notes: String
 - createdBy: String (wallet cua staff/admin tao ban ghi)
@@ -155,9 +156,10 @@ Authorization: Bearer <JWT_TOKEN>
 | Product  | GET    | /api/products/:idOrCode        | Public               | Lay chi tiet 1 san pham                          |
 | Product  | PUT    | /api/products/:idOrCode        | Admin, Staff         | Sua thong tin san pham                           |
 | Product  | DELETE | /api/products/:idOrCode        | Admin                | Xoa mem san pham                                 |
-| Warranty | POST   | /api/warranties                | Admin, Staff         | Pre-mint tao so bao hanh voi status pending      |
-| Warranty | PATCH  | /api/warranties/:id            | Admin, Staff         | Post-mint cap nhat tokenId + txHash              |
+| Warranty | POST   | /api/warranties                | Admin, Staff         | Pre-mint: Tao DB va upload IPFS Pinata (tokenURI)|
+| Warranty | PATCH  | /api/warranties/:id            | Admin, Staff         | Post-mint: Cap nhat tokenId + txHash             |
 | Warranty | GET    | /api/warranties/my-warranties  | User                 | Lay so bao hanh cua vi dang dang nhap            |
+| Warranty | GET    | /api/warranties/verify/:serialNumber | Public         | Tra cuu chi tiet ho tro ca thong tin Web2 & Web3 |
 | Warranty | PATCH  | /api/warranties/:id/status     | Admin                | Cap nhat nhanh trang thai bao hanh               |
 | Repair   | POST   | /api/repair-logs               | Technician, Admin    | Tao log sua chua                                 |
 | Repair   | GET    | /api/repair-logs/:serialNumber | Public               | Tra cuu lich su sua chua theo serial             |
