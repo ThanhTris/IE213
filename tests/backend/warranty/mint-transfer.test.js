@@ -93,6 +93,7 @@ describe("Mint & Transfer Flows", () => {
       serialNumber: "SN-1001",
       ownerAddress: "0x2222222222222222222222222222222222222222",
       tokenId: tokenId,
+      tokenURI: "ipfs://finalhash",
     };
 
     vi.spyOn(Warranty, "findByIdAndUpdate").mockResolvedValueOnce(
@@ -108,7 +109,7 @@ describe("Mint & Transfer Flows", () => {
     const res = await request(app)
       .patch(`/api/warranties/${id}`)
       .set("Authorization", `Bearer ${token}`)
-      .send({ tokenId, txHash });
+      .send({ tokenId, txHash, tokenURI: "ipfs://finalhash" });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);

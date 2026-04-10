@@ -1,62 +1,114 @@
-# Transfers API (Mock Data)
+# API Contract - Transfer Histories
 
-## POST /api/transfers
+Ngay cap nhat: 2026-04-05
 
-- Description: Record a transfer event after an on-chain transfer transaction.
-- Request example:
+## 1) Data model dung cho FE
 
-```
-POST /api/transfers
-Content-Type: application/json
+TransferHistory object:
+
+```json
 {
-  "warrantyId": "643a1f...",
-  "tokenId": "1234",
+  "_id": "661100aa22bb33cc44dd9911",
+  "warrantyId": "661100aa22bb33cc44dd7711",
+  "tokenId": "12345",
+  "transferType": "transfer",
   "from": "0xOldOwner...",
   "to": "0xNewOwner...",
   "txHash": "0xfeedface...",
-  "transferAt": "2026-04-03T11:12:00Z"
+  "transferAt": "2026-04-04T11:12:00.000Z",
+  "createdAt": "2026-04-04T11:12:05.000Z",
+  "updatedAt": "2026-04-04T11:12:05.000Z"
 }
 ```
 
-- Response example:
+## 2) Endpoints
 
+### 2.1 POST /api/transfers (User)
+
+Muc dich:
+
+- FE bao cao giao dich chuyen nhuong thanh cong on-chain.
+
+Header:
+
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
+
+```json
+{
+  "warrantyId": "661100aa22bb33cc44dd7711",
+  "tokenId": "12345",
+  "transferType": "transfer",
+  "from": "0xOldOwner...",
+  "to": "0xNewOwner...",
+  "txHash": "0xfeedface...",
+  "transferAt": "2026-04-04T11:12:00.000Z"
+}
 ```
-201 Created
+
+Success 201:
+
+```json
 {
   "success": true,
   "message": "Transfer recorded",
   "data": {
-    "_id": "645c3f...",
-    "warrantyId": "643a1f...",
-    "tokenId": "1234",
+    "_id": "661100aa22bb33cc44dd9911",
+    "tokenId": "12345",
+    "transferType": "transfer",
     "from": "0xOldOwner...",
     "to": "0xNewOwner...",
     "txHash": "0xfeedface...",
-    "transferAt": "2026-04-03T11:12:00Z",
-    "transferType": "transfer"
+    "transferAt": "2026-04-04T11:12:00.000Z"
   }
 }
 ```
 
-## GET /api/transfers/:tokenId
+### 2.2 GET /api/transfers/token/:tokenId (Public)
 
-- Response example:
+Muc dich:
 
-```
-200 OK
+- Xem lich su mint/transfer cua 1 so bao hanh.
+
+Success 200:
+
+```json
 {
   "success": true,
-  "message": "Transfers retrieved",
+  "message": "Transfer history retrieved",
   "data": [
     {
-      "_id": "645c3f...",
-      "tokenId": "1234",
+      "_id": "661100aa22bb33cc44dd9910",
+      "tokenId": "12345",
+      "transferType": "mint",
+      "from": "0x0000000000000000000000000000000000000000",
+      "to": "0xOldOwner...",
+      "txHash": "0xabcdmint...",
+      "transferAt": "2026-04-01T10:05:00.000Z"
+    },
+    {
+      "_id": "661100aa22bb33cc44dd9911",
+      "tokenId": "12345",
+      "transferType": "transfer",
       "from": "0xOldOwner...",
       "to": "0xNewOwner...",
       "txHash": "0xfeedface...",
-      "transferAt": "2026-04-03T11:12:00Z",
-      "transferType": "transfer"
+      "transferAt": "2026-04-04T11:12:00.000Z"
     }
   ]
+}
+```
+
+## 3) Error mau
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "E404_NOT_FOUND",
+    "message": "Transfer history not found for tokenId",
+    "details": []
+  }
 }
 ```

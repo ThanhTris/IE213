@@ -12,7 +12,7 @@ const EVM_TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
 const createWarranty = async (req, res) => {
   try {
     // Zero-trust whitelist: chỉ nhận đúng các field được phép từ client.
-    const { serialNumber, productCode, ownerAddress, warrantyMonths } = req.body || {};
+    const { serialNumber, productCode, ownerAddress, warrantyMonths, tokenURI } = req.body || {};
 
     if (!serialNumber || !productCode || !ownerAddress) {
       return sendError(res, {
@@ -96,7 +96,51 @@ const createWarranty = async (req, res) => {
       },
       expiryDate,
       status: true,
+      tokenURI: tokenURI ? String(tokenURI).trim() : null,
     });
+
+    // ---------------------------------------------------------
+    // WEB3: AUTO UPLOAD METADATA TO IPFS (PINATA)
+    // ---------------------------------------------------------
+    if (!warranty.tokenURI && process.env.PINATA_JWT) {
+      try {
+        const metadataJSON = {
+          name: `Warranty Card - ${warranty.serialNumber}`,
+          description: `E-Warranty for ${warranty.productInfo.productName} by ${warranty.productInfo.brand}`,
+          attributes: [
+            { trait_type: "Serial Number", value: warranty.serialNumber },
+            { trait_type: "Product Code", value: warranty.productCode },
+            { trait_type: "Brand", value: warranty.productInfo.brand },
+            { trait_type: "Color", value: warranty.productInfo.color },
+            { trait_type: "Expiry Date", display_type: "date", value: warranty.expiryDate },
+            { trait_type: "Owner", value: warranty.ownerAddress }
+          ]
+        };
+
+        const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.PINATA_JWT}`,
+          },
+          body: JSON.stringify({
+            pinataContent: metadataJSON,
+            pinataMetadata: {
+              name: `warranty_${warranty.serialNumber}.json`,
+            },
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          warranty.tokenURI = `ipfs://${result.IpfsHash}`;
+        } else {
+          console.error("[IPFS] Pinata upload failed:", await response.text());
+        }
+      } catch (ipfsError) {
+        console.error("[IPFS] Error uploading to Pinata:", ipfsError.message);
+      }
+    }
 
     const savedWarranty = await warranty.save();
 
@@ -132,7 +176,7 @@ const updateMintInfo = async (req, res) => {
   try {
     const { id } = req.params;
     // Accept tokenId and txHash per API spec
-    const { tokenId, txHash } = req.body || {};
+    const { tokenId, txHash, tokenURI } = req.body || {};
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendError(res, {
@@ -158,12 +202,12 @@ const updateMintInfo = async (req, res) => {
       });
     }
 
-    // Update Warranty first
     const updatedWarranty = await Warranty.findByIdAndUpdate(
       id,
       {
         tokenId: normalizedTokenId,
         mintTxHash: normalizedTxHash,
+        ...(tokenURI && { tokenURI: String(tokenURI).trim() }),
         mintedAt: new Date(),
         status: true,
       },
@@ -417,6 +461,7 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
         expiryDate: warranty.expiryDate,
         status: warranty.status,
         tokenId: warranty.tokenId,
+        tokenURI: warranty.tokenURI,
         mintTxHash: warranty.mintTxHash,
         mintedAt: warranty.mintedAt,
         isMinted: Boolean(warranty.tokenId && warranty.mintTxHash),

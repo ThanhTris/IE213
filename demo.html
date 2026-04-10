@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlockWarranty — Web3 E-Warranty & Product Passport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy-primary: #2955ce;
+      --navy-primary-dark: #172554;
+      --navy-950: #0f172a;
+      --navy-900: #1e293b;
+      --navy-800: #334155;
+      --navy-700: #475569;
+      --navy-600: #64748b;
+      --white: #ffffff;
+      --grey-50: #f8fafc;
+      --grey-100: #f1f5f9;
+      --grey-200: #e2e8f0;
+      --grey-400: #94a3b8;
+      --grey-600: #64748b;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --emerald-100: #d1fae5;
+      --emerald-glow: rgba(16, 185, 129, 0.45);
+      --coral-500: #f97066;
+      --coral-600: #e85d4c;
+      --gold-star: #eab308;
+      --shadow-sm: 0 1px 2px rgba(30, 58, 138, 0.06);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 20px 40px rgba(30, 58, 138, 0.12);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+      --font-display: "Inter", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--navy-900);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--grey-100);
+      box-shadow: var(--shadow-sm);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .nav-center-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+    }
+    @media (max-width: 1024px) {
+      .nav-center-wrap { order: 3; flex-basis: 100%; justify-content: flex-start; overflow-x: auto; }
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: var(--navy-primary);
+    }
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--navy-primary);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand-mark svg { width: 22px; height: 22px; color: var(--white); }
+    .brand-text { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.03em; color: var(--navy-primary); }
+
+    .nav-tabs {
+      display: inline-flex;
+      gap: 0.2rem;
+      padding: 0.25rem;
+      background: var(--grey-100);
+      border-radius: 999px;
+    }
+    .nav-tabs button {
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 0.5rem 0.85rem;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--grey-600);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-tabs button svg { flex-shrink: 0; opacity: 0.85; }
+    .nav-tabs button:hover { color: var(--navy-primary); }
+    .nav-tabs button[aria-selected="true"] {
+      background: var(--navy-primary);
+      color: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-tabs button[aria-selected="true"] svg { color: var(--white); opacity: 1; }
+
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-login {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--navy-primary);
+      background: var(--white);
+      color: var(--navy-primary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-login:hover { background: var(--grey-50); }
+    .btn {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.6rem 1.1rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--navy-700);
+    }
+    .btn-ghost:hover { background: var(--grey-100); }
+    .btn-primary {
+      background: var(--navy-primary);
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(30, 58, 138, 0.35);
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+      box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+    }
+    .btn-emerald {
+      background: linear-gradient(180deg, var(--emerald-500), var(--emerald-600));
+      color: var(--white);
+      box-shadow: 0 4px 16px var(--emerald-glow);
+    }
+
+    main { min-height: calc(100vh - 64px); }
+
+    .view { display: none; animation: fadeIn 0.35s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ——— BlockWarranty landing ——— */
+    .bw-hero {
+      background: linear-gradient(165deg, var(--navy-primary) 0%, #1e40af 45%, var(--navy-primary-dark) 100%);
+      padding: 3.5rem 1.5rem 4.5rem;
+      text-align: center;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .bw-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.12), transparent 55%);
+      pointer-events: none;
+    }
+    .bw-hero-inner { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+    .bw-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.35rem;
+    }
+    .bw-hero-title {
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin: 0 0 1rem;
+    }
+    .bw-hero-title .accent { color: var(--emerald-500); }
+    .bw-hero-lead {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      opacity: 0.92;
+      max-width: 36rem;
+      margin: 0 auto 1.75rem;
+    }
+    .bw-hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn-hero-emerald {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-md);
+      border: none;
+      background: linear-gradient(180deg, var(--emerald-500), var(--emerald-600));
+      color: var(--white);
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn-hero-emerald:hover { filter: brightness(1.05); }
+    .btn-hero-outline {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      cursor: pointer;
+    }
+    .btn-hero-outline:hover { background: rgba(255,255,255,0.18); }
+
+    .bw-section { padding: 4rem 1.5rem; }
+    .bw-section.alt { background: var(--grey-50); }
+    .bw-inner { max-width: 1120px; margin: 0 auto; }
+    .bw-h2 {
+      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-weight: 700;
+      color: var(--navy-primary);
+      text-align: center;
+      margin: 0 0 0.65rem;
+      letter-spacing: -0.02em;
+    }
+    .bw-sub {
+      text-align: center;
+      color: var(--grey-600);
+      max-width: 40rem;
+      margin: 0 auto 2rem;
+      font-size: 1rem;
+    }
+
+    .bw-track-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--grey-200);
+      box-shadow: var(--shadow-md);
+      padding: 1.35rem 1.35rem 1.5rem;
+      max-width: 720px;
+      margin: 0 auto 1rem;
+    }
+    .bw-search-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .bw-search-input-wrap {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--grey-200);
+      border-radius: var(--radius-md);
+      background: var(--grey-50);
+    }
+    .bw-search-input-wrap svg { color: var(--grey-400); flex-shrink: 0; }
+    .bw-search-input-wrap input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      color: var(--navy-900);
+    }
+    .bw-search-btn {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.35rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--navy-primary);
+      color: var(--white);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .bw-search-btn:hover { background: #2563eb; }
+    .bw-hint { text-align: center; font-size: 0.85rem; color: var(--grey-400); margin: 0.85rem 0 0; }
+
+    .bw-start-card {
+      max-width: 560px;
+      margin: 2.5rem auto 0;
+      padding: 2.25rem 1.75rem;
+      border-radius: var(--radius-xl);
+      border: 2px dashed var(--grey-200);
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .bw-start-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.25rem;
+      border-radius: 50%;
+      background: rgba(30, 58, 138, 0.1);
+      color: var(--navy-primary);
+      display: grid;
+      place-items: center;
+    }
+    .bw-start-card h3 { margin: 0 0 0.5rem; font-size: 1.35rem; font-weight: 700; color: var(--navy-primary); }
+    .bw-start-card p { margin: 0; color: var(--grey-600); font-size: 0.95rem; }
+
+    .bw-feature-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) { .bw-feature-row { grid-template-columns: 1fr; } }
+    .bw-feature-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--grey-200);
+      padding: 1.75rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .bw-icon-em {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--emerald-100);
+      color: var(--emerald-600);
+      display: grid;
+      place-items: center;
+      margin-bottom: 1rem;
+    }
+    .bw-feature-card h4 { margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 700; color: var(--navy-primary); }
+    .bw-feature-card p { margin: 0; font-size: 0.9rem; color: var(--grey-600); line-height: 1.55; }
+
+    .bw-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) { .bw-steps { grid-template-columns: 1fr; } }
+    .bw-step-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.35rem 1.75rem;
+      text-align: center;
+      border: 1px solid var(--grey-200);
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    .bw-step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--navy-primary);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: grid;
+      place-items: center;
+      margin: -2.75rem auto 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .bw-step-card .bw-icon-em { margin: 0 auto 1rem; }
+    .bw-step-card h4 { margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 700; color: var(--navy-primary); }
+    .bw-step-card p { margin: 0; font-size: 0.875rem; color: var(--grey-600); }
+
+    .bw-trust {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+      background: var(--navy-primary);
+      color: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem 2.5rem;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 900px) { .bw-trust { grid-template-columns: 1fr; } }
+    .bw-trust-visual {
+      border-radius: var(--radius-lg);
+      min-height: 220px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.2);
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+    }
+    .bw-trust-mock {
+      width: 100%;
+      max-width: 280px;
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-md);
+      background: linear-gradient(145deg, #1e293b, var(--navy-primary-dark));
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .bw-trust-mock .shield-lg { width: 56px; height: 56px; color: var(--emerald-500); }
+    .bw-trust-mock span { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; color: rgba(255,255,255,0.7); }
+    .bw-trust-copy h3 {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 700;
+      margin: 0 0 1rem;
+      line-height: 1.2;
+    }
+    .bw-trust-copy h3 .accent { color: var(--emerald-500); }
+    .bw-trust-copy > p { opacity: 0.9; margin: 0 0 1.25rem; line-height: 1.6; }
+    .bw-check-list { list-style: none; padding: 0; margin: 0; }
+    .bw-check-list li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+      font-size: 0.95rem;
+    }
+    .bw-check-list li:last-child { margin-bottom: 0; }
+    .bw-check-ic {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--emerald-500);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      margin-top: 2px;
+    }
+    .bw-check-list strong { display: block; color: var(--white); margin-bottom: 0.15rem; }
+
+    .bw-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 900px) { .bw-grid-6 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .bw-grid-6 { grid-template-columns: 1fr; } }
+    .bw-mini-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--grey-200);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .bw-mini-card .bw-icon-em { width: 44px; height: 44px; font-size: 0.9rem; }
+    .bw-mini-card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 700; color: var(--navy-primary); }
+    .bw-mini-card p { margin: 0; font-size: 0.82rem; color: var(--grey-600); line-height: 1.5; }
+
+    .bw-testimonials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) { .bw-testimonials { grid-template-columns: 1fr; } }
+    .bw-quote {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      border: 1px solid var(--grey-200);
+      box-shadow: var(--shadow-md);
+    }
+    .bw-quote.featured {
+      border: 2px solid var(--emerald-500);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12), var(--shadow-md);
+    }
+    .bw-stars { color: var(--gold-star); font-size: 0.95rem; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    .bw-quote p { margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--navy-900); line-height: 1.55; }
+    .bw-author { display: flex; align-items: center; gap: 0.75rem; }
+    .bw-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--grey-200);
+    }
+    .bw-author strong { display: block; font-size: 0.9rem; color: var(--navy-primary); }
+    .bw-author span { font-size: 0.8rem; color: var(--grey-600); }
+
+    .bw-logo-strip {
+      background: var(--grey-100);
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .bw-logo-pill {
+      padding: 0.65rem 1.25rem;
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--grey-200);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--grey-400);
+    }
+
+    .bw-signup-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) { .bw-signup-split { grid-template-columns: 1fr; } }
+    .bw-signup-left {
+      background: var(--navy-primary);
+      color: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .bw-signup-left h3 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.75rem; }
+    .bw-signup-left > p { opacity: 0.9; margin: 0 0 1.5rem; font-size: 0.95rem; }
+    .bw-signup-left .bw-check-list li { font-size: 0.9rem; }
+    .bw-signup-form {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      border: 1px solid var(--grey-200);
+      box-shadow: var(--shadow-md);
+    }
+    .bw-signup-form h4 { margin: 0 0 1.25rem; font-size: 1.25rem; font-weight: 700; color: var(--navy-primary); }
+    .bw-field { margin-bottom: 1rem; }
+    .bw-field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--grey-600); margin-bottom: 0.35rem; }
+    .bw-field-wrap { position: relative; }
+    .bw-field-wrap input {
+      width: 100%;
+      padding: 0.75rem 0.85rem 0.75rem 2.65rem;
+      border: 1px solid var(--grey-200);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    .bw-field-wrap > svg {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--grey-400);
+      pointer-events: none;
+    }
+    .bw-submit-trial {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.9rem;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, var(--emerald-500), var(--emerald-600));
+      color: var(--white);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .bw-form-foot { text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--grey-600); }
+    .bw-form-foot a { color: var(--navy-primary); font-weight: 600; text-decoration: none; }
+
+    .bw-pricing {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) { .bw-pricing { grid-template-columns: 1fr; } }
+    .bw-price-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--grey-200);
+      padding: 2rem 1.5rem 1.75rem;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .bw-price-card.popular {
+      border: 2px solid var(--emerald-500);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1), var(--shadow-md);
+    }
+    .bw-pop-badge {
+      position: absolute;
+      top: -0.65rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--emerald-500);
+      color: var(--white);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+    }
+    .bw-price-card h4 { margin: 0 0 0.35rem; font-size: 1.1rem; font-weight: 700; color: var(--navy-primary); }
+    .bw-price { font-size: 1.75rem; font-weight: 700; color: var(--navy-900); margin-bottom: 1rem; }
+    .bw-price-features { list-style: none; padding: 0; margin: 0 0 1.25rem; flex: 1; }
+    .bw-price-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--grey-600);
+      margin-bottom: 0.55rem;
+    }
+    .bw-price-features li svg { flex-shrink: 0; color: var(--emerald-600); margin-top: 2px; }
+    .bw-price-btn {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .bw-price-btn.navy { background: var(--navy-primary); color: var(--white); }
+    .bw-price-btn.navy:hover { background: #2563eb; }
+    .bw-price-btn.emerald { background: linear-gradient(180deg, var(--emerald-500), var(--emerald-600)); color: var(--white); }
+    .bw-price-btn.ghost { background: var(--white); border: 2px solid var(--grey-200); color: var(--navy-primary); }
+
+    .bw-cta-gradient {
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      background: linear-gradient(90deg, var(--navy-primary) 0%, #1e40af 50%, var(--emerald-600) 100%);
+      color: var(--white);
+      border-radius: var(--radius-xl);
+      margin: 0 auto;
+      max-width: 1120px;
+    }
+    .bw-cta-gradient h3 { font-size: clamp(1.65rem, 3vw, 2.25rem); font-weight: 700; margin: 0 0 0.65rem; }
+    .bw-cta-gradient p { opacity: 0.92; max-width: 32rem; margin: 0 auto 1.5rem; font-size: 1rem; }
+    .bw-cta-btns { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .bw-cta-pill {
+      font-family: inherit;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .bw-cta-pill.solid { background: var(--white); color: var(--navy-primary); }
+    .bw-cta-pill.outline { background: transparent; border: 2px solid rgba(255,255,255,0.85); color: var(--white); }
+
+    .bw-footer {
+      background: var(--navy-primary-dark);
+      color: rgba(255,255,255,0.85);
+      padding: 3rem 1.5rem 2rem;
+      margin-top: 0;
+    }
+    .bw-footer-grid {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(3, 1fr);
+      gap: 2rem;
+    }
+    @media (max-width: 768px) { .bw-footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .bw-footer-grid { grid-template-columns: 1fr; } }
+    .bw-footer-brand strong { color: var(--white); font-size: 1.1rem; }
+    .bw-footer-brand p { font-size: 0.875rem; line-height: 1.55; margin: 0.75rem 0 0; opacity: 0.85; }
+    .bw-footer-col h5 { margin: 0 0 1rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.55); }
+    .bw-footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .bw-footer-col a {
+      display: block;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 0.875rem;
+      padding: 0.35rem 0;
+    }
+    .bw-footer-col a:hover { color: var(--white); }
+    .bw-footer-copy {
+      max-width: 1120px;
+      margin: 2.5rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.65;
+    }
+    .bw-help-fab {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--navy-primary);
+      color: var(--white);
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      z-index: 90;
+    }
+    .bw-help-fab:hover { background: #2563eb; }
+
+    /* ——— View 1: Guest ——— */
+    .guest-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+    .guest-head { text-align: center; margin-bottom: 2rem; }
+    .guest-head h1 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      color: var(--navy-primary);
+    }
+    .guest-head p { margin: 0; color: var(--grey-600); font-size: 0.95rem; }
+
+    .search-bar-wrap {
+      position: relative;
+      margin-bottom: 2.5rem;
+    }
+    .search-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
+      background: var(--white);
+      border: 1px solid var(--grey-200);
+      border-radius: var(--radius-lg);
+      padding: 0.45rem 0.45rem 0.45rem 0.65rem;
+      box-shadow: var(--shadow-md);
+    }
+    .search-input-icon {
+      display: grid;
+      place-items: center;
+      padding-left: 0.35rem;
+      color: var(--grey-400);
+      flex-shrink: 0;
+    }
+    .search-bar input {
+      flex: 1;
+      border: none;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.85rem 0.5rem;
+      outline: none;
+      color: var(--navy-900);
+      background: transparent;
+      min-width: 0;
+    }
+    .guest-search-hint {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--grey-400);
+      margin: 0.85rem 0 0;
+    }
+    .search-bar input::placeholder { color: var(--grey-400); }
+    .search-actions { display: flex; gap: 0.35rem; }
+    .icon-btn {
+      width: 48px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--grey-50);
+      color: var(--navy-700);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s;
+    }
+    .icon-btn:hover { background: var(--grey-100); }
+    .search-submit {
+      padding: 0 1.35rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: var(--navy-primary);
+      color: var(--white);
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .search-submit:hover { opacity: 0.92; background: #2563eb; }
+
+    .result-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--grey-100);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .result-top {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 1.5rem;
+      padding: 1.75rem;
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .result-top { grid-template-columns: 1fr; text-align: center; }
+      .result-meta { align-items: center; }
+    }
+    .phone-3d {
+      perspective: 800px;
+      display: grid;
+      place-items: center;
+      min-height: 200px;
+    }
+    .phone-mesh {
+      width: 140px;
+      height: 280px;
+      border-radius: 28px;
+      background: linear-gradient(160deg, #334155 0%, var(--navy-primary) 40%, var(--navy-primary-dark) 100%);
+      box-shadow:
+        0 25px 50px rgba(12, 25, 41, 0.35),
+        inset 0 0 0 2px rgba(255,255,255,0.08),
+        inset -8px -8px 20px rgba(0,0,0,0.3);
+      transform: rotateY(-18deg) rotateX(8deg);
+      position: relative;
+    }
+    .phone-mesh::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #1a2332, var(--navy-950));
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+    }
+    .phone-mesh::after {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48px;
+      height: 22px;
+      border-radius: 12px;
+      background: #0d1520;
+    }
+    .phone-glow {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, var(--emerald-glow), transparent 70%);
+      filter: blur(20px);
+      z-index: -1;
+    }
+    .result-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    .warranty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--emerald-600);
+      background: var(--emerald-100);
+      box-shadow: 0 0 24px var(--emerald-glow);
+    }
+    .warranty-badge svg { filter: drop-shadow(0 0 6px var(--emerald-glow)); }
+    .token-id {
+      font-family: ui-monospace, monospace;
+      font-size: 0.85rem;
+      color: var(--grey-600);
+      background: var(--grey-50);
+      padding: 0.4rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--grey-100);
+    }
+    .device-name { font-weight: 700; font-size: 1.15rem; color: var(--navy-900); margin: 0; }
+    .serial-muted { font-size: 0.85rem; color: var(--grey-600); margin: 0; }
+
+    .timeline-section {
+      border-top: 1px solid var(--grey-100);
+      padding: 1.5rem 1.75rem 1.75rem;
+      background: var(--grey-50);
+    }
+    .timeline-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--grey-600); margin: 0 0 1.25rem; }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--emerald-500), var(--grey-200));
+      border-radius: 2px;
+    }
+    .tl-item { position: relative; padding-bottom: 1.35rem; padding-left: 1.25rem; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute;
+      left: -1.5rem;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--emerald-500);
+      border: 2px solid var(--white);
+      box-shadow: 0 0 0 2px var(--emerald-100);
+    }
+    .tl-item h4 { margin: 0 0 0.2rem; font-size: 0.95rem; color: var(--navy-800); }
+    .tl-item p { margin: 0; font-size: 0.8rem; color: var(--grey-600); }
+    .tl-status {
+      display: inline-block;
+      margin-top: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--emerald-600);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ——— View 2: User ——— */
+    .user-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 64px);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    @media (max-width: 800px) {
+      .user-layout { grid-template-columns: 1fr; }
+      .user-sidebar { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--grey-100); }
+    }
+    .user-sidebar {
+      background: var(--grey-50);
+      border-right: 1px solid var(--grey-100);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .side-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--grey-600);
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .side-link:hover { background: var(--grey-100); color: var(--navy-800); }
+    .side-link.active { background: var(--white); color: var(--navy-primary); box-shadow: var(--shadow-sm); }
+    .user-main { padding: 1.75rem 1.5rem 3rem; background: var(--white); }
+    .user-main h2 { font-family: var(--font-display); font-size: 1.35rem; margin: 0 0 0.35rem; }
+    .user-main .sub { color: var(--grey-600); font-size: 0.9rem; margin: 0 0 1.5rem; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .warranty-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      min-height: 180px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.25);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%),
+        linear-gradient(210deg, #2563eb 0%, var(--navy-primary) 40%, var(--navy-primary-dark) 100%);
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.12);
+      color: var(--white);
+      transition: transform 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+    .warranty-card::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.12), transparent 45%);
+      pointer-events: none;
+    }
+    .warranty-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 24px 48px rgba(12, 25, 41, 0.22), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .warranty-card .chip {
+      width: 42px;
+      height: 32px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #c9a962, #8b7355);
+      margin-bottom: 1rem;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.35);
+    }
+    .warranty-card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; font-weight: 600; position: relative; }
+    .warranty-card .serial { font-family: ui-monospace, monospace; font-size: 0.8rem; opacity: 0.75; position: relative; }
+    .warranty-card .expiry {
+      position: absolute;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    .warranty-card .brand-mini { position: relative; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.5; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 11, 20, 0.45);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-panel {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      max-width: 400px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      animation: modalIn 0.3s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: var(--grey-100);
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      color: var(--grey-600);
+    }
+    .modal-panel h3 { margin: 0 0 0.25rem; font-family: var(--font-display); font-size: 1.25rem; }
+    .modal-panel .muted { margin: 0 0 1.25rem; font-size: 0.875rem; color: var(--grey-600); }
+    .qr-placeholder {
+      aspect-ratio: 1;
+      max-width: 220px;
+      margin: 0 auto 1.5rem;
+      border-radius: var(--radius-md);
+      background: var(--grey-50);
+      border: 1px dashed var(--grey-200);
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+    }
+    .qr-svg { width: 100%; height: auto; max-width: 200px; }
+    .modal-actions { display: flex; flex-direction: column; gap: 0.65rem; }
+    .modal-actions .btn-primary { width: 100%; padding: 0.85rem; font-size: 1rem; }
+
+    /* ——— View 3: Admin ——— */
+    .admin-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+    .admin-wrap > h2 { font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 0.25rem; }
+    .admin-wrap > .sub { color: var(--grey-600); margin: 0 0 1.75rem; font-size: 0.9rem; }
+
+    .mint-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+    @media (max-width: 860px) { .mint-split { grid-template-columns: 1fr; } }
+
+    .mint-form-col {
+      background: var(--grey-50);
+      border: 1px solid var(--grey-100);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .mint-form-col h3 { margin: 0 0 1.25rem; font-size: 1rem; font-weight: 700; color: var(--navy-800); }
+    .field { margin-bottom: 1.1rem; }
+    .field label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-600); margin-bottom: 0.4rem; }
+    .field input, .field select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--grey-200);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--navy-900);
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--navy-primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+    }
+    .input-with-icon {
+      display: flex;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+    .input-with-icon input { flex: 1; }
+    .input-with-icon .icon-btn { width: 44px; flex-shrink: 0; background: var(--white); border: 1px solid var(--grey-200); }
+
+    .mint-preview-col {
+      background: var(--white);
+      border: 1px solid var(--grey-100);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--grey-600); margin-bottom: 1rem; }
+    .hash-preview {
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      word-break: break-all;
+      padding: 1rem;
+      background: var(--grey-50);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--grey-100);
+      color: var(--navy-700);
+      margin-bottom: auto;
+      min-height: 120px;
+    }
+    .submit-block { margin-top: 1.5rem; }
+    .submit-block .btn-primary {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      font-size: 1rem;
+      border-radius: var(--radius-md);
+    }
+
+    .admin-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 640px) { .admin-metrics { grid-template-columns: 1fr; } }
+    .metric-tile {
+      background: var(--white);
+      border: 1px solid var(--grey-100);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .metric-tile strong { display: block; font-size: 1.35rem; font-family: var(--font-display); color: var(--navy-primary); }
+    .metric-tile span { font-size: 0.8rem; color: var(--grey-600); }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <a href="#" class="brand" id="brand-home" aria-label="BlockWarranty home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+        <span class="brand-text">BlockWarranty</span>
+      </a>
+      <div class="nav-center-wrap">
+        <nav class="nav-tabs" role="tablist" aria-label="Application views">
+          <button type="button" role="tab" id="tab-home" aria-selected="true" aria-controls="view-home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Home
+          </button>
+          <button type="button" role="tab" id="tab-guest" aria-selected="false" aria-controls="view-guest">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            Public Search
+          </button>
+          <button type="button" role="tab" id="tab-user" aria-selected="false" aria-controls="view-user">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M6 12h12"/></svg>
+            User Wallet
+          </button>
+          <button type="button" role="tab" id="tab-admin" aria-selected="false" aria-controls="view-admin">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Admin Portal
+          </button>
+        </nav>
+      </div>
+      <div class="header-cta">
+        <button type="button" class="btn-login" data-go="user" aria-label="Login">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Login
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="view-home" class="view active" role="tabpanel" aria-labelledby="tab-home">
+      <section class="bw-hero">
+        <div class="bw-hero-inner">
+          <p class="bw-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Blockchain-Powered Warranty
+          </p>
+          <h1 class="bw-hero-title">Your Products, <span class="accent">Secured Forever</span></h1>
+          <p class="bw-hero-lead">Transform product warranties into unforgeable digital assets. Track, transfer, and verify with complete transparency using blockchain technology.</p>
+          <div class="bw-hero-cta">
+            <button type="button" class="btn-hero-emerald" data-go="guest">Try Public Search <span aria-hidden="true">→</span></button>
+            <button type="button" class="btn-hero-outline" data-go="user">Access Your Wallet</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section" id="track">
+        <div class="bw-inner">
+          <h2 class="bw-h2">Track Your Warranty</h2>
+          <p class="bw-sub">Enter a device serial number or scan QR code to verify warranty status.</p>
+          <div class="bw-track-card">
+            <div class="bw-search-row">
+              <div class="bw-search-input-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="search" placeholder="Enter Device Serial Number (e.g., FNQW8123XYZ)" aria-label="Serial number" />
+              </div>
+              <button type="button" class="bw-search-btn" data-go="guest">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                Search Warranty
+              </button>
+            </div>
+            <p class="bw-hint">Or scan QR code from product packaging.</p>
+          </div>
+          <div class="bw-start-card">
+            <div class="bw-start-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+            <h3>Start Your Search</h3>
+            <p>Enter a serial number above to view warranty details and repair history.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section alt" id="welcome">
+        <div class="bw-inner">
+          <h2 class="bw-h2">Welcome to the Future of Product Warranties</h2>
+          <p class="bw-sub">BlockWarranty revolutionizes how warranties are issued, managed, and transferred. Say goodbye to lost paper receipts and fraudulent claims. Say hello to secure, verifiable, and transferable digital warranties.</p>
+          <div class="bw-feature-row">
+            <article class="bw-feature-card">
+              <div class="bw-icon-em"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <h4>Tamper-Proof</h4>
+              <p>Every warranty is stored on the blockchain, making it impossible to forge, alter, or lose.</p>
+            </article>
+            <article class="bw-feature-card">
+              <div class="bw-icon-em"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0115 15"/></svg></div>
+              <h4>Globally Accessible</h4>
+              <p>Access your warranties from anywhere in the world, anytime, with just an internet connection.</p>
+            </article>
+            <article class="bw-feature-card">
+              <div class="bw-icon-em"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+              <h4>Instant Transfer</h4>
+              <p>Transfer warranties to new owners instantly when selling your products, adding value to resale.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section" id="how">
+        <div class="bw-inner">
+          <h2 class="bw-h2">How It Works</h2>
+          <p class="bw-sub">Three simple steps to secure your products with blockchain technology.</p>
+          <div class="bw-steps">
+            <article class="bw-step-card">
+              <div class="bw-step-num">1</div>
+              <div class="bw-icon-em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+              <h4>Purchase Product</h4>
+              <p>Buy a product from any participating retailer or manufacturer in our network.</p>
+            </article>
+            <article class="bw-step-card">
+              <div class="bw-step-num">2</div>
+              <div class="bw-icon-em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg></div>
+              <h4>Receive NFT Warranty</h4>
+              <p>A unique digital warranty NFT is minted and sent directly to your wallet.</p>
+            </article>
+            <article class="bw-step-card">
+              <div class="bw-step-num">3</div>
+              <div class="bw-icon-em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+              <h4>Manage &amp; Transfer</h4>
+              <p>Track repairs, claim warranty, and transfer ownership seamlessly when needed.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section alt">
+        <div class="bw-inner">
+          <div class="bw-trust">
+            <div class="bw-trust-visual">
+              <div class="bw-trust-mock">
+                <svg class="shield-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>BLOCKCHAIN</span>
+              </div>
+            </div>
+            <div class="bw-trust-copy">
+              <h3>Built on Trust, Powered by <span class="accent">Innovation</span></h3>
+              <p>BlockWarranty combines enterprise-grade blockchain security with a modern, Apple Wallet–inspired experience your customers already understand.</p>
+              <ul class="bw-check-list">
+                <li>
+                  <span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span>
+                  <span><strong>Enterprise-Grade Security</strong>Military-grade encryption and blockchain immutability.</span>
+                </li>
+                <li>
+                  <span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span>
+                  <span><strong>User-Friendly Interface</strong>No blockchain knowledge required — simple as Apple Wallet.</span>
+                </li>
+                <li>
+                  <span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span>
+                  <span><strong>24/7 Customer Support</strong>Our team is always here to help you and your customers.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section" id="why">
+        <div class="bw-inner">
+          <h2 class="bw-h2">Why Choose BlockWarranty?</h2>
+          <p class="bw-sub">Join the revolution and provide your customers with unmatched warranty protection.</p>
+          <div class="bw-grid-6">
+            <article class="bw-mini-card"><div class="bw-icon-em"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div><h4>Increase Resale Value</h4><p>Products with transferable warranties are worth more in the secondary market.</p></article>
+            <article class="bw-mini-card"><div class="bw-icon-em"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div><h4>Reduce Fraud</h4><p>Eliminate counterfeit warranties with blockchain verification and immutable records.</p></article>
+            <article class="bw-mini-card"><div class="bw-icon-em"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div><h4>Instant Verification</h4><p>Service centers verify warranty status instantly, reducing wait times.</p></article>
+            <article class="bw-mini-card"><div class="bw-icon-em"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0115 15"/></svg></div><h4>Global Coverage</h4><p>Your warranty works anywhere — ideal for travelers and global businesses.</p></article>
+            <article class="bw-mini-card"><div class="bw-icon-em"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h4>Privacy Protected</h4><p>Personal data stays private while authenticity remains publicly verifiable.</p></article>
+            <article class="bw-mini-card"><div class="bw-icon-em"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><h4>Eco-Friendly</h4><p>Go paperless and reduce environmental impact while improving warranty management.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section alt" id="testimonials">
+        <div class="bw-inner">
+          <h2 class="bw-h2">Trusted by Thousands</h2>
+          <p class="bw-sub">See what our customers and partners are saying about BlockWarranty.</p>
+          <div class="bw-testimonials">
+            <blockquote class="bw-quote">
+              <div class="bw-stars">★★★★★</div>
+              <p>“We cut warranty disputes by half. Customers love scanning the QR at the counter.”</p>
+              <div class="bw-author"><span class="bw-avatar" aria-hidden="true"></span><div><strong>Sarah Chen</strong><span>Retail Operations Lead</span></div></div>
+            </blockquote>
+            <blockquote class="bw-quote featured">
+              <div class="bw-stars">★★★★★</div>
+              <p>“Finally a blockchain product that doesn’t feel like blockchain. Onboarding took one afternoon.”</p>
+              <div class="bw-author"><span class="bw-avatar" aria-hidden="true"></span><div><strong>Marcus Rodriguez</strong><span>CTO, FutureTech</span></div></div>
+            </blockquote>
+            <blockquote class="bw-quote">
+              <div class="bw-stars">★★★★★</div>
+              <p>“Resale value messaging at point of sale is a clear win. Support tickets dropped noticeably.”</p>
+              <div class="bw-author"><span class="bw-avatar" aria-hidden="true"></span><div><strong>Elena Volkov</strong><span>Channel Partner Manager</span></div></div>
+            </blockquote>
+          </div>
+          <h2 class="bw-h2" style="margin-top:3.5rem;">Trusted by Leading Brands</h2>
+          <p class="bw-sub">Join 500+ companies already protecting their products with blockchain.</p>
+          <div class="bw-logo-strip" aria-label="Partner logos">
+            <span class="bw-logo-pill">TechCorp</span>
+            <span class="bw-logo-pill">GlobalElectronics</span>
+            <span class="bw-logo-pill">SmartDevices</span>
+            <span class="bw-logo-pill">FutureTech</span>
+            <span class="bw-logo-pill">ProGadgets</span>
+            <span class="bw-logo-pill">NextGen</span>
+            <span class="bw-logo-pill">InnoTech</span>
+            <span class="bw-logo-pill">DigiWorld</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section">
+        <div class="bw-inner bw-signup-split">
+          <div class="bw-signup-left">
+            <h3>Start Protecting Your Products Today</h3>
+            <p>Create your account in minutes and issue your first digital warranties.</p>
+            <ul class="bw-check-list">
+              <li><span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span><span>Free account setup</span></li>
+              <li><span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span><span>30-day free trial</span></li>
+              <li><span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span><span>No credit card required</span></li>
+              <li><span class="bw-check-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span><span>Cancel anytime</span></li>
+            </ul>
+          </div>
+          <div class="bw-signup-form">
+            <h4>Create Your Account</h4>
+            <div class="bw-field">
+              <label for="su-name">Full Name</label>
+              <div class="bw-field-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input id="su-name" type="text" placeholder="Jane Doe" autocomplete="name" />
+              </div>
+            </div>
+            <div class="bw-field">
+              <label for="su-email">Email Address</label>
+              <div class="bw-field-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                <input id="su-email" type="email" placeholder="you@company.com" autocomplete="email" />
+              </div>
+            </div>
+            <div class="bw-field">
+              <label for="su-co">Company Name (Optional)</label>
+              <div class="bw-field-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+                <input id="su-co" type="text" placeholder="Acme Inc." />
+              </div>
+            </div>
+            <button type="button" class="bw-submit-trial">Start Free Trial <span aria-hidden="true">→</span></button>
+            <p class="bw-form-foot">Already have an account? <a href="#">Sign in</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section alt" id="pricing">
+        <div class="bw-inner">
+          <h2 class="bw-h2">Simple, Transparent Pricing</h2>
+          <p class="bw-sub">Choose the plan that fits your business needs.</p>
+          <div class="bw-pricing">
+            <div class="bw-price-card">
+              <h4>Starter</h4>
+              <div class="bw-price">$99<span style="font-size:1rem;font-weight:600">/mo</span></div>
+              <ul class="bw-price-features">
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Up to 100 warranties/month</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Basic analytics dashboard</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Email support</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>QR code generation</li>
+              </ul>
+              <button type="button" class="bw-price-btn navy">Get Started</button>
+            </div>
+            <div class="bw-price-card popular">
+              <span class="bw-pop-badge">Most Popular</span>
+              <h4>Professional</h4>
+              <div class="bw-price">$299<span style="font-size:1rem;font-weight:600">/mo</span></div>
+              <ul class="bw-price-features">
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Up to 1,000 warranties/month</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Priority support</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>API access</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Custom branding</li>
+              </ul>
+              <button type="button" class="bw-price-btn emerald">Get Started</button>
+            </div>
+            <div class="bw-price-card">
+              <h4>Enterprise</h4>
+              <div class="bw-price">Custom</div>
+              <ul class="bw-price-features">
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Unlimited warranties</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Full white-label solution</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Custom integrations</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>SLA guarantee</li>
+              </ul>
+              <button type="button" class="bw-price-btn ghost">Contact Sales</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bw-section" style="padding-top:0">
+        <div class="bw-cta-gradient">
+          <h3>Ready to Get Started?</h3>
+          <p>Join thousands of satisfied customers and businesses using BlockWarranty to protect valuable products.</p>
+          <div class="bw-cta-btns">
+            <button type="button" class="bw-cta-pill solid" data-go="admin">For Businesses →</button>
+            <button type="button" class="bw-cta-pill outline" data-go="user">Individual wallet</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="bw-footer">
+        <div class="bw-footer-grid">
+          <div class="bw-footer-brand">
+            <strong>BlockWarranty</strong>
+            <p>Secure, transparent, and tamper-proof digital warranty system powered by blockchain.</p>
+          </div>
+          <div class="bw-footer-col">
+            <h5>Product</h5>
+            <ul>
+              <li><a href="#welcome">Features</a></li>
+              <li><a href="#how">How it Works</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+            </ul>
+          </div>
+          <div class="bw-footer-col">
+            <h5>Company</h5>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Careers</a></li>
+            </ul>
+          </div>
+          <div class="bw-footer-col">
+            <h5>Legal</h5>
+            <ul>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="bw-footer-copy">© 2026 BlockWarranty. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <!-- VIEW 1: Guest -->
+    <div id="view-guest" class="view" role="tabpanel" aria-labelledby="tab-guest" hidden>
+      <div class="guest-wrap">
+        <div class="guest-head">
+          <h1>Track Your Warranty</h1>
+          <p>Enter a device serial number or scan QR code to verify warranty status.</p>
+        </div>
+        <div class="search-bar-wrap">
+          <div class="search-bar">
+            <span class="search-input-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </span>
+            <input type="search" placeholder="Enter Device Serial Number (e.g., FNQW8123XYZ)" aria-label="Serial or QR" value="SN-7K2M-2024-X9" />
+            <div class="search-actions">
+              <button type="button" class="icon-btn" title="Scan QR" aria-label="Scan QR code">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="5" height="5"/><rect x="12" y="12" width="5" height="5"/></svg>
+              </button>
+              <button type="button" class="search-submit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                Search Warranty
+              </button>
+            </div>
+          </div>
+          <p class="guest-search-hint">Or scan QR code from product packaging.</p>
+        </div>
+        <article class="result-card" aria-label="Warranty result">
+          <div class="result-top">
+            <div class="phone-3d">
+              <div class="phone-glow"></div>
+              <div class="phone-mesh" role="img" aria-label="Smartphone illustration"></div>
+            </div>
+            <div class="result-meta">
+              <span class="warranty-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                Active Warranty
+              </span>
+              <h2 class="device-name">Aurora Phone 14 Pro</h2>
+              <p class="serial-muted">Serial · SN-7K2M-••••-X9</p>
+              <span class="token-id">Token ID · 0x1234…abc</span>
+            </div>
+          </div>
+          <div class="timeline-section">
+            <h3 class="timeline-title">Repair history</h3>
+            <div class="timeline">
+              <div class="tl-item">
+                <span class="tl-dot" aria-hidden="true"></span>
+                <h4>Display module replaced</h4>
+                <p>Authorized Service Center · Ho Chi Minh City</p>
+                <span class="tl-status">Completed · Jan 12, 2025</span>
+              </div>
+              <div class="tl-item">
+                <span class="tl-dot" aria-hidden="true"></span>
+                <h4>Battery health check</h4>
+                <p>Retail partner · Passed diagnostics</p>
+                <span class="tl-status">Completed · Aug 03, 2024</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- VIEW 2: User -->
+    <div id="view-user" class="view" role="tabpanel" aria-labelledby="tab-user" hidden>
+      <div class="user-layout">
+        <aside class="user-sidebar" aria-label="Wallet navigation">
+          <button type="button" class="side-link active" data-side="devices">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+            My Devices
+          </button>
+          <button type="button" class="side-link" data-side="transfer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+            Transfer History
+          </button>
+        </aside>
+        <div class="user-main">
+          <h2>Digital warranty wallet</h2>
+          <p class="sub">Tap a card to show the in-store QR and transfer options.</p>
+          <div class="cards-grid" id="wallet-cards">
+            <article class="warranty-card" data-card="1" tabindex="0" role="button" aria-label="Aurora Phone 14 Pro warranty">
+              <span class="brand-mini">BlockWarranty</span>
+              <div class="chip"></div>
+              <h3>Aurora Phone 14 Pro</h3>
+              <p class="serial">SN-7K2M-••••-X9</p>
+              <span class="expiry">Exp Mar 2026</span>
+            </article>
+            <article class="warranty-card" data-card="2" tabindex="0" role="button" aria-label="Nimbus Tablet Air warranty">
+              <span class="brand-mini">BlockWarranty</span>
+              <div class="chip"></div>
+              <h3>Nimbus Tablet Air</h3>
+              <p class="serial">SN-TB-••••-881</p>
+              <span class="expiry">Exp Nov 2025</span>
+            </article>
+            <article class="warranty-card" data-card="3" tabindex="0" role="button" aria-label="Pulse Watch Series 5 warranty">
+              <span class="brand-mini">BlockWarranty</span>
+              <div class="chip"></div>
+              <h3>Pulse Watch S5</h3>
+              <p class="serial">SN-WT-••••-102</p>
+              <span class="expiry" style="color:var(--coral-600);">Expired</span>
+            </article>
+          </div>
+          <div id="transfer-panel" class="sub" style="margin-top:2rem;display:none;">
+            <strong style="color:var(--navy-800);">Transfer history</strong> — Last outbound: Aurora Phone 14 Pro → 0x8f…3a2 (demo) · Pending signature.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: Admin -->
+    <div id="view-admin" class="view" role="tabpanel" aria-labelledby="tab-admin" hidden>
+      <div class="admin-wrap">
+        <h2>Management portal</h2>
+        <p class="sub">Mint NFT warranties and log repairs for your store or authorized service network.</p>
+        <div class="admin-metrics">
+          <div class="metric-tile"><strong>128</strong><span>Issued this month</span></div>
+          <div class="metric-tile"><strong>14</strong><span>Pending repairs</span></div>
+          <div class="metric-tile"><strong>3</strong><span>Revoked (coral flag)</span></div>
+        </div>
+        <div class="mint-split">
+          <div class="mint-form-col">
+            <h3>Mint warranty</h3>
+            <div class="field">
+              <label for="device-model">Device model</label>
+              <select id="device-model">
+                <option>Aurora Phone 14 Pro</option>
+                <option>Nimbus Tablet Air</option>
+                <option>Pulse Watch S5</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="serial">Serial number</label>
+              <div class="input-with-icon">
+                <input id="serial" type="text" value="SN-NEW-2025-001" autocomplete="off" />
+                <button type="button" class="icon-btn" title="Scan barcode" aria-label="Scan barcode">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><path d="M8 12h8"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="wallet">Customer wallet address</label>
+              <input id="wallet" type="text" value="0x71C7656EC7ab88b098defB751B7401B5f6d8976F" />
+            </div>
+            <div class="field">
+              <label for="expiry">Expiry date</label>
+              <input id="expiry" type="date" value="2027-03-22" />
+            </div>
+          </div>
+          <div class="mint-preview-col">
+            <span class="preview-label">Live preview · content hash</span>
+            <div class="hash-preview" id="hash-preview">0x9f2e4a1b7c8d3e6f5a0b9c2d4e7f1a3b5c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6</div>
+            <div class="submit-block">
+              <button type="button" class="btn btn-primary" id="mint-btn">Issue Warranty on Blockchain</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <button type="button" class="bw-help-fab" title="Help" aria-label="Help">?</button>
+
+  <div class="modal-backdrop" id="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-panel">
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close">×</button>
+      <h3 id="modal-title">Service center check-in</h3>
+      <p class="muted">Show this QR at the counter. Staff scans to pull your on-chain warranty record.</p>
+      <div class="qr-placeholder">
+        <svg class="qr-svg" viewBox="0 0 120 120" aria-hidden="true">
+          <rect width="120" height="120" fill="var(--white)"/>
+          <path fill="var(--navy-primary)" d="M10 10h30v30H10zm10 10h10v10H20zm50-20h10v10H70zm20 0h10v10H90zm-20 20h30v10H70zm10-10h10v10H80zm-60 20h10v10H20zm20 0h10v10H40zm30 0h10v10H70zm20 0h10v10H90zm-80 20h20v20H10zm30 0h10v10H40zm20 0h20v20H60zm30 0h10v10H90zm10 10h10v10h-10zm-90 10h10v10H20zm20 0h30v10H40zm40 0h10v10H80zm20 0h10v10h-10zm-80 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zm20 0h10v10h-10z"/>
+        </svg>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary">Transfer Ownership</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const views = {
+        home: document.getElementById("view-home"),
+        guest: document.getElementById("view-guest"),
+        user: document.getElementById("view-user"),
+        admin: document.getElementById("view-admin"),
+      };
+      const tabs = {
+        home: document.getElementById("tab-home"),
+        guest: document.getElementById("tab-guest"),
+        user: document.getElementById("tab-user"),
+        admin: document.getElementById("tab-admin"),
+      };
+
+      function showView(name) {
+        Object.keys(views).forEach((key) => {
+          const v = views[key];
+          const on = key === name;
+          v.classList.toggle("active", on);
+          v.hidden = !on;
+        });
+        Object.keys(tabs).forEach((key) => {
+          tabs[key].setAttribute("aria-selected", key === name ? "true" : "false");
+        });
+      }
+
+      document.querySelectorAll('[role="tab"]').forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.id.replace("tab-", "");
+          showView(id);
+        });
+      });
+
+      document.querySelectorAll("[data-go]").forEach((el) => {
+        el.addEventListener("click", () => showView(el.getAttribute("data-go")));
+      });
+
+      document.getElementById("brand-home").addEventListener("click", (e) => {
+        e.preventDefault();
+        showView("home");
+      });
+
+      const modal = document.getElementById("wallet-modal");
+      const modalClose = document.getElementById("modal-close");
+      document.querySelectorAll(".warranty-card").forEach((card) => {
+        card.addEventListener("click", () => modal.classList.add("open"));
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            modal.classList.add("open");
+          }
+        });
+      });
+      modalClose.addEventListener("click", () => modal.classList.remove("open"));
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("open");
+      });
+
+      document.querySelectorAll(".side-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.querySelectorAll(".side-link").forEach((l) => l.classList.remove("active"));
+          link.classList.add("active");
+          const panel = document.getElementById("transfer-panel");
+          const grid = document.getElementById("wallet-cards");
+          if (link.dataset.side === "transfer") {
+            panel.style.display = "block";
+            grid.style.display = "none";
+          } else {
+            panel.style.display = "none";
+            grid.style.display = "grid";
+          }
+        });
+      });
+
+      function updateHashPreview() {
+        const m = document.getElementById("device-model").value;
+        const s = document.getElementById("serial").value;
+        const w = document.getElementById("wallet").value;
+        const e = document.getElementById("expiry").value;
+        const raw = m + "|" + s + "|" + w + "|" + e;
+        let h = 0;
+        for (let i = 0; i < raw.length; i++) h = (Math.imul(31, h) + raw.charCodeAt(i)) | 0;
+        const hex = Math.abs(h).toString(16).padStart(8, "0");
+        const fake = ("0x" + hex.repeat(8)).slice(0, 66);
+        document.getElementById("hash-preview").textContent = fake;
+      }
+      ["device-model", "serial", "wallet", "expiry"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", updateHashPreview);
+      });
+      updateHashPreview();
+
+      document.getElementById("mint-btn").addEventListener("click", () => {
+        const btn = document.getElementById("mint-btn");
+        const t = btn.textContent;
+        btn.textContent = "Submitted · Confirm in wallet…";
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.textContent = t;
+          btn.disabled = false;
+        }, 2200);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -4,7 +4,17 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "forwardPorts": [3000, 5000],
+  "forwardPorts": [5000, 5173],
+  "portsAttributes": {
+    "5000": {
+      "label": "Backend API (Express)",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Frontend (Vite)",
+      "onAutoForward": "openBrowser"
+    }
+  },
   "mounts": [
     "source=ie213-backend-node-modules,target=/workspaces/IE213/backend/node_modules,type=volume",
     "source=ie213-frontend-node-modules,target=/workspaces/IE213/frontend/node_modules,type=volume",
