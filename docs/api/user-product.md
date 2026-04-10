@@ -1,11 +1,10 @@
-# API Contract Mẫu - User & Product
+# API Contract - User va Product (FE Integration)
 
-Ngày cập nhật: 2026-03-22
-Mục tiêu: BE chốt contract trước để FE dùng mock data, sau đó thay endpoint thật mà không đổi cấu trúc dữ liệu.
+Ngay cap nhat: 2026-04-05
 
-## 1) Chuẩn JSON dùng chung
+## 1) Response envelope (bat buoc)
 
-### Success Response
+### Success
 
 ```json
 {
@@ -15,212 +14,128 @@ Mục tiêu: BE chốt contract trước để FE dùng mock data, sau đó thay
 }
 ```
 
-### Error Response
+### Error
 
 ```json
 {
   "success": false,
   "error": {
-    "code": "...",
+    "code": "E400_VALIDATION",
     "message": "...",
     "details": []
   }
 }
 ```
 
-## 2) Error Codes chuẩn
+## 2) User APIs
 
-| Code               | HTTP | Ý nghĩa                                      |
-| ------------------ | ---- | -------------------------------------------- |
-| E400_VALIDATION    | 400  | Dữ liệu đầu vào không hợp lệ                 |
-| E400_MISSING_FIELD | 400  | Thiếu trường bắt buộc                        |
-| E401_UNAUTHORIZED  | 401  | Chưa xác thực ví/người dùng                  |
-| E403_FORBIDDEN     | 403  | Không đủ quyền thao tác                      |
-| E404_NOT_FOUND     | 404  | Không tìm thấy tài nguyên                    |
-| E409_DUPLICATE     | 409  | Dữ liệu bị trùng (walletAddress/productCode) |
-| E500_INTERNAL      | 500  | Lỗi hệ thống                                 |
+### 2.1 POST /api/users/auth (Public)
 
-## 3) User APIs
+Muc dich:
 
-### 3.1 POST /api/users/auth
+- FE gui walletAddress + signature Web3 de dang nhap/dang ky.
 
-Mục đích: Đăng nhập/đăng ký theo walletAddress.
-
-Request
+Request:
 
 ```json
 {
   "walletAddress": "0x1234...abcd",
+  "signature": "0x...",
+  "nonce": "login_nonce_from_server",
   "fullName": "Nguyen Van A",
   "email": "a@example.com",
   "phone": "0909000999"
 }
 ```
 
-Success (201 hoặc 200)
+Success 200:
 
-````json
+```json
 {
   "success": true,
   "message": "User authenticated",
   "data": {
-    "_id": "usr_001",
-    "walletAddress": "0x1234...abcd",
-    "fullName": "Nguyen Van A",
-    "email": "a@example.com",
-    "phone": "0909000999",
+    "user": {
+      "_id": "661100aa22bb33cc44dd55ee",
+      "walletAddress": "0x1234...abcd",
+      "role": "user",
+      "status": true,
+      "createdAt": "2026-04-05T10:00:00.000Z",
+      "updatedAt": "2026-04-05T10:00:00.000Z"
+    },
+    "token": "<JWT_TOKEN>"
+  }
+}
+```
 
-### 3.5 GET /api/users/:walletAddress
+### 2.2 GET /api/users/me (Authenticated)
 
-Mục đích: Admin/privileged roles lấy chi tiết user theo địa chỉ ví.
+Header:
 
-Success (200)
+- Authorization: Bearer <JWT_TOKEN>
+
+Success 200:
 
 ```json
 {
   "success": true,
-  "message": "User found",
+  "message": "Current user",
   "data": {
-    "_id": "usr_001",
+    "_id": "661100aa22bb33cc44dd55ee",
     "walletAddress": "0x1234...abcd",
-    "fullName": "Nguyen Van A",
-    "email": "a@example.com",
-    "phone": "0909000999",
     "role": "user",
-    "isActive": true
-  }
-}
-````
-
-### 3.6 PATCH /api/users/:walletAddress/role
-
-Mục đích: Admin cập nhật role của user (ví dụ: staff, technician, admin).
-
-Request
-
-```json
-{
-  "role": "technician"
-}
-```
-
-Success (200)
-
-```json
-{
-  "success": true,
-  "message": "User role updated",
-  "data": {
-    "_id": "usr_001",
-    "walletAddress": "0x1234...abcd",
-    "role": "technician"
+    "status": true,
+    "createdAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
   }
 }
 ```
 
-### 3.7 PATCH /api/users/:walletAddress/is-active
+### 2.3 PUT /api/users/:walletAddress (Admin hoac chinh chu)
 
-Mục đích: Bật/tắt trạng thái hoạt động của người dùng.
+Header:
 
-Request
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
 
 ```json
 {
-  "isActive": false
+  "email": "new@example.com",
+  "phone": "0909888777",
+  "role": "staff",
+  "status": false
 }
 ```
 
-Success (200)
+Ghi chu quyen:
 
-```json
-{
-  "success": true,
-  "message": "User active state updated",
-  "data": {
-    "_id": "usr_001",
-    "walletAddress": "0x1234...abcd",
-    "isActive": false
-  }
-}
-```
+- Chinh chu: duoc sua thong tin profile co ban.
+- Admin: duoc sua role va status.
 
-    "createdAt": "2026-03-22T10:00:00.000Z",
-    "updatedAt": "2026-03-22T10:00:00.000Z"
-
-}
-}
-
-````
-
-Error mẫu
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "E400_MISSING_FIELD",
-    "message": "walletAddress is required",
-    "details": ["walletAddress"]
-  }
-}
-````
-
-### 3.2 GET /api/users/me?walletAddress=0x...
-
-Mục đích: Lấy hồ sơ user theo ví.
-
-Success (200)
-
-```json
-{
-  "success": true,
-  "message": "User found",
-  "data": {
-    "_id": "usr_001",
-    "walletAddress": "0x1234...abcd",
-    "fullName": "Nguyen Van A",
-    "email": "a@example.com",
-    "phone": "0909000999"
-  }
-}
-```
-
-### 3.3 PUT /api/users/:walletAddress
-
-Mục đích: Cập nhật thông tin user.
-
-Request
-
-```json
-{
-  "fullName": "Nguyen Van B",
-  "email": "b@example.com",
-  "phone": "0911222333"
-}
-```
-
-Success (200)
+Success 200:
 
 ```json
 {
   "success": true,
   "message": "User updated",
   "data": {
-    "_id": "usr_001",
+    "_id": "661100aa22bb33cc44dd55ee",
     "walletAddress": "0x1234...abcd",
-    "fullName": "Nguyen Van B",
-    "email": "b@example.com",
-    "phone": "0911222333",
-    "updatedAt": "2026-03-22T11:00:00.000Z"
+    "role": "staff",
+    "status": false,
+    "updatedAt": "2026-04-05T11:00:00.000Z"
   }
 }
 ```
 
-### 3.4 GET /api/users
+### 2.4 GET /api/users (Admin)
 
-Mục đích: Lấy danh sách user.
+Header:
 
-Success (200)
+- Authorization: Bearer <JWT_TOKEN>
+
+Success 200:
 
 ```json
 {
@@ -228,79 +143,62 @@ Success (200)
   "message": "Users retrieved",
   "data": [
     {
-      "_id": "usr_001",
+      "_id": "661100aa22bb33cc44dd55ee",
       "walletAddress": "0x1234...abcd",
-      "fullName": "Nguyen Van A",
-      "email": "a@example.com",
-      "phone": "0909000999"
+      "role": "user",
+      "status": true
     },
     {
-      "_id": "usr_002",
-      "walletAddress": "0x9999...eeee",
-      "fullName": "Tran Thi B",
-      "email": "b@example.com",
-      "phone": "0911000222"
+      "_id": "661100aa22bb33cc44dd55ff",
+      "walletAddress": "0xabcd...1234",
+      "role": "technician",
+      "status": true
     }
   ]
 }
 ```
 
-## 4) Product APIs
+## 3) Product APIs
 
-### 4.1 POST /api/products
+### 3.1 POST /api/products (Admin, Staff)
 
-Mục đích: Tạo sản phẩm mới.
+Header:
 
-Request
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
 
 ```json
 {
-  "productCode": "P001",
-  "productName": "Phone X",
-  "brand": "Brand A",
-  "price": 999,
+  "productCode": "IP15-PRO-256",
+  "name": "iPhone 15 Pro 256GB",
+  "description": "Titanium, A17 Pro",
   "warrantyMonths": 12
 }
 ```
 
-Success (201)
+Success 201:
 
 ```json
 {
   "success": true,
   "message": "Product created",
   "data": {
-    "_id": "prd_001",
-    "productCode": "P001",
-    "productName": "Phone X",
-    "brand": "Brand A",
-    "price": 999,
+    "_id": "661100aa22bb33cc44dd6611",
+    "productCode": "IP15-PRO-256",
+    "name": "iPhone 15 Pro 256GB",
+    "description": "Titanium, A17 Pro",
     "warrantyMonths": 12,
     "isActive": true,
-    "createdAt": "2026-03-22T10:20:00.000Z",
-    "updatedAt": "2026-03-22T10:20:00.000Z"
+    "createdAt": "2026-04-05T10:20:00.000Z",
+    "updatedAt": "2026-04-05T10:20:00.000Z"
   }
 }
 ```
 
-Error duplicate (409)
+### 3.2 GET /api/products (Public)
 
-```json
-{
-  "success": false,
-  "error": {
-    "code": "E409_DUPLICATE",
-    "message": "productCode already exists",
-    "details": ["productCode"]
-  }
-}
-```
-
-### 4.2 GET /api/products
-
-Mục đích: Lấy danh sách sản phẩm.
-
-Success (200)
+Success 200:
 
 ```json
 {
@@ -308,11 +206,10 @@ Success (200)
   "message": "Products retrieved",
   "data": [
     {
-      "_id": "prd_001",
-      "productCode": "P001",
-      "productName": "Phone X",
-      "brand": "Brand A",
-      "price": 999,
+      "_id": "661100aa22bb33cc44dd6611",
+      "productCode": "IP15-PRO-256",
+      "name": "iPhone 15 Pro 256GB",
+      "description": "Titanium, A17 Pro",
       "warrantyMonths": 12,
       "isActive": true
     }
@@ -320,208 +217,80 @@ Success (200)
 }
 ```
 
-### 4.3 GET /api/products/:idOrCode
+### 3.3 GET /api/products/:idOrCode (Public)
 
-Mục đích: Lấy chi tiết sản phẩm.
-
-Success (200)
+Success 200:
 
 ```json
 {
   "success": true,
   "message": "Product found",
   "data": {
-    "_id": "prd_001",
-    "productCode": "P001",
-    "productName": "Phone X",
-    "brand": "Brand A",
-    "price": 999,
+    "_id": "661100aa22bb33cc44dd6611",
+    "productCode": "IP15-PRO-256",
+    "name": "iPhone 15 Pro 256GB",
+    "description": "Titanium, A17 Pro",
     "warrantyMonths": 12,
     "isActive": true
   }
 }
 ```
 
-### 4.4 PUT /api/products/:idOrCode
+### 3.4 PUT /api/products/:idOrCode (Admin, Staff)
 
-Mục đích: Cập nhật sản phẩm.
+Header:
 
-Request
+- Authorization: Bearer <JWT_TOKEN>
+
+Request:
 
 ```json
 {
-  "productName": "Phone X Pro",
-  "price": 1099,
+  "name": "iPhone 15 Pro 256GB (VN/A)",
   "warrantyMonths": 18
 }
 ```
 
-Success (200)
+Success 200:
 
 ```json
 {
   "success": true,
   "message": "Product updated",
   "data": {
-    "_id": "prd_001",
-    "productCode": "P001",
-    "productName": "Phone X Pro",
-    "brand": "Brand A",
-    "price": 1099,
+    "_id": "661100aa22bb33cc44dd6611",
+    "productCode": "IP15-PRO-256",
+    "name": "iPhone 15 Pro 256GB (VN/A)",
     "warrantyMonths": 18,
-    "isActive": true,
-    "updatedAt": "2026-03-22T11:10:00.000Z"
+    "updatedAt": "2026-04-05T11:30:00.000Z"
   }
 }
 ```
 
-### 4.5 DELETE /api/products/:idOrCode
+### 3.5 DELETE /api/products/:idOrCode (Admin)
 
-Mục đích: Xóa mềm sản phẩm.
+Header:
 
-Success (200)
+- Authorization: Bearer <JWT_TOKEN>
+
+Success 200:
 
 ```json
 {
   "success": true,
-  "message": "Product disabled",
+  "message": "Product deactivated",
   "data": {
-    "_id": "prd_001",
-    "productCode": "P001",
-    "isActive": false
+    "_id": "661100aa22bb33cc44dd6611",
+    "productCode": "IP15-PRO-256",
+    "isActive": false,
+    "updatedAt": "2026-04-05T11:40:00.000Z"
   }
 }
 ```
 
-## 5) Testcase checklist BE
+## 4) FE implementation checklist
 
-### User
-
-- [ ] POST /api/users/auth: thiếu walletAddress -> E400_MISSING_FIELD.
-- [ ] POST /api/users/auth: walletAddress đã tồn tại -> trả 200 với dữ liệu user cũ hoặc 409 theo rule team chốt.
-- [ ] GET /api/users/me: không có query walletAddress -> E400_MISSING_FIELD.
-- [ ] PUT /api/users/:walletAddress: body rỗng -> E400_VALIDATION.
-- [ ] GET /api/users: trả mảng user đúng schema.
-
-### Product
-
-- [ ] POST /api/products: thiếu productCode/productName/brand -> E400_MISSING_FIELD.
-- [ ] POST /api/products: trùng productCode -> E409_DUPLICATE.
-- [ ] GET /api/products: trả mảng product đúng schema.
-- [ ] GET /api/products/:idOrCode: không tồn tại -> E404_NOT_FOUND.
-- [ ] PUT /api/products/:idOrCode: body rỗng -> E400_VALIDATION.
-- [ ] DELETE /api/products/:idOrCode: cập nhật isActive=false.
-
-## 6) Checklist FE dùng mock ngay
-
-- [ ] Tạo file mock users/products theo đúng cấu trúc data ở tài liệu này.
-- [ ] Render UI không hardcode key khác schema đã chốt.
-- [ ] Service layer FE giữ nguyên shape response để chuyển API thật không phải sửa UI lớn.
-
-## 7) Warranty & Transfer (mint/transfer)
-
-FE cần mock thêm các endpoint liên quan workflow mint và chuyển nhượng.
-
-7.1 POST /api/warranties
-
-Mục đích: Tạo bản ghi bảo hành (pre-mint). Hỗ trợ truyền `warrantyMonths` để tính `expiryDate`.
-
-Request
-
-```json
-{
-  "productId": "prd_001",
-  "serialNumber": "SN-001",
-  "ownerAddress": "0x1234...abcd",
-  "warrantyMonths": 12
-}
-```
-
-Success (201)
-
-```json
-{
-  "success": true,
-  "message": "Warranty created",
-  "data": {
-    "_id": "wty_001",
-    "productId": "prd_001",
-    "serialNumber": "SN-001",
-    "ownerAddress": "0x1234...abcd",
-    "warrantyMonths": 12,
-    "expiryDate": "2027-03-30T00:00:00.000Z",
-    "status": false
-  }
-}
-```
-
-7.2 PATCH /api/warranties/:id (mint)
-
-Mục đích: Ghi nhận thông tin mint từ on-chain indexer hoặc admin — cập nhật `tokenId`, `mintTxHash`, `mintedAt` và set `status` active; kèm tạo `TransferHistory` với `transferType: "mint"` (from zero address).
-
-Request
-
-```json
-{
-  "tokenId": "1234",
-  "txHash": "0xabc...123"
-}
-```
-
-Success (200)
-
-```json
-{
-  "success": true,
-  "message": "Warranty minted",
-  "data": {
-    "_id": "wty_001",
-    "tokenId": "1234",
-    "mintTxHash": "0xabc...123",
-    "mintedAt": "2026-03-30T12:00:00.000Z",
-    "status": true
-  }
-}
-```
-
-7.3 POST /api/transfers
-
-Mục đích: Ghi nhận giao dịch chuyển nhượng off-chain (hoặc từ indexer) — endpoint yêu cầu `Authorization` (JWT) và chỉ cho phép chủ sở hữu hiện tại (`req.user.walletAddress`) thực hiện.
-
-Request
-
-```json
-{
-  "warrantyId": "wty_001",
-  "from": "0xOldOwner",
-  "to": "0xNewOwner",
-  "tokenId": "1234",
-  "txHash": "0xdef...456"
-}
-```
-
-Success (201)
-
-```json
-{
-  "success": true,
-  "message": "Transfer recorded",
-  "data": {
-    "_id": "th_001",
-    "warrantyId": "wty_001",
-    "from": "0xOldOwner",
-    "to": "0xNewOwner",
-    "tokenId": "1234",
-    "txHash": "0xdef...456",
-    "transferType": "transfer",
-    "createdAt": "2026-03-30T13:00:00.000Z"
-  }
-}
-```
-
-7.4 Public GET history endpoints (no auth)
-
-- GET `/api/transfers/tx/:txHash` — trả chi tiết transfer theo `txHash`.
-- GET `/api/transfers/token/:tokenId` — trả danh sách `TransferHistory` theo `tokenId`.
-
-FE note: sử dụng cấu trúc envelope `success/message/data` như phần còn lại để dễ chuyển từ mock sang API thật.
+- Tao userApi va productApi trong mot file wrapper chung.
+- Tu dong them Authorization header neu co token.
+- Xu ly loi theo error.code thay vi hardcode text loi.
+- Khong bind UI truc tiep vao field ngoai envelope.

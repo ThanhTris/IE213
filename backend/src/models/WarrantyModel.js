@@ -10,6 +10,11 @@ const warrantySchema = new mongoose.Schema(
         partialFilterExpression: { tokenId: { $type: "string" } },
       },
     },
+    tokenURI: {
+      type: String,
+      required: false,
+      default: null,
+    },
     serialNumber: {
       type: String,
       required: true,

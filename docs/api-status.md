@@ -1,94 +1,203 @@
-# Trạng thái API Backend
+# API Contract va Database Schema (Chuan FE + BE)
 
-Ngày cập nhật: 2026-03-31
+Ngay cap nhat: 2026-04-05
+Phien ban contract: v1.0
 
-## 1) Tổng quan
+Tai lieu nay la nguon su that duy nhat cho:
 
-Mức hoàn thiện API backend hiện tại: 100%
+- Team Backend: dong bo schema MongoDB va quyen endpoint.
+- Team Frontend: tich hop API theo dung request/response format.
 
-Backend đang có:
+## 1) Database Schema bat buoc (MongoDB)
 
-- App Express, middleware CORS/Morgan/JSON parser.
-- Chuẩn hóa response thành công/lỗi.
-- Route prefix /api.
-- Endpoint hoạt động thực tế: GET /api/health.
-- User API: đã có route/controller + JWT auth + role cơ bản.
-- Product API: đã có CRUD route/controller.
-- Warranty API: đã có pre-mint/mint/admin flows + public verify.
-- Repair Log API: đã có create/list/public lookup/patch + phân quyền ownership.
-- Transfer History API: đã có routes/controller + unit tests; hỗ trợ `POST /api/transfers` (yêu cầu JWT, kiểm tra chủ sở hữu) và public `GET /api/transfers/tx/:txHash`, `GET /api/transfers/token/:tokenId`.
+He thong su dung chinh xac 5 collection sau.
 
-## 2) Bảng trạng thái endpoint
+### 1.1 users
 
-| Endpoint                                  | Trạng thái | RESTful        | Ghi chú                                                                |
-| ----------------------------------------- | ---------- | -------------- | ---------------------------------------------------------------------- |
-| GET /api/health                           | Done       | Đúng           | Có controller + test health                                            |
-| GET /api                                  | Done (404) | Chấp nhận được | Không có resource root, trả Route not found                            |
-| POST /api/users/auth                      | Done       | Đúng           | Đã triển khai login/register theo wallet                               |
-| GET /api/users/me                         | Done       | Chấp nhận được | Có auth, dùng walletAddress query/body                                 |
-| PUT /api/users/:walletAddress             | Done       | Đúng           | Có auth + kiểm tra quyền user/admin                                    |
-| GET /api/users                            | Done       | Đúng           | Chỉ admin truy cập                                                     |
-| POST /api/products                        | Done       | Đúng           | Có auth + authorize admin, response tạo mới chỉ trả createdAt          |
-| GET /api/products                         | Done       | Đúng           | Public list mặc định active-only, includeInactive chỉ cho admin        |
-| GET /api/products/:idOrCode               | Done       | Đúng           | Hỗ trợ id hoặc productCode                                             |
-| PUT /api/products/:idOrCode               | Done       | Đúng           | Có auth + authorize admin                                              |
-| DELETE /api/products/:idOrCode            | Done       | Đúng           | Soft delete (isActive=false), không còn hard delete qua query          |
-| POST /api/warranties                      | Done       | Đúng           | Có auth/role + pre-mint flow                                           |
-| PUT /api/warranties/:id/mint              | Removed    | Deprecated     | Đã loại bỏ: dùng `PATCH /api/warranties/:id` để gắn `tokenId`/`txHash` |
-| PATCH /api/warranties/:id/status          | Done       | Đúng           | Quản trị trạng thái bảo hành                                           |
-| GET /api/warranties                       | Done       | Đúng           | Có auth + authorize                                                    |
-| GET /api/warranties/:id                   | Done       | Đúng           | Xem chi tiết bảo hành admin/staff                                      |
-| GET /api/warranties/my-warranties         | Done       | Đúng           | Danh sách bảo hành theo chủ sở hữu từ token                            |
-| GET /api/warranties/verify/:serialNumber  | Done       | Đúng           | Public verify, có mask ownerAddress                                    |
-| POST /api/repair-logs                     | Done       | Đúng           | Chỉ admin/technician, create repair log                                |
-| GET /api/repair-logs                      | Done       | Đúng           | Admin/staff/technician xem toàn bộ                                     |
-| GET /api/repair-logs/device/:serialNumber | Done       | Đúng           | Public lookup theo serialNumber, có check tồn tại warranty             |
-| PATCH /api/repair-logs/:id                | Done       | Đúng           | Admin sửa mọi log, technician chỉ sửa log của chính mình               |
+- \_id: ObjectId
+- walletAddress: String (required, unique, index)
+- role: String (enum: guest, user, admin, staff, technician; default: user)
+- nonce: String
+- status: Boolean (default: true)
+- createdAt: Date
+- updatedAt: Date
 
-| POST /api/transfers | Done | Đúng | Ghi nhận transfer, bảo mật ownership (JWT) |
-| GET /api/transfers/tx/:txHash | Done | Đúng | Public lookup transfer detail theo txHash |
-| GET /api/transfers/token/:tokenId | Done | Đúng | Public lịch sử transfer theo tokenId |
+Index khuyen nghi:
 
-## 3) Đánh giá RESTful sơ bộ
+- unique index cho walletAddress
 
-- Phần đã triển khai:
-  - Nhóm users và products theo chuẩn tài nguyên, nhìn chung RESTful.
-  - Warranty API đã hoàn thiện auth/role + public verify.
-  - Repair Log API đã có phân quyền theo ownership cho thao tác cập nhật.
-- Phần cần chuẩn hóa tiếp:
-  - Hoàn thiện Transfer History API để khép kín vòng đời bảo hành/chuyển nhượng.
+### 1.2 products
 
-## 4) Checklist để chuyển trạng thái Done
+- \_id: ObjectId
+- productCode: String (required, unique, index)
+- name: String (required)
+- description: String
+- warrantyMonths: Number (required)
+- isActive: Boolean (default: true)
+- createdAt: Date
+- updatedAt: Date
 
-### UC-Auth API
+Index khuyen nghi:
 
-- [x] Tạo UserModel với unique walletAddress.
-- [x] Tạo route/controller POST /api/users/auth.
-- [x] Tạo route/controller GET /api/users/me.
-- [x] Tạo route/controller PUT /api/users/:walletAddress.
-- [x] Tạo route/controller GET /api/users.
-- [ ] Pass đầy đủ test backend cho luồng auth/user.
+- unique index cho productCode
 
-### UC-ProductCRUD API
+### 1.3 warranties
 
-- [x] Tạo ProductModel với unique productCode.
-- [x] Tạo route/controller POST /api/products.
-- [x] Tạo route/controller GET /api/products.
-- [x] Tạo route/controller GET /api/products/:idOrCode.
-- [x] Tạo route/controller PUT /api/products/:idOrCode.
-- [x] Tạo route/controller DELETE /api/products/:idOrCode (soft delete).
-- [x] Pass đầy đủ test backend cho product CRUD.
+- \_id: ObjectId
+- serialNumber: String (required, unique, index)
+- serialHash: String (required)
+- productCode: String (required; map voi products.productCode)
+- ownerAddress: String (required)
+- tokenId: String (default: null)
+- tokenURI: String (Chua link IPFS, tao tu dong tai api POST)
+- mintTxHash: String (default: null)
+- expiryDate: Number (epoch seconds)
+- status: Boolean (enum: true/false; default: true)
+- mintedAt: Date
+- notes: String
+- createdBy: String (wallet cua staff/admin tao ban ghi)
+- createdAt: Date
+- updatedAt: Date
 
-### UC-RepairLog API
+Index khuyen nghi:
 
-- [x] Đồng bộ tên file/controller/middleware theo cấu trúc hiện tại.
-- [x] Mount route repair log vào app.
-- [x] Chuẩn hóa phân quyền kỹ thuật viên/quản trị + ownership.
-- [x] Viết test cho create/read/update repair logs.
+- unique index cho serialNumber
+- index ket hop cho ownerAddress + status
+- index cho tokenId
 
-### UC-Warranty API
+### 1.4 repair_logs
 
-- [x] Tạo model Warranty.
-- [x] Tạo route/controller create/get/update warranty.
-- [x] Bổ sung auth/role cho endpoint warranty.
-- [x] Viết test cho warranty API.
+- \_id: ObjectId
+- warrantyId: ObjectId (ref warranties.\_id)
+- serialNumber: String
+- tokenId: String
+- description: String (required)
+- parts: [String]
+- cost: Number (default: 0)
+- performedAt: Date
+- createdBy: String (wallet cua technician/admin)
+- createdAt: Date
+- updatedAt: Date
+
+Index khuyen nghi:
+
+- index cho warrantyId
+- index cho serialNumber
+- index cho tokenId
+
+### 1.5 transfer_histories
+
+- \_id: ObjectId
+- warrantyId: ObjectId (ref warranties.\_id)
+- tokenId: String
+- transferType: String (enum: mint, transfer)
+- from: String
+- to: String
+- txHash: String (required)
+- transferAt: Date
+- createdAt: Date
+- updatedAt: Date
+
+Index khuyen nghi:
+
+- index cho tokenId
+- unique index cho txHash
+- index cho warrantyId + transferAt
+
+## 2) Quy tac vang cho response
+
+Tat ca API phai tra ve envelope chuan.
+
+### 2.1 Success
+
+```json
+{
+  "success": true,
+  "message": "Noi dung thong bao (neu co)",
+  "data": {}
+}
+```
+
+### 2.2 Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "E400_VALIDATION",
+    "message": "Chi tiet loi",
+    "details": []
+  }
+}
+```
+
+Error code baseline:
+
+- E400_VALIDATION
+- E401_UNAUTHORIZED
+- E403_FORBIDDEN
+- E404_NOT_FOUND
+- E409_DUPLICATE
+- E500_INTERNAL
+
+## 3) Bang chi muc API cho Frontend
+
+Luu y: API danh dau khoa yeu cau header
+Authorization: Bearer <JWT_TOKEN>
+
+| Domain   | Method | Endpoint                       | Quyen                | Muc dich FE                                      |
+| -------- | ------ | ------------------------------ | -------------------- | ------------------------------------------------ |
+| Auth     | POST   | /api/users/auth                | Public               | Dang nhap/dang ky bang walletAddress + signature |
+| Auth     | GET    | /api/users/me                  | Authenticated        | Lay thong tin tai khoan dang dang nhap           |
+| User     | PUT    | /api/users/:walletAddress      | Admin hoac chinh chu | Cap nhat profile / role / status theo chinh sach |
+| User     | GET    | /api/users                     | Admin                | Lay danh sach user cho trang quan tri            |
+| Product  | POST   | /api/products                  | Admin, Staff         | Tao model san pham moi                           |
+| Product  | GET    | /api/products                  | Public               | Lay danh sach san pham                           |
+| Product  | GET    | /api/products/:idOrCode        | Public               | Lay chi tiet 1 san pham                          |
+| Product  | PUT    | /api/products/:idOrCode        | Admin, Staff         | Sua thong tin san pham                           |
+| Product  | DELETE | /api/products/:idOrCode        | Admin                | Xoa mem san pham                                 |
+| Warranty | POST   | /api/warranties                | Admin, Staff         | Pre-mint: Tao DB va upload IPFS Pinata (tokenURI)|
+| Warranty | PATCH  | /api/warranties/:id            | Admin, Staff         | Post-mint: Cap nhat tokenId + txHash             |
+| Warranty | GET    | /api/warranties/my-warranties  | User                 | Lay so bao hanh cua vi dang dang nhap            |
+| Warranty | GET    | /api/warranties/verify/:serialNumber | Public         | Tra cuu chi tiet ho tro ca thong tin Web2 & Web3 |
+| Warranty | PATCH  | /api/warranties/:id/status     | Admin                | Cap nhat nhanh trang thai bao hanh               |
+| Repair   | POST   | /api/repair-logs               | Technician, Admin    | Tao log sua chua                                 |
+| Repair   | GET    | /api/repair-logs/:serialNumber | Public               | Tra cuu lich su sua chua theo serial             |
+| Repair   | PATCH  | /api/repair-logs/:id           | Technician, Admin    | Sua log (technician chi sua log do minh tao)     |
+| Transfer | POST   | /api/transfers                 | User                 | Bao cao giao dich chuyen nhuong thanh cong       |
+| Transfer | GET    | /api/transfers/token/:tokenId  | Public               | Xem lich su chuyen nhuong theo tokenId           |
+
+## 4) Chuan hoa phan quyen
+
+- guest: truy cap endpoint public.
+- user: endpoint cua user va transfer sau khi dang nhap.
+- staff: tac vu van hanh product + warranty pre/post mint.
+- technician: tao/sua repair log theo ownership.
+- admin: toan quyen quan tri, bao gom user list, role/status, warranty status.
+
+## 5) Quy tac tich hop FE
+
+- FE su dung mot API wrapper chung (axios/fetch) cho toan bo request.
+- FE phai inject Authorization header voi endpoint can quyen.
+- FE parse response theo envelope success/error o muc 2.
+- FE khong hardcode shape rieng tung endpoint ngoai truong data, message, error.
+
+## 6) Mapping tai lieu chi tiet
+
+- User va Product: xem docs/api/user-product.md
+- Warranty: xem docs/api/warranties.md
+- Repair Logs: xem docs/api/repair-logs.md
+- Transfers: xem docs/api/transfers.md
+- Health check: xem docs/api/health.md
+
+## 7) Checklist doi chieu code (cap nhat theo code hien tai)
+
+- [x] Envelope success/error da duoc dung chung qua backend/src/utils/apiResponse.js.
+- [x] Da co route auth va cap JWT: POST /api/users/auth.
+- [x] Da co transfer flow: POST /api/transfers, GET /api/transfers/token/:tokenId, GET /api/transfers/tx/:txHash.
+- [x] Da co warranty verify public: GET /api/warranties/verify/:serialNumber.
+- [ ] Chuan endpoint repair public theo bang API FE: GET /api/repair-logs/:serialNumber (code hien tai dang la /api/repair-logs/device/:serialNumber).
+- [ ] Chuan role Product theo bang API FE (Admin/Staff cho create/update) - code hien tai dang chi Admin.
+- [ ] Chuan role User list theo bang API FE (chi Admin) - code hien tai dang cho Admin/Staff/Technician.
+- [ ] Chuan role Warranty status theo bang API FE (chi Admin) - code hien tai dang cho Admin/Staff.
+- [ ] Chuan hoa field naming schema theo contract docs (status vs isActive, productModel vs productCode, txHash vs mintTxHash).

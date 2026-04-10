@@ -42,18 +42,21 @@ Theo trạng thái thực tế hiện tại: phần On-chain được ghi nhận
   - [x] Có contract address Sepolia trong tài liệu/cấu hình.
   - [x] Có test cơ bản cho mint/ownerOf/tokenURI hoặc serialHash mapping.
 
-### UC-MintNFT (Hybrid)
+### UC-MintNFT (Hybrid với Tự động IPFS)
 
-- Luồng kỳ vọng:
-  1. Frontend gọi hàm mint từ ví phù hợp.
-  2. Contract phát event Mint/WarrantyIssued.
-  3. Indexer đọc event và cập nhật MongoDB.
-- Trạng thái: Not Started
+- Luồng kỳ vọng mới (Đã cập nhật IPFS Auto-pin):
+  1. Frontend gọi API `POST /api/warranties` để tạo nháp thẻ bảo hành.
+  2. Backend tự động bọc dữ liệu, upload lên **Pinata IPFS** và nhận về `tokenURI`.
+  3. Backend lưu vào MongoDB (`tokenURI`, `serialNumber`...) và trả `tokenURI` về cho Frontend.
+  4. Frontend nhận `tokenURI`, kích hoạt MetaMask yêu cầu User ký xác nhận hàm `mint()` trên Smart Contract.
+  5. Sau khi Smart Contract mint thành công (có `txHash`), Frontend gọi `PATCH /api/warranties/:id` xác nhận `tokenId` và `txHash`.
+- Trạng thái: Backend Đã Hoàn Thành (FE Not Started)
 - Checklist DoD:
-  - [ ] Mint thành công trên Sepolia, có tx hash.
-  - [ ] MongoDB lưu tokenId, walletAddress, serialHash tương ứng.
-  - [ ] Backend có endpoint truy vấn mapping NFT <-> product/user.
-  - [ ] Có test tích hợp end-to-end.
+  - [x] Backend kết nối thành công Pinata (Tự động IPFS).
+  - [x] Backend endpoint `POST /warranties` trả về `tokenURI`.
+  - [x] Backend endpoint `PATCH /warranties/:id` lưu `tokenId` chuẩn xác.
+  - [ ] Frontend gọi MetaMask mint thành công bằng `tokenURI` từ BE trả về.
+  - [ ] Frontend tích hợp chuỗi API Create -> MetaMask Mint -> Update API mượt mà.
 
 ### UC-IndexerSync (Off-chain sync)
 
@@ -70,9 +73,9 @@ Theo trạng thái thực tế hiện tại: phần On-chain được ghi nhận
 
 ## 3) Đối chiếu Web3 với Backend hiện tại
 
-- Chưa có kết nối thực tế giữa frontend và backend qua walletAddress.
-- Chưa có endpoint backend phục vụ mint workflow hoặc đồng bộ dữ liệu on-chain.
-- Chưa có schema MongoDB dành cho NFT warranty mapping.
+- Backend **ĐÃ CÓ ĐẦY ĐỦ** Schema NFT Warranty Mapping (Tích hợp thêm `tokenURI` chuẩn ERC-721).
+- Backend **ĐÃ HOÀN THIỆN** Endpoint đáp ứng luồng Mint Workflow (API Pre-mint tự sinh `tokenURI` trên Pinata và API Update Mint Data).
+- FE chưa có kết nối thực tế với ví MetaMask.
 
 ## 4) Ưu tiên Web3 tuần này
 
