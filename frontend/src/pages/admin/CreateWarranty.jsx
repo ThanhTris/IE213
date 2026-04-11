@@ -1,33 +1,60 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import { API_ROOT } from "../../utils/api";
 import { buildFakeHash } from "../../utils/hashPreview";
-
-const DEVICE_MODELS = [
-  "Apple Watch Ultra",
-  "Apple Watch Series 9",
-  "iPhone 15 Pro Max",
-  "iPhone 15 Pro",
-  "iPhone 15",
-  "iPad Pro 12.9\"",
-  "MacBook Pro 16\"",
-  "MacBook Air M2",
-  "Samsung Galaxy S24 Ultra",
-  "Samsung Galaxy S24",
-];
+import { processWarrantyMinting } from "../../services/warrantyService";
 
 function CreateWarranty() {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const initialForm = {
-    deviceModel: "Apple Watch Ultra",
+    deviceModel: "",
     serialNumber: "",
     walletAddress: "",
-    expiryDate: "",
+    warrantyMonths: "12",
   };
 
   const [form, setForm] = useState(initialForm);
+  const [deviceModels, setDeviceModels] = useState([]);
+  const [isFetchingModels, setIsFetchingModels] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem("bw_auth_token");
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const res = await fetch(`${API_ROOT}/products`, { headers });
+        const data = await res.json().catch(() => ({}));
+        
+        if (!res.ok || data.success === false) {
+           throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
+        }
+        
+        if (data.success && Array.isArray(data.data)) {
+          setDeviceModels(data.data);
+          if (data.data.length > 0) {
+            setForm((prev) => ({ ...prev, deviceModel: data.data[0].productCode }));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setErrors((prev) => ({ ...prev, fetchError: err.message }));
+      } finally {
+        setIsFetchingModels(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const selectedProduct = useMemo(() => {
+    return deviceModels.find((p) => p.productCode === form.deviceModel);
+  }, [deviceModels, form.deviceModel]);
 
   const previewHash = useMemo(() => buildFakeHash(form), [form]);
 
@@ -41,6 +68,13 @@ function CreateWarranty() {
     return form.serialNumber.slice(0, 3) + "•".repeat(Math.max(0, form.serialNumber.length - 3));
   }, [form.serialNumber]);
 
+  const calculatedExpiryDate = useMemo(() => {
+    if (!form.warrantyMonths) return "";
+    const date = new Date();
+    date.setMonth(date.getMonth() + parseInt(form.warrantyMonths, 10));
+    return date.toISOString().slice(0, 10);
+  }, [form.warrantyMonths]);
+
   const validateEthereumAddress = (address) =>
     /^0x[a-fA-F0-9]{40}$/.test(address);
 
@@ -53,7 +87,7 @@ function CreateWarranty() {
     } else if (!validateEthereumAddress(form.walletAddress)) {
       newErrors.walletAddress = "Invalid Ethereum address (0x + 40 hex characters)";
     }
-    if (!form.expiryDate) newErrors.expiryDate = "Warranty expiry date is required";
+    if (!form.warrantyMonths) newErrors.warrantyMonths = "Please select warranty months";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [form]);
@@ -63,24 +97,30 @@ function CreateWarranty() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleReset = () => {
-    setForm(initialForm);
-    setErrors({});
-    setSubmitted(false);
-  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
     setIsLoading(true);
+    setErrors({});
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1800));
+      await processWarrantyMinting(form, imageFile, calculatedExpiryDate, (stepMsg) => {
+        setCurrentStep(stepMsg);
+      });
+
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3500);
-    } catch {
-      setErrors({ submit: "Failed to issue warranty. Please try again." });
+
+    } catch (err) {
+      console.error(err);
+      const msg = err.message || "Gặp lỗi khi tạo thẻ bảo hành NFT. Vui lòng thử lại.";
+      setErrors({ submit: msg });
+      alert("Lỗi: " + msg);
     } finally {
       setIsLoading(false);
+      setCurrentStep("");
     }
   };
 
@@ -107,6 +147,9 @@ function CreateWarranty() {
               ✓ Warranty NFT issued successfully on blockchain!
             </div>
           )}
+          {errors.fetchError && (
+            <div className="cw-banner cw-banner--error">Lỗi tải dữ liệu: {errors.fetchError}</div>
+          )}
           {errors.submit && (
             <div className="cw-banner cw-banner--error">{errors.submit}</div>
           )}
@@ -121,10 +164,19 @@ function CreateWarranty() {
                   className={`cw-select ${errors.deviceModel ? "cw-input--error" : ""}`}
                   value={form.deviceModel}
                   onChange={updateField("deviceModel")}
+                  disabled={isLoading || isFetchingModels}
                 >
-                  {DEVICE_MODELS.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
+                  {isFetchingModels ? (
+                    <option value="">Đang tải...</option>
+                  ) : deviceModels.length === 0 ? (
+                    <option value="">Không có dữ liệu</option>
+                  ) : (
+                    deviceModels.map((p) => (
+                      <option key={p.productCode} value={p.productCode}>
+                        {p.productName} ({p.productCode})
+                      </option>
+                    ))
+                  )}
                 </select>
                 <span className="cw-select-arrow">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -157,6 +209,7 @@ function CreateWarranty() {
                   placeholder="Enter device serial number"
                   value={form.serialNumber}
                   onChange={updateField("serialNumber")}
+                  disabled={isLoading}
                 />
               </div>
               {errors.serialNumber && <p className="cw-error-msg">{errors.serialNumber}</p>}
@@ -180,33 +233,52 @@ function CreateWarranty() {
                   placeholder="0x..."
                   value={form.walletAddress}
                   onChange={updateField("walletAddress")}
+                  disabled={isLoading}
                 />
               </div>
               {errors.walletAddress && <p className="cw-error-msg">{errors.walletAddress}</p>}
             </div>
 
-            {/* Warranty Expiry Date */}
+            {/* Warranty Months */}
             <div className="cw-field">
-              <label className="cw-label" htmlFor="expiryDate">Warranty Expiry Date</label>
-              <div className="cw-input-wrap">
-                <span className="cw-input-icon">
+              <label className="cw-label" htmlFor="warrantyMonths">Thời hạn bảo hành (Tháng)</label>
+              <div className="cw-select-wrap">
+                <select
+                  id="warrantyMonths"
+                  className={`cw-select ${errors.warrantyMonths ? "cw-input--error" : ""}`}
+                  value={form.warrantyMonths}
+                  onChange={updateField("warrantyMonths")}
+                  disabled={isLoading}
+                >
+                  <option value="6">6 Tháng</option>
+                  <option value="12">12 Tháng</option>
+                  <option value="24">24 Tháng</option>
+                  <option value="36">36 Tháng</option>
+                </select>
+                <span className="cw-select-arrow">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
+                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </span>
+              </div>
+              {errors.warrantyMonths && <p className="cw-error-msg">{errors.warrantyMonths}</p>}
+            </div>
+
+            {/* Device Image */}
+            <div className="cw-field">
+              <label className="cw-label" htmlFor="deviceImage">Product Image (Optional)</label>
+              <div className="cw-input-wrap">
                 <input
-                  id="expiryDate"
-                  type="date"
-                  className={`cw-input ${errors.expiryDate ? "cw-input--error" : ""}`}
-                  value={form.expiryDate}
-                  onChange={updateField("expiryDate")}
+                  id="deviceImage"
+                  type="file"
+                  accept="image/*"
+                  className="cw-input"
+                  onChange={(e) => setImageFile(e.target.files[0])}
+                  disabled={isLoading}
+                  style={{ padding: '8px 14px' }}
                 />
               </div>
-              {errors.expiryDate && <p className="cw-error-msg">{errors.expiryDate}</p>}
             </div>
 
             {/* Smart contract notice */}
@@ -224,7 +296,7 @@ function CreateWarranty() {
               {isLoading ? (
                 <>
                   <span className="cw-spinner" />
-                  Issuing on Blockchain...
+                  {currentStep || "Đang xử lý..."}
                 </>
               ) : submitted ? (
                 <>✓ Issued Successfully!</>
@@ -259,7 +331,9 @@ function CreateWarranty() {
             {/* Device name row */}
             <div className="cw-nft-name-row">
               <div>
-                <h3 className="cw-nft-device-name">{form.deviceModel || "Select Device Model"}</h3>
+                <h3 className="cw-nft-device-name">
+                  {selectedProduct ? selectedProduct.productName : (form.deviceModel || "Select Device Model")}
+                </h3>
                 <p className="cw-nft-serial">Serial: {maskedSerial}</p>
               </div>
               <span className="cw-nft-badge">NFT</span>
@@ -285,8 +359,8 @@ function CreateWarranty() {
               </div>
               <div className="cw-nft-row">
                 <span className="cw-nft-row-label">Expires</span>
-                <span className={`cw-nft-row-value ${form.expiryDate ? "" : "cw-nft-row-value--orange"}`}>
-                  {form.expiryDate || "Not set"}
+                <span className={`cw-nft-row-value ${calculatedExpiryDate ? "" : "cw-nft-row-value--orange"}`}>
+                  {calculatedExpiryDate || "Not set"}
                 </span>
               </div>
             </div>
