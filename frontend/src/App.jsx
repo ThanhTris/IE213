@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CreateNewProduct from "./pages/admin/CreateNewProduct";
 
-
 function App() {
   return (
     <div className="App">

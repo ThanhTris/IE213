@@ -1,6 +1,5 @@
 import AdminDashboard from "./admin/AdminDashboard";
 import CreateWarranty from "./admin/CreateWarranty";
-import CreateNewProduct from "./admin/CreateNewProduct";
 import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
 import "../assets/views/admin-portal.css";
