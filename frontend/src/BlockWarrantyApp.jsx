@@ -6,6 +6,7 @@ import GuestPage from "./pages/GuestPage";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import SignInUpPage from "./pages/SignInUpPage";
+import MyProfilePage from "./pages/MyProfilePage";
 import "./assets/views/styles.css";
 import "./assets/views/shared.css";
 import "./assets/views/home.css";
@@ -37,7 +38,7 @@ function BlockWarrantyApp() {
   const isAuthenticated = Boolean(auth?.token);
 
   const handleChangeView = (nextView) => {
-    if ((nextView === "user" || nextView === "admin") && !isAuthenticated) {
+    if ((nextView === "user" || nextView === "admin" || nextView === "profile") && !isAuthenticated) {
       setActiveView("auth");
       return;
     }
@@ -66,7 +67,9 @@ function BlockWarrantyApp() {
   useEffect(() => {
     // Keep active view aligned with auth status and role.
     if (!isAuthenticated) {
-      setActiveView((v) => (v === "user" || v === "admin" ? "home" : v));
+      if (activeView === "user" || activeView === "admin" || activeView === "profile") {
+        setActiveView("home");
+      }
       return;
     }
 
@@ -115,6 +118,7 @@ function BlockWarrantyApp() {
         {activeView === "user" && (
           <UserPage sideTab={sideTab} onChangeSideTab={setSideTab} onOpenModal={() => setModalOpen(true)} />
         )}
+        {activeView === "profile" && <MyProfilePage auth={auth} />}
         {activeView === "admin" && <AdminPage adminActiveTab={adminTab} onSetAdminTab={setAdminTab} />}
         {activeView === "auth" && (
           <SignInUpPage
