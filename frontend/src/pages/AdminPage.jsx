@@ -59,16 +59,63 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
             <div className="admin-header">
               <div className="admin-header-content">
                 <h1>Admin Management Portal</h1>
-                <p>Issue warranties, log repairs, and manage your warranty program</p>
+                <p>
+                  Issue warranties, log repairs, and manage your warranty
+                  program
+                </p>
               </div>
               <div className="admin-header-actions">
-                <a href="/create-new-product" className="header-action primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 5v14"></path>
-                    <path d="M5 12h14"></path>
+                <a
+                  href="/create-new-product"
+                  type="button"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 12,
+                    background:
+                      "linear-gradient(90deg, #10b981 0%, #16c784 100%)",
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: 20,
+                    border: "none",
+                    borderRadius: 32,
+                    padding: "14px 36px",
+                    boxShadow: "0 4px 24px #10b98122",
+                    cursor: "pointer",
+                    textDecoration: "none",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.background =
+                      "linear-gradient(90deg, #16c784 0%, #10b981 100%)")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.background =
+                      "linear-gradient(90deg, #10b981 0%, #16c784 100%)")
+                  }
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
-                  Create New Product
+                  <span
+                    style={{
+                      textDecoration: "none",
+                      fontWeight: 700,
+                      fontSize: 20,
+                    }}
+                  >
+                    Create New Product
+                  </span>
                 </a>
               </div>
             </div>

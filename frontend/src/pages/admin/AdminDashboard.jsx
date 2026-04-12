@@ -1,8 +1,9 @@
 import { useState } from "react";
 import ProductList from "./ProductList";
 import RepairHistory from "./RepairHistory";
+import UserManagement from "./UserManagement";
 
-function AdminDashboard({ onReturnToPortal }) {
+function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products");
 
   const tabs = [
@@ -44,6 +45,25 @@ function AdminDashboard({ onReturnToPortal }) {
         </svg>
       ),
     },
+    {
+      id: "user-management",
+      label: "User Management",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="7" r="4" />
+          <path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -54,47 +74,34 @@ function AdminDashboard({ onReturnToPortal }) {
           <p>Monitor products, warranties, and repair activities</p>
         </div>
         <div className="admin-header-actions">
-          <button
+          <a
+            href="/create-new-product"
             type="button"
-            className="header-action secondary"
-            onClick={onReturnToPortal}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 12,
+              background: 'linear-gradient(90deg, #10b981 0%, #16c784 100%)',
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: 20,
+              border: 'none',
+              borderRadius: 32,
+              padding: '14px 36px',
+              boxShadow: '0 4px 24px #10b98122',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'background 0.2s',
+            }}
+            onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #16c784 0%, #10b981 100%)'}
+            onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #10b981 0%, #16c784 100%)'}
           >
-            <span>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 12h18"></path>
-                <path d="M3 6h18"></path>
-                <path d="M3 18h18"></path>
-              </svg>
-            </span>
-            Admin Portal
-          </button>
-          <button type="button" className="header-action primary">
-            <span>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 5v14"></path>
-                <path d="M5 12h14"></path>
-              </svg>
-            </span>
-            Create New Product
-          </button>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span style={{ textDecoration: 'none', fontWeight: 700, fontSize: 20 }}>Create New Product</span>
+          </a>
         </div>
       </div>
 
@@ -255,6 +262,7 @@ function AdminDashboard({ onReturnToPortal }) {
       <div className="admin-content">
         {activeTab === "products" && <ProductList />}
         {activeTab === "repair-history" && <RepairHistory />}
+        {activeTab === "user-management" && <UserManagement />}
       </div>
     </div>
   );
