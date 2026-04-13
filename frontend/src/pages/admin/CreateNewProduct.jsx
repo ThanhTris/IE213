@@ -1,7 +1,9 @@
 import { useMemo, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { buildFakeHash } from "../../utils/hashPreview";
 
 function CreateNewProduct() {
+  const navigate = useNavigate();
   const initialForm = {
     productName: "iPhone 15 Pro Max",
     manufacturer: "Apple Inc.",
@@ -140,8 +142,87 @@ function CreateNewProduct() {
   };
 
   return (
-    <div className="create-warranty-container">
-      <div className="create-warranty-layout">
+    <div
+      className="create-warranty-container"
+      style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 0" }}
+    >
+      {/* Banner Section */}
+      <div
+        style={{
+          background: "linear-gradient(120deg, #2242a6 0%, #2563eb 100%)",
+          borderRadius: 32,
+          padding: "36px 40px 32px 40px",
+          marginBottom: 36,
+          color: "#fff",
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          position: "relative",
+          minHeight: 180,
+        }}
+      >
+        <div>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            style={{
+              background: "rgba(255,255,255,0.13)",
+              border: "none",
+              borderRadius: 16,
+              padding: "14px 32px",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: 18,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 32,
+              boxShadow: "0 2px 8px #0002",
+              cursor: "pointer",
+              transition: "background 0.2s",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.background = "rgba(255,255,255,0.22)")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.background = "rgba(255,255,255,0.13)")
+            }
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back
+          </button>
+          <h1
+            style={{
+              fontSize: 44,
+              fontWeight: 800,
+              margin: 0,
+              marginBottom: 10,
+              letterSpacing: -1,
+            }}
+          >
+            Create New Product
+          </h1>
+          <div style={{ fontSize: 18, opacity: 0.93, marginTop: 2 }}>
+            Fill in the product and warranty information below
+          </div>
+        </div>
+        {/* You can add a status badge or icon here if needed */}
+      </div>
+      <div
+        className="create-warranty-layout"
+        style={{ maxWidth: 1000, margin: "0 auto" }}
+      >
         <form
           onSubmit={handleSubmit}
           className={`warranty-form ${isLoading ? "form-loading" : ""}`}

@@ -1306,3 +1306,11 @@
   border-color: #fca5a5;
   color: #991b1b;
 }
+
+.user-management-container {
+  background: white;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}

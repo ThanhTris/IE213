@@ -663,8 +663,11 @@
    ======================================== */
 
 .create-warranty-container {
+  flex: 1;
+  padding: 80px;
   max-width: 100%;
   margin: 0 auto;
+  width: 100%;
 }
 
 .create-warranty-layout {
@@ -1447,4 +1450,16 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.header-action.primary {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
