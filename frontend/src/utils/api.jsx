@@ -19,3 +19,28 @@ export async function apiPostUserAuth(payload) {
   const json = await res.json().catch(() => null);
   return { res, json };
 }
+
+export async function apiGetMyProfile(token) {
+  const res = await fetch(`${API_ROOT}/users/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const json = await res.json().catch(() => null);
+  return { res, json };
+}
+
+export async function apiUpdateMyProfile(token, payload) {
+  const res = await fetch(`${API_ROOT}/users/me`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload || {}),
+  });
+  const json = await res.json().catch(() => null);
+  return { res, json };
+}

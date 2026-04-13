@@ -18,6 +18,10 @@ function HeaderTabs({ activeView, onChangeView, auth, onLogout, adminActiveTab, 
     tabs.push({ key: "user", label: "User Wallet" });
   }
 
+  if (isAuthenticated) {
+    tabs.push({ key: "profile", label: "My Profile" });
+  }
+
   return (
     <header className="app-header">
       <div className="header-inner">
@@ -49,9 +53,12 @@ function HeaderTabs({ activeView, onChangeView, auth, onLogout, adminActiveTab, 
             <button
               type="button"
               role="tab"
-              aria-selected={adminActiveTab === "dashboard"}
+              aria-selected={activeView === "admin" && adminActiveTab === "dashboard"}
               className="nav-tab-dashboard"
-              onClick={() => onAdminAction?.("dashboard")}
+              onClick={() => {
+                onChangeView("admin");
+                onAdminAction?.("dashboard");
+              }}
             >
               Dashboard
             </button>
