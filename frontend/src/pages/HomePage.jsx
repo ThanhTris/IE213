@@ -1,8 +1,9 @@
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
-function HomePage({ onChangeView, isAuthenticated, role }) {
+function HomePage({ isAuthenticated, role }) {
+  const navigate = useNavigate();
   const [quickSerial, setQuickSerial] = useState("");
 
   const goSearch = () => {
@@ -15,7 +16,15 @@ function HomePage({ onChangeView, isAuthenticated, role }) {
     } catch (_e) {
       // ignore storage failures
     }
-    onChangeView("guest");
+    navigate("/search");
+  };
+
+  const goPortal = () => {
+    if (!isAuthenticated) {
+      navigate("/auth");
+    } else {
+      navigate(role === "admin" ? "/admin" : "/user");
+    }
   };
 
   return (
@@ -50,7 +59,7 @@ function HomePage({ onChangeView, isAuthenticated, role }) {
             <button
               type="button"
               className="btn-hero-outline"
-              onClick={() => onChangeView(isAuthenticated ? (role === "admin" ? "admin" : "user") : "auth")}
+              onClick={goPortal}
             >
               Access Your Wallet
             </button>

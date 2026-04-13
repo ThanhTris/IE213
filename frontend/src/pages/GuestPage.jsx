@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_ROOT } from "../utils/api";
 import Footer from "../components/Footer";
 
-function GuestPage({ onChangeView, isAuthenticated }) {
+function GuestPage({ isAuthenticated }) {
+  const navigate = useNavigate();
   const initialPrefill = (() => {
     try {
       return sessionStorage.getItem("bw_search_prefill") || "SN-7K2M-2024-X9";
@@ -142,7 +144,7 @@ function GuestPage({ onChangeView, isAuthenticated }) {
                 <button
                   type="button"
                   className="btn-login"
-                  onClick={() => onChangeView("auth")}
+                  onClick={() => navigate("/auth")}
                 >
                   Sign in
                 </button>
