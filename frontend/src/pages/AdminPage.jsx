@@ -4,9 +4,17 @@ import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
 import "../assets/views/admin-portal.css";
 
+import { useNavigate, Link } from "react-router-dom";
+
 function AdminPage({ adminActiveTab, onSetAdminTab }) {
+  const navigate = useNavigate();
   const activeTab = adminActiveTab ?? "create";
   const setActiveTab = onSetAdminTab ?? (() => {});
+
+  const handleReturnToPortal = () => {
+    setActiveTab("create");
+    navigate("/admin");
+  };
 
   const tabs = [
     {
@@ -51,7 +59,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
     <>
       <div className="view active">
         {activeTab === "dashboard" ? (
-          <AdminDashboard onReturnToPortal={() => setActiveTab("create")} />
+          <AdminDashboard onReturnToPortal={handleReturnToPortal} />
         ) : (
           <div className="admin-page-wrapper">
             {/* Admin Header */}
@@ -64,9 +72,9 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
                 </p>
               </div>
               <div className="admin-header-actions">
-                <a
-                  href="/create-new-product"
-                  type="button"
+                <Link
+                  to="/create-new-product"
+                  className="btn-create-product-link"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -115,7 +123,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
                   >
                     Create New Product
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
 

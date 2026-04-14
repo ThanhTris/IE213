@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import ProductList from "./ProductList";
 import RepairHistory from "./RepairHistory";
 import UserManagement from "./UserManagement";
@@ -74,9 +75,8 @@ function AdminDashboard() {
           <p>Monitor products, warranties, and repair activities</p>
         </div>
         <div className="admin-header-actions">
-          <a
-            href="/create-new-product"
-            type="button"
+          <Link
+            to="/create-new-product"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -101,7 +101,7 @@ function AdminDashboard() {
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             <span style={{ textDecoration: 'none', fontWeight: 700, fontSize: 20 }}>Create New Product</span>
-          </a>
+          </Link>
         </div>
       </div>
 

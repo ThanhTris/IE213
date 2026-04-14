@@ -1,8 +1,12 @@
 import { useMemo, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import { walletCards, transferRecords } from "../data/mockData";
 import Footer from "../components/Footer";
 
-function UserPage({ sideTab, onChangeSideTab }) {
+function UserPage() {
+  const { setModalOpen } = useOutletContext();
+  const [sideTab, setSideTab] = useState("devices");
+  const onChangeSideTab = setSideTab;
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
