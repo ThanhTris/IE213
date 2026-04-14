@@ -50,31 +50,31 @@ function MainLayout({ auth, onLogout, adminActiveTab, onAdminAction }) {
 function App() {
   const navigate = useNavigate();
   const [adminTab, setAdminTab] = useState("create");
-  
+
   const [auth, setAuth] = useState(() => {
     // DEV MODE: check for simulated roles in URL or sessionStorage
-    if (import.meta.env.VITE_ENABLE_DEV_ROLE === 'true') {
+    if (import.meta.env.VITE_ENABLE_DEV_ROLE === "true") {
       const urlParams = new URLSearchParams(window.location.search);
-      let devRole = urlParams.get('devRole');
-      
+      let devRole = urlParams.get("devRole");
+
       // Fallback to sessionStorage if not in URL but was previously set
       if (!devRole) {
-        devRole = sessionStorage.getItem('bw_dev_role_active');
+        devRole = sessionStorage.getItem("bw_dev_role_active");
       } else {
         // Persist to sessionStorage if found in URL
-        sessionStorage.setItem('bw_dev_role_active', devRole);
+        sessionStorage.setItem("bw_dev_role_active", devRole);
       }
 
-      if (devRole === 'admin' || devRole === 'user') {
+      if (devRole === "admin" || devRole === "user") {
         console.warn(`[DEV MODE] Đang chạy với quyền giả lập: ${devRole}`);
-        return { 
-          token: `DUMMY_TOKEN_FOR_${devRole.toUpperCase()}`, 
-          walletAddress: `0xDev${devRole}WalletAddress`, 
-          role: devRole 
+        return {
+          token: `DUMMY_TOKEN_FOR_${devRole.toUpperCase()}`,
+          walletAddress: `0xDev${devRole}WalletAddress`,
+          role: devRole,
         };
       }
     }
-    return loadAuthFromStorage(); 
+    return loadAuthFromStorage();
   });
 
   const isAuthenticated = Boolean(auth?.token);
@@ -92,58 +92,106 @@ function App() {
 
   return (
     <Routes>
-      <Route element={
-        <MainLayout 
-          auth={auth} 
-          onLogout={handleLogout} 
-          adminActiveTab={adminTab}
-          onAdminAction={setAdminTab}
+      <Route
+        element={
+          <MainLayout
+            auth={auth}
+            onLogout={handleLogout}
+            adminActiveTab={adminTab}
+            onAdminAction={setAdminTab}
+          />
+        }
+      >
+        <Route
+          path="/"
+          element={
+            <HomePage isAuthenticated={isAuthenticated} role={auth?.role} />
+          }
         />
-      }>
-        <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} role={auth?.role} />} />
-        <Route path="/search" element={<GuestPage isAuthenticated={isAuthenticated} />} />
-        
-        {/* Protected Routes */}
-        <Route path="/user" element={
-          <ProtectedRoute isAuthenticated={isAuthenticated} userRole={auth?.role}>
-            <UserPage />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/admin" element={
-          <ProtectedRoute isAuthenticated={isAuthenticated} userRole={auth?.role} requiredRole="admin">
-            <AdminPage adminActiveTab={adminTab} onSetAdminTab={setAdminTab} />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/search"
+          element={<GuestPage isAuthenticated={isAuthenticated} />}
+        />
 
-        <Route path="/admin/dashboard" element={
-          <ProtectedRoute isAuthenticated={isAuthenticated} userRole={auth?.role} requiredRole="admin">
-            <AdminPage adminActiveTab="dashboard" onSetAdminTab={setAdminTab} />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/profile" element={
-          <ProtectedRoute isAuthenticated={isAuthenticated}>
-            <MyProfilePage auth={auth} />
-          </ProtectedRoute>
-        } />
+        {/* Protected Routes */}
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute
+              isAuthenticated={isAuthenticated}
+              userRole={auth?.role}
+            >
+              <UserPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute
+              isAuthenticated={isAuthenticated}
+              userRole={auth?.role}
+              requiredRole="admin"
+            >
+              <AdminPage
+                adminActiveTab={adminTab}
+                onSetAdminTab={setAdminTab}
+              />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute
+              isAuthenticated={isAuthenticated}
+              userRole={auth?.role}
+              requiredRole="admin"
+            >
+              <AdminPage
+                adminActiveTab="dashboard"
+                onSetAdminTab={setAdminTab}
+              />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <MyProfilePage auth={auth} />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Auth Route - No Header */}
-      <Route path="/auth" element={
-        isAuthenticated ? (
-          <Navigate to={auth?.role === "admin" ? "/admin" : "/user"} replace />
-        ) : (
-          <SignInUpPage onAuthSuccess={handleAuthSuccess} onCancel={() => navigate("/")} />
-        )
-      } />
+      <Route
+        path="/auth"
+        element={
+          isAuthenticated ? (
+            <Navigate
+              to={auth?.role === "admin" ? "/admin" : "/user"}
+              replace
+            />
+          ) : (
+            <SignInUpPage
+              onAuthSuccess={handleAuthSuccess}
+              onCancel={() => navigate("/")}
+            />
+          )
+        }
+      />
 
       {/* Separate layout/no-header routes if any */}
-      <Route path="/create-new-product" element={
+      {/* <Route path="/create-new-product" element={
         <ProtectedRoute isAuthenticated={isAuthenticated} userRole={auth?.role} requiredRole="admin">
           <CreateNewProduct />
         </ProtectedRoute>
-      } />
+      } /> */}
 
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
