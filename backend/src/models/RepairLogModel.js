@@ -39,6 +39,23 @@ const repairLogSchema = new mongoose.Schema(
       maxlength: 150,
     },
     repairDate: { type: Date, default: Date.now, index: true },
+    completionDate: { type: Date, default: null },
+    status: {
+      type: String,
+      enum: ["pending", "in-progress", "completed"],
+      default: "completed",
+      index: true,
+    },
+    repairType: {
+      type: String,
+      trim: true,
+      maxlength: 100,
+    },
+    serviceCenter: {
+      type: String,
+      trim: true,
+      maxlength: 255,
+    },
     repairContent: {
       type: String,
       required: true,

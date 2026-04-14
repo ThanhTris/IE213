@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { repairLogService } from "../../services/repairLogService";
 
 function LogRepairs() {
   const [repairForm, setRepairForm] = useState({
@@ -6,6 +7,8 @@ function LogRepairs() {
     serialNumber: "",
     technicianName: "",
     repairDate: new Date().toISOString().slice(0, 10),
+    completionDate: "",
+    status: "completed",
     repairType: "",
     serviceCenter: "",
     partsReplaced: "",
@@ -14,6 +17,7 @@ function LogRepairs() {
     notes: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const updateField = (field) => (event) => {
@@ -47,16 +51,35 @@ function LogRepairs() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    console.log("Repair record submitted:", repairForm);
+    setIsLoading(true);
+    try {
+      // Chuyển đổi linh kiện thay thế từ chuỗi (phân tách bằng dấu phẩy) sang mảng
+      const partsArray = repairForm.partsReplaced
+        ? repairForm.partsReplaced.split(",").map((p) => p.trim()).filter(Boolean)
+        : [];
+
+      const payload = {
+        ...repairForm,
+        partsReplaced: partsArray,
+        cost: parseFloat(repairForm.cost) || 0,
+      };
+
+      await repairLogService.createLog(payload);
+
+      setSubmitted(true);
+      // Reset các trường nhập liệu sau khi thành công
+      setRepairForm({ ...repairForm, repairContent: "", partsReplaced: "", cost: "", notes: "" });
+      setTimeout(() => setSubmitted(false), 3000);
+    } catch (err) {
+      setErrors({ submit: err.message || "Failed to log repair" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -93,7 +116,13 @@ function LogRepairs() {
             </div>
           )}
 
-          <form className="repair-log-form" onSubmit={handleSubmit}>
+          {errors.submit && (
+            <div className="form-error" style={{ marginBottom: "20px", color: "#dc2626" }}>
+              {errors.submit}
+            </div>
+          )}
+
+          <form className={`repair-log-form ${isLoading ? "form-loading" : ""}`} onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="form-group">
                 <label htmlFor="tokenId">Warranty Token ID</label>
@@ -180,6 +209,27 @@ function LogRepairs() {
                 />
               </div>
               <div className="form-group">
+                <label htmlFor="status">Repair Status</label>
+                <select
+                  id="status"
+                  value={repairForm.status}
+                  onChange={updateField("status")}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="completionDate">Completion Date</label>
+                <input
+                  id="completionDate"
+                  type="date"
+                  value={repairForm.completionDate}
+                  onChange={updateField("completionDate")}
+                />
+              </div>
+              <div className="form-group">
                 <label htmlFor="cost">Repair Cost</label>
                 <input
                   id="cost"
@@ -227,8 +277,8 @@ function LogRepairs() {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="btn-submit">
-                Submit Repair Record
+              <button type="submit" className="btn-submit" disabled={isLoading}>
+                {isLoading ? "Submitting..." : "Submit Repair Record"}
               </button>
             </div>
           </form>
