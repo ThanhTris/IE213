@@ -1,68 +1,53 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { repairLogService } from "../../services/repairLogService";
 
 function RepairHistory() {
-  const [repairRecords] = useState([
-    {
-      id: 1,
-      serialNumber: "FNQW8123XYZ",
-      productName: "iPhone 15 Pro Max",
-      owner: "John Doe (0x7426...08f)",
-      issueType: "Screen Damage",
-      repairDate: "2025-12-10",
-      completionDate: "2025-12-14",
-      status: "completed",
-      repairCost: "$149.00",
-      technician: "Tech Service Center #1",
-    },
-    {
-      id: 2,
-      serialNumber: "C0ZZ456LMD6",
-      productName: 'MacBook Pro 16"',
-      owner: "Jane Smith (0x8a3d...0bc2)",
-      issueType: "Battery Replacement",
-      repairDate: "2025-11-20",
-      completionDate: "2025-11-25",
-      status: "completed",
-      repairCost: "$199.00",
-      technician: "Apple Service",
-    },
-    {
-      id: 3,
-      serialNumber: "DMPH234ABC",
-      productName: "iPad Pro 12.9\"",
-      owner: "Sarah Williams (0x9c2b...de3)",
-      issueType: "Display Issue",
-      repairDate: "2025-12-01",
-      completionDate: null,
-      status: "in-progress",
-      repairCost: "Pending",
-      technician: "Tech Service Center #2",
-    },
-    {
-      id: 4,
-      serialNumber: "XYWZ567EFG",
-      productName: "AirPods Pro 2",
-      owner: "David Chen (0x7d4c...df2a)",
-      issueType: "Audio Problem",
-      repairDate: "2025-10-15",
-      completionDate: "2025-10-18",
-      status: "completed",
-      repairCost: "$99.00",
-      technician: "Apple Service",
-    },
-  ]);
-
+  const [repairRecords, setRepairRecords] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setIsLoading(true);
+        const res = await repairLogService.getAllLogs();
+        if (res.success) {
+          setRepairRecords(res.data);
+        }
+      } catch (err) {
+        setError(err.message || "Failed to load repair history");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchHistory();
+  }, []);
+
   const formatDate = (dateStr) => {
-    if (!dateStr || typeof dateStr !== 'string') return dateStr;
+    if (!dateStr) return "-";
     const regex = /^\d{4}-\d{2}-\d{2}$/;
     if (regex.test(dateStr)) {
       const [y, m, d] = dateStr.split("-");
       return `${d}/${m}/${y}`;
     }
+    try {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString("vi-VN");
+      }
+    } catch (e) {
+      return dateStr;
+    }
     return dateStr;
+  };
+
+  const renderStatus = (record) => {
+    if (record.status && record.status !== "completed") {
+      return getStatusBadge(record.status);
+    }
+    return getStatusBadge("completed");
   };
 
   const filteredRecords = useMemo(() => {
@@ -72,11 +57,11 @@ function RepairHistory() {
 
       // Filter by search term
       const searchMatch = searchTerm === "" ||
-        record.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.issueType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.technician.toLowerCase().includes(searchTerm.toLowerCase());
+        (record.tokenId && record.tokenId.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (record.repairType && record.repairType.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (record.repairContent && record.repairContent.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (record.technicianName && record.technicianName.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return statusMatch && searchMatch;
     });
@@ -87,6 +72,7 @@ function RepairHistory() {
       completed: { backgroundColor: "#10b981", color: "white" },
       "in-progress": { backgroundColor: "#f59e0b", color: "white" },
       pending: { backgroundColor: "#6b7280", color: "white" },
+      expired: { backgroundColor: "#ef4444", color: "white" },
     };
     return (
       <span
@@ -100,7 +86,7 @@ function RepairHistory() {
           ...styles[status],
         }}
       >
-        {status === "in-progress" ? "In Progress" : status}
+        {status === "in-progress" ? "In Progress" : status === "expired" ? "Expired" : status}
       </span>
     );
   };
@@ -108,6 +94,8 @@ function RepairHistory() {
   return (
     <div className="repair-history-container">
       {/* Search and Filter Section */}
+      {error && <div style={{ color: "#dc2626", marginBottom: "20px" }}>{error}</div>}
+
       <div className="search-filter-section">
         <div className="search-input-wrapper">
           <input
@@ -170,23 +158,35 @@ function RepairHistory() {
             </tr>
           </thead>
           <tbody>
-            {filteredRecords.map((record) => (
-              <tr key={record.id}>
+            {isLoading ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center", padding: "40px" }}>Loading records...</td>
+              </tr>
+            ) : filteredRecords.length === 0 ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center", padding: "40px" }}>No repair records found.</td>
+              </tr>
+            ) : filteredRecords.map((record) => (
+              <tr key={record.id || record._id}>
                 <td>
                   <div className="device-cell">
-                    <div className="device-name">{record.productName}</div>
                     <div className="device-serial">{record.serialNumber}</div>
+                    {record.tokenId && <div style={{ fontSize: "11px", color: "#64748b" }}>Token: {record.tokenId}</div>}
                   </div>
                 </td>
-                <td>{record.owner}</td>
+                <td>{record.serviceCenter || "N/A"}</td>
                 <td>
-                  <span className="issue-type">{record.issueType}</span>
+                  <span className="issue-type">{record.repairType || "General"}</span>
                 </td>
                 <td>{formatDate(record.repairDate)}</td>
-                <td>{formatDate(record.completionDate) || "-"}</td>
-                <td>{getStatusBadge(record.status)}</td>
-                <td className="cost-cell">{record.repairCost}</td>
-                <td>{record.technician}</td>
+                <td>{formatDate(record.completionDate)}</td>
+                <td>
+                  {record.warrantyId?.expiryDate && record.warrantyId.expiryDate < Math.floor(Date.now() / 1000)
+                    ? getStatusBadge("expired")
+                    : getStatusBadge(record.status || "completed")}
+                </td>
+                <td className="cost-cell">${record.cost || 0}</td>
+                <td>{record.technicianName}</td>
                 <td>
                   <div className="action-buttons">
                     <button className="action-btn view-btn" title="View Details">

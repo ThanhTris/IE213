@@ -13,7 +13,11 @@ const createRepairLog = async (req, res) => {
   try {
     const allowedFields = new Set([
       "serialNumber",
+      "repairType",
+      "serviceCenter",
       "repairContent",
+      "status",
+      "completionDate",
       "partsReplaced",
       "cost",
       "notes",
@@ -145,6 +149,10 @@ const createRepairLog = async (req, res) => {
       tokenId: warranty.tokenId || null,
       technicianWallet,
       technicianName,
+      status: payload.status || "completed",
+      completionDate: payload.completionDate || null,
+      repairType: normalizeText(payload.repairType),
+      serviceCenter: normalizeText(payload.serviceCenter),
       repairContent,
       partsReplaced,
       cost,
@@ -228,6 +236,10 @@ const getAllRepairLogs = async (req, res) => {
     const sortDirection = sortQuery === "asc" ? 1 : -1;
 
     const repairLogs = await RepairLog.find({})
+      .populate({
+        path: "warrantyId",
+        select: "ownerAddress productCode expiryDate status",
+      })
       .sort({ createdAt: sortDirection })
       .lean();
 
@@ -258,7 +270,11 @@ const updateRepairLog = async (req, res) => {
     }
 
     const allowedFields = new Set([
+      "repairType",
+      "serviceCenter",
       "repairContent",
+      "status",
+      "completionDate",
       "partsReplaced",
       "cost",
       "notes",

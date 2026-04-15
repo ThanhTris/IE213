@@ -443,6 +443,16 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       });
     }
 
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    if (warranty.status === true && warranty.expiryDate < nowInSeconds) {
+      await Warranty.findByIdAndUpdate(warranty._id, { 
+        status: false,
+        isActive: false 
+      });
+      warranty.status = false;
+      warranty.isActive = false;
+    }
+
     const owner = String(warranty.ownerAddress || "").trim();
     const maskedOwnerAddress =
       owner.length > 10
