@@ -80,14 +80,6 @@ function UserPage() {
             >
               My Devices
             </button>
-            {/* <button
-              type="button"
-              className={`side-link ${sideTab === "transfer" ? "active" : ""}`}
-              onClick={() => onChangeSideTab("transfer")}
-            >
-              Transfer History
-            </button> */}
-
             <div className="wallet-summary-card">
               <p className="summary-title">Wallet Status</p>
               <div className="summary-row">
