@@ -74,7 +74,7 @@ function AdminDashboard() {
           <h1>Admin Dashboard</h1>
           <p>Monitor products, warranties, and repair activities</p>
         </div>
-        <div className="admin-header-actions">
+        {/* <div className="admin-header-actions">
           <Link
             to="/create-new-product"
             style={{
@@ -102,7 +102,7 @@ function AdminDashboard() {
             </svg>
             <span style={{ textDecoration: 'none', fontWeight: 700, fontSize: 20 }}>Create New Product</span>
           </Link>
-        </div>
+        </div> */}
       </div>
 
       {/* Metrics Cards */}
