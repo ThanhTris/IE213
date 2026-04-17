@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
 const Product = require("../models/ProductModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
+const { uploadFileToPinata } = require("../utils/pinata");
 
+// Fields cho phép cập nhật qua PUT
 const UPDATABLE_FIELDS = [
   "productName",
   "brand",
-  "model",
   "color",
-  "configuration",
-  "specifications",
+  "config",
   "imageUrl",
   "price",
   "warrantyMonths",
+  "description",
   "isActive",
 ];
 
@@ -44,13 +45,12 @@ const toProductResponse = (product, options = {}) => {
     productCode: product.productCode,
     productName: product.productName,
     brand: product.brand,
-    model: product.model,
     color: product.color,
-    configuration: product.configuration,
-    specifications: product.specifications,
+    config: product.config,
     imageUrl: product.imageUrl,
     price: product.price,
     warrantyMonths: product.warrantyMonths,
+    description: product.description,
     isActive: product.isActive,
   };
 
@@ -63,14 +63,7 @@ const toProductResponse = (product, options = {}) => {
 const sanitizeProductPayload = (payload = {}) => {
   const nextPayload = { ...payload };
 
-  [
-    "productName",
-    "brand",
-    "model",
-    "color",
-    "configuration",
-    "imageUrl",
-  ].forEach((field) => {
+  ["productName", "brand", "color", "config", "imageUrl", "description"].forEach((field) => {
     if (typeof nextPayload[field] === "string") {
       nextPayload[field] = nextPayload[field].trim();
     }
@@ -79,7 +72,7 @@ const sanitizeProductPayload = (payload = {}) => {
   return nextPayload;
 };
 
-// POST /api/products
+// POST /api/products — nhận multipart/form-data, upload ảnh lên Pinata
 const createProduct = async (req, res, next) => {
   try {
     const body = req.body || {};
@@ -87,13 +80,11 @@ const createProduct = async (req, res, next) => {
       productCode,
       productName,
       brand,
-      model,
       color,
-      configuration,
-      specifications,
-      imageUrl,
+      config,
       price,
       warrantyMonths,
+      description,
     } = body;
 
     const normalizedCode = normalizeProductCode(productCode || "");
@@ -140,18 +131,41 @@ const createProduct = async (req, res, next) => {
       });
     }
 
+    // -------------------------------------------------------
+    // XỬ LÝ ẢNH: Upload lên Pinata nếu có file
+    // -------------------------------------------------------
+    let imageUrl = typeof body.imageUrl === "string" ? body.imageUrl.trim() : undefined;
+
+    if (req.file && process.env.PINATA_JWT) {
+      try {
+        const imageCID = await uploadFileToPinata(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+        );
+        imageUrl = `ipfs://${imageCID}`;
+        console.log(`[Pinata] Ảnh sản phẩm ${normalizedCode} uploaded: ${imageUrl}`);
+      } catch (ipfsError) {
+        console.error("[Pinata] Upload ảnh thất bại:", ipfsError.message);
+        return sendError(res, {
+          statusCode: 502,
+          errorCode: "E502_IPFS",
+          message: `Upload ảnh lên IPFS thất bại: ${ipfsError.message}`,
+        });
+      }
+    }
+
     const product = new Product(
       sanitizeProductPayload({
         productCode: normalizedCode,
         productName: normalizedName,
         brand: normalizedBrand,
-        model,
         color,
-        configuration,
-        specifications: specifications || undefined,
+        config,
         imageUrl,
         price: parsedPrice,
         warrantyMonths: parsedWarrantyMonths,
+        description,
       }),
     );
 
@@ -270,6 +284,26 @@ const updateProduct = async (req, res, next) => {
       }
     });
 
+    // Xử lý upload ảnh mới nếu có (PUT cũng hỗ trợ multipart)
+    if (req.file && process.env.PINATA_JWT) {
+      try {
+        const imageCID = await uploadFileToPinata(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+        );
+        updates.imageUrl = `ipfs://${imageCID}`;
+        console.log(`[Pinata] Ảnh sản phẩm cập nhật uploaded: ${updates.imageUrl}`);
+      } catch (ipfsError) {
+        console.error("[Pinata] Upload ảnh thất bại:", ipfsError.message);
+        return sendError(res, {
+          statusCode: 502,
+          errorCode: "E502_IPFS",
+          message: `Upload ảnh lên IPFS thất bại: ${ipfsError.message}`,
+        });
+      }
+    }
+
     if (Object.keys(updates).length === 0) {
       return sendError(res, {
         statusCode: 400,
@@ -341,7 +375,7 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
-// DELETE /api/products/:idOrCode
+// DELETE /api/products/:idOrCode (soft delete)
 const deleteProduct = async (req, res, next) => {
   try {
     const identifier = req.params.idOrCode;
