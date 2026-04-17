@@ -4,6 +4,7 @@ const EVM_ADDRESS_REGEX = /^0x[a-f0-9]{40}$/;
 
 const repairLogSchema = new mongoose.Schema(
   {
+    // Tham chiếu đến Warranty để truy xuất lịch sử sửa chữa của thiết bị
     warrantyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Warranty",
@@ -17,13 +18,6 @@ const repairLogSchema = new mongoose.Schema(
       index: true,
       maxlength: 128,
     },
-    tokenId: {
-      type: String,
-      default: null,
-      trim: true,
-      maxlength: 128,
-      index: true,
-    },
     technicianWallet: {
       type: String,
       required: true,
@@ -32,31 +26,28 @@ const repairLogSchema = new mongoose.Schema(
       match: EVM_ADDRESS_REGEX,
       index: true,
     },
-    technicianName: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 150,
-    },
-    repairDate: { type: Date, default: Date.now, index: true },
     repairContent: {
       type: String,
       required: true,
       trim: true,
       maxlength: 2000,
     },
-    partsReplaced: {
-      type: [
-        {
-          type: String,
-          trim: true,
-          maxlength: 255,
-        },
-      ],
-      default: [],
+    // true = được bảo hành miễn phí, false = phải trả phí sửa chữa
+    isWarrantyCovered: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
+    // Trạng thái đơn sửa chữa
+    status: {
+      type: String,
+      enum: ["pending", "in_progress", "done", "rejected"],
+      default: "pending",
+      index: true,
+    },
+    // Chi phí sửa chữa (0 nếu được bảo hành)
     cost: { type: Number, default: 0, min: 0 },
-    notes: { type: String, trim: true, maxlength: 2000 },
+    repairDate: { type: Date, default: Date.now, index: true },
   },
   {
     collection: "repair_log",

@@ -31,12 +31,6 @@ const transferHistorySchema = new mongoose.Schema(
       match: /^0x[a-f0-9]{40}$/,
       index: true,
     },
-    transferDate: {
-      type: Date,
-      required: true,
-      default: Date.now,
-      index: true,
-    },
     txHash: {
       type: String,
       required: true,
@@ -52,9 +46,12 @@ const transferHistorySchema = new mongoose.Schema(
       default: "transfer",
       index: true,
     },
-    blockNumber: { type: Number, min: 0, index: true },
-    chainId: { type: Number, min: 1 },
-    isActive: { type: Boolean, default: true, index: true },
+    transferDate: {
+      type: Date,
+      required: true,
+      default: Date.now,
+      index: true,
+    },
   },
   {
     collection: "transfer_history",
