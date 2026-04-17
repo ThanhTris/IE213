@@ -9,12 +9,13 @@ const {
   verifyWarrantyBySerialNumber,
 } = require("../controllers/warranty.controller");
 const { authenticate: verifyToken, authorize } = require("../middleware/auth");
+const { uploadSingleImage } = require("../middleware/multer");
 
 const router = express.Router();
 
 const authorizeRoles = (...roles) => authorize(roles);
 
-// Static routes must be defined before dynamic routes.
+// Static routes trước dynamic routes
 router.get("/my-warranties", verifyToken, getMyWarranties);
 router.get("/verify/:serialNumber", verifyWarrantyBySerialNumber);
 router.get(
@@ -24,9 +25,16 @@ router.get(
   getAllWarranties,
 );
 
-// POST /api/warranties - pre-mint record
-router.post("/", verifyToken, authorizeRoles("admin", "staff"), createWarranty);
-// PATCH /api/warranties/:id - update on-chain mint proof (admin/staff)
+// POST /api/warranties — nhận multipart/form-data (optional image)
+router.post(
+  "/",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  uploadSingleImage,
+  createWarranty,
+);
+
+// PATCH /api/warranties/:id — update on-chain mint proof (admin/staff)
 router.patch(
   "/:id",
   verifyToken,
@@ -34,13 +42,15 @@ router.patch(
   updateMintInfo,
 );
 
-// Note: Only PATCH /:id is supported for setting mint proof (tokenId, txHash).
+// PATCH /api/warranties/:id/status
 router.patch(
   "/:id/status",
   verifyToken,
   authorizeRoles("admin", "staff"),
   updateWarrantyStatus,
 );
+
+// GET /api/warranties/:id — chi tiết (admin/staff)
 router.get(
   "/:id",
   verifyToken,

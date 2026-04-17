@@ -5,35 +5,38 @@ const Product = require("../models/ProductModel");
 const User = require("../models/UserModel");
 const TransferHistory = require("../models/TranferHistoryModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
+const { uploadFileToPinata, uploadJSONToPinata } = require("../utils/pinata");
 
 const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const EVM_TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
 
+// POST /api/warranties — nhận multipart/form-data, tích hợp Pinata IPFS
 const createWarranty = async (req, res) => {
   try {
     // Zero-trust whitelist: chỉ nhận đúng các field được phép từ client.
-    const { serialNumber, productCode, ownerAddress, warrantyMonths, tokenURI } = req.body || {};
+    const { serialNumber, productCode, ownerWallet, warrantyMonths } = req.body || {};
 
-    if (!serialNumber || !productCode || !ownerAddress) {
+    if (!serialNumber || !productCode || !ownerWallet) {
       return sendError(res, {
         statusCode: 400,
-        message: "serialNumber, productCode, ownerAddress là bắt buộc",
+        message: "serialNumber, productCode, ownerWallet là bắt buộc",
       });
     }
 
-    const normalizedOwnerAddress = String(ownerAddress).trim().toLowerCase();
-    if (!EVM_ADDRESS_REGEX.test(normalizedOwnerAddress)) {
+    const normalizedOwnerWallet = String(ownerWallet).trim().toLowerCase();
+    if (!EVM_ADDRESS_REGEX.test(normalizedOwnerWallet)) {
       return sendError(res, {
         statusCode: 400,
-        message: "ownerAddress không đúng định dạng ví EVM",
+        message: "ownerWallet không đúng định dạng ví EVM",
       });
     }
 
     const normalizedSerialNumber = String(serialNumber).trim();
     const normalizedProductCode = String(productCode).trim().toUpperCase();
 
+    // Kiểm tra khách hàng tồn tại trong hệ thống
     const customer = await User.findOne({
-      walletAddress: normalizedOwnerAddress,
+      walletAddress: normalizedOwnerWallet,
     }).lean();
 
     if (!customer) {
@@ -44,6 +47,7 @@ const createWarranty = async (req, res) => {
       });
     }
 
+    // Kiểm tra sản phẩm tồn tại
     const product = await Product.findOne({
       productCode: normalizedProductCode,
     }).lean();
@@ -55,6 +59,7 @@ const createWarranty = async (req, res) => {
       });
     }
 
+    // Kiểm tra serialNumber chưa được dùng
     const existedWarranty = await Warranty.findOne({
       serialNumber: normalizedSerialNumber,
     }).lean();
@@ -65,15 +70,20 @@ const createWarranty = async (req, res) => {
       });
     }
 
+    // Tự động tính serialHash từ serialNumber
     const serialHash = `0x${crypto
       .createHash("sha256")
       .update(normalizedSerialNumber)
       .digest("hex")}`;
 
+    // Tính ngày hết hạn bảo hành
     const nowInSeconds = Math.floor(Date.now() / 1000);
-    // Allow overriding warranty months via request (optional). Fall back to product config.
     const monthsFromProduct = Number(product.warrantyMonths) || 0;
-    const requestedMonths = typeof warrantyMonths !== "undefined" ? Number(warrantyMonths) : monthsFromProduct;
+    const requestedMonths =
+      typeof warrantyMonths !== "undefined"
+        ? Number(warrantyMonths)
+        : monthsFromProduct;
+
     if (Number.isNaN(requestedMonths) || requestedMonths < 0) {
       return sendError(res, {
         statusCode: 400,
@@ -83,64 +93,91 @@ const createWarranty = async (req, res) => {
 
     const expiryDate = nowInSeconds + requestedMonths * 30 * 24 * 60 * 60;
 
+    // -------------------------------------------------------
+    // BƯỚC 1: XỬ LÝ ẢNH — Upload mới hoặc lấy từ Product
+    // -------------------------------------------------------
+    let imageCIDUrl = null; // ipfs://<CID> hoặc http URL
+
+    if (req.file && process.env.PINATA_JWT) {
+      // Có ảnh mới => upload lên Pinata
+      try {
+        const imageCID = await uploadFileToPinata(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+        );
+        imageCIDUrl = `ipfs://${imageCID}`;
+        console.log(`[Pinata] Ảnh warranty ${normalizedSerialNumber} uploaded: ${imageCIDUrl}`);
+      } catch (ipfsError) {
+        console.error("[Pinata] Upload ảnh thất bại:", ipfsError.message);
+        return sendError(res, {
+          statusCode: 502,
+          errorCode: "E502_IPFS",
+          message: `Upload ảnh lên IPFS thất bại: ${ipfsError.message}`,
+        });
+      }
+    } else {
+      // Không có ảnh mới => dùng imageUrl mặc định từ Product
+      imageCIDUrl = product.imageUrl || null;
+      console.log(`[Pinata] Không có ảnh mới, dùng imageUrl từ Product: ${imageCIDUrl}`);
+    }
+
+    // -------------------------------------------------------
+    // BƯỚC 2: TẠO NFT METADATA JSON & UPLOAD LÊN PINATA
+    // -------------------------------------------------------
+    let tokenURI = null;
+
+    if (process.env.PINATA_JWT) {
+      try {
+        const metadataJSON = {
+          name: `Warranty Card - ${normalizedSerialNumber}`,
+          description: `E-Warranty for ${product.productName} by ${product.brand}. ${product.description || ""}`.trim(),
+          image: imageCIDUrl || "",
+          attributes: [
+            { trait_type: "Serial Number", value: normalizedSerialNumber },
+            { trait_type: "Product Code", value: normalizedProductCode },
+            { trait_type: "Product Name", value: product.productName },
+            { trait_type: "Brand", value: product.brand },
+            { trait_type: "Color", value: product.color || "" },
+            { trait_type: "Config", value: product.config || "" },
+            {
+              trait_type: "Expiry Date",
+              display_type: "date",
+              value: expiryDate,
+            },
+            { trait_type: "Owner Wallet", value: normalizedOwnerWallet },
+            {
+              trait_type: "Warranty Months",
+              value: requestedMonths,
+            },
+          ],
+        };
+
+        const jsonCID = await uploadJSONToPinata(
+          metadataJSON,
+          `warranty_${normalizedSerialNumber}.json`,
+        );
+        tokenURI = `ipfs://${jsonCID}`;
+        console.log(`[Pinata] Metadata warranty ${normalizedSerialNumber} uploaded: ${tokenURI}`);
+      } catch (ipfsError) {
+        console.error("[Pinata] Upload metadata JSON thất bại:", ipfsError.message);
+        // Không hard-fail metadata upload: vẫn lưu warranty nhưng không có tokenURI
+        tokenURI = null;
+      }
+    }
+
+    // -------------------------------------------------------
+    // BƯỚC 3: LƯU VÀO DB
+    // -------------------------------------------------------
     const warranty = new Warranty({
       serialNumber: normalizedSerialNumber,
       serialHash,
-      ownerAddress: normalizedOwnerAddress,
+      ownerWallet: normalizedOwnerWallet,
       productCode: normalizedProductCode,
-      productInfo: {
-        productName: product.productName,
-        brand: product.brand,
-        color: product.color,
-        configuration: product.configuration,
-      },
       expiryDate,
       status: true,
-      tokenURI: tokenURI ? String(tokenURI).trim() : null,
+      tokenURI,
     });
-
-    // ---------------------------------------------------------
-    // WEB3: AUTO UPLOAD METADATA TO IPFS (PINATA)
-    // ---------------------------------------------------------
-    if (!warranty.tokenURI && process.env.PINATA_JWT) {
-      try {
-        const metadataJSON = {
-          name: `Warranty Card - ${warranty.serialNumber}`,
-          description: `E-Warranty for ${warranty.productInfo.productName} by ${warranty.productInfo.brand}`,
-          attributes: [
-            { trait_type: "Serial Number", value: warranty.serialNumber },
-            { trait_type: "Product Code", value: warranty.productCode },
-            { trait_type: "Brand", value: warranty.productInfo.brand },
-            { trait_type: "Color", value: warranty.productInfo.color },
-            { trait_type: "Expiry Date", display_type: "date", value: warranty.expiryDate },
-            { trait_type: "Owner", value: warranty.ownerAddress }
-          ]
-        };
-
-        const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.PINATA_JWT}`,
-          },
-          body: JSON.stringify({
-            pinataContent: metadataJSON,
-            pinataMetadata: {
-              name: `warranty_${warranty.serialNumber}.json`,
-            },
-          }),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          warranty.tokenURI = `ipfs://${result.IpfsHash}`;
-        } else {
-          console.error("[IPFS] Pinata upload failed:", await response.text());
-        }
-      } catch (ipfsError) {
-        console.error("[IPFS] Error uploading to Pinata:", ipfsError.message);
-      }
-    }
 
     const savedWarranty = await warranty.save();
 
@@ -172,10 +209,10 @@ const createWarranty = async (req, res) => {
   }
 };
 
+// PATCH /api/warranties/:id — Cập nhật thông tin On-chain sau khi mint NFT
 const updateMintInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    // Accept tokenId and txHash per API spec
     const { tokenId, txHash, tokenURI } = req.body || {};
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -206,7 +243,7 @@ const updateMintInfo = async (req, res) => {
       id,
       {
         tokenId: normalizedTokenId,
-        mintTxHash: normalizedTxHash,
+        txHash: normalizedTxHash,
         ...(tokenURI && { tokenURI: String(tokenURI).trim() }),
         mintedAt: new Date(),
         status: true,
@@ -224,23 +261,21 @@ const updateMintInfo = async (req, res) => {
       });
     }
 
-    // Create transfer history for mint (zero address -> customer)
+    // Tự động tạo transfer history mint (0x0 → ownerWallet)
     try {
       await TransferHistory.create({
         tokenId: normalizedTokenId,
         serialNumber: updatedWarranty.serialNumber,
         fromAddress: "0x0000000000000000000000000000000000000000",
-        toAddress: updatedWarranty.ownerAddress,
+        toAddress: updatedWarranty.ownerWallet,
         txHash: normalizedTxHash,
         transferType: "mint",
       });
     } catch (err) {
-      // If creating transfer history fails, do NOT remove mintTxHash (birth record).
-      // Warranty remains minted; transfer history must be created manually or retried.
       return sendError(res, {
         statusCode: 500,
         message:
-          "Đã cập nhật mint (mintTxHash được giữ nguyên) nhưng tạo lịch sử chuyển nhượng thất bại",
+          "Đã cập nhật mint (txHash được giữ nguyên) nhưng tạo lịch sử chuyển nhượng thất bại",
       });
     }
 
@@ -272,6 +307,7 @@ const updateMintInfo = async (req, res) => {
   }
 };
 
+// GET /api/warranties — Lấy tất cả (admin/staff)
 const getAllWarranties = async (req, res) => {
   try {
     const { status } = req.query || {};
@@ -311,6 +347,7 @@ const getAllWarranties = async (req, res) => {
   }
 };
 
+// GET /api/warranties/:id — Chi tiết (admin/staff)
 const getWarrantyByIdAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -344,6 +381,7 @@ const getWarrantyByIdAdmin = async (req, res) => {
   }
 };
 
+// PATCH /api/warranties/:id/status — Đổi trạng thái (admin/staff)
 const updateWarrantyStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -392,6 +430,7 @@ const updateWarrantyStatus = async (req, res) => {
   }
 };
 
+// GET /api/warranties/my-warranties — Lấy bảo hành của user đang login
 const getMyWarranties = async (req, res) => {
   try {
     if (!req.user || !req.user.walletAddress) {
@@ -401,9 +440,9 @@ const getMyWarranties = async (req, res) => {
       });
     }
 
-    const ownerAddress = String(req.user.walletAddress).trim().toLowerCase();
+    const ownerWallet = String(req.user.walletAddress).trim().toLowerCase();
 
-    const warranties = await Warranty.find({ ownerAddress })
+    const warranties = await Warranty.find({ ownerWallet })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -420,6 +459,7 @@ const getMyWarranties = async (req, res) => {
   }
 };
 
+// GET /api/warranties/verify/:serialNumber — Tra cứu công khai
 const verifyWarrantyBySerialNumber = async (req, res) => {
   try {
     const { serialNumber } = req.params;
@@ -443,8 +483,8 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       });
     }
 
-    const owner = String(warranty.ownerAddress || "").trim();
-    const maskedOwnerAddress =
+    const owner = String(warranty.ownerWallet || "").trim();
+    const maskedOwnerWallet =
       owner.length > 10
         ? `${owner.substring(0, 6)}...${owner.substring(owner.length - 4)}`
         : owner;
@@ -455,16 +495,15 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       data: {
         serialNumber: warranty.serialNumber,
         serialHash: warranty.serialHash,
-        ownerAddress: maskedOwnerAddress,
+        ownerWallet: maskedOwnerWallet,
         productCode: warranty.productCode,
-        productInfo: warranty.productInfo,
         expiryDate: warranty.expiryDate,
         status: warranty.status,
         tokenId: warranty.tokenId,
         tokenURI: warranty.tokenURI,
-        mintTxHash: warranty.mintTxHash,
+        txHash: warranty.txHash,
         mintedAt: warranty.mintedAt,
-        isMinted: Boolean(warranty.tokenId && warranty.mintTxHash),
+        isMinted: Boolean(warranty.tokenId && warranty.txHash),
       },
     });
   } catch (error) {
