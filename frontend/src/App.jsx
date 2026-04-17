@@ -5,6 +5,7 @@ import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import HeaderTabs from "./components/HeaderTabs";
 import WalletModal from "./components/WalletModal";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "sonner";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -43,6 +44,7 @@ function MainLayout({ auth, onLogout, adminActiveTab, onAdminAction }) {
         <Outlet context={{ setModalOpen }} />
       </main>
       <WalletModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <Toaster position="top-right" richColors />
     </div>
   );
 }
