@@ -213,7 +213,7 @@ const createWarranty = async (req, res) => {
 const updateMintInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { tokenId, txHash, tokenURI } = req.body || {};
+    const { tokenId, txHash, tokenURI, status } = req.body || {};
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendError(res, {
@@ -239,6 +239,12 @@ const updateMintInfo = async (req, res) => {
       });
     }
 
+    // Xác định trạng thái status
+    let updateStatus = true;
+    if (status !== undefined) {
+      updateStatus = typeof status === "string" ? status.toLowerCase() === "true" || status.toLowerCase() === "active" : Boolean(status);
+    }
+
     const updatedWarranty = await Warranty.findByIdAndUpdate(
       id,
       {
@@ -246,7 +252,7 @@ const updateMintInfo = async (req, res) => {
         txHash: normalizedTxHash,
         ...(tokenURI && { tokenURI: String(tokenURI).trim() }),
         mintedAt: new Date(),
-        status: true,
+        status: updateStatus,
       },
       {
         new: true,
