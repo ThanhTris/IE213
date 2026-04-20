@@ -9,12 +9,16 @@
     "test": "NODE_PATH=./node_modules vitest run --config ./vitest.config.js"
   },
   "dependencies": {
+    "axios": "^1.15.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "ethers": "^6.16.0",
     "express": "^4.19.2",
+    "form-data": "^4.0.5",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "multer": "^2.1.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",

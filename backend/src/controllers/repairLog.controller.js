@@ -9,14 +9,15 @@ const EVM_ADDRESS_REGEX = /^0x[a-f0-9]{40}$/;
 const normalizeText = (value = "") => String(value).trim();
 const normalizeWallet = (value = "") => String(value).trim().toLowerCase();
 
+// POST /api/repair-logs
 const createRepairLog = async (req, res) => {
   try {
     const allowedFields = new Set([
       "serialNumber",
       "repairContent",
-      "partsReplaced",
+      "isWarrantyCovered",
+      "status",
       "cost",
-      "notes",
     ]);
     const payload = Object.entries(req.body || {}).reduce(
       (acc, [key, value]) => {
@@ -47,34 +48,34 @@ const createRepairLog = async (req, res) => {
       });
     }
 
-    let partsReplaced = [];
-    if (payload.partsReplaced !== undefined) {
-      if (!Array.isArray(payload.partsReplaced)) {
+    // isWarrantyCovered (boolean, bắt buộc)
+    if (payload.isWarrantyCovered === undefined) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "isWarrantyCovered là trường bắt buộc (true/false)",
+        details: ["isWarrantyCovered"],
+      });
+    }
+    const isWarrantyCovered = Boolean(payload.isWarrantyCovered === true || payload.isWarrantyCovered === "true");
+
+    // status (optional, default "pending")
+    const VALID_STATUSES = ["pending", "in_progress", "done", "rejected"];
+    let status = "pending";
+    if (payload.status !== undefined) {
+      const normalizedStatus = normalizeText(payload.status).toLowerCase();
+      if (!VALID_STATUSES.includes(normalizedStatus)) {
         return sendError(res, {
           statusCode: 400,
           errorCode: "E400_VALIDATION",
-          message: "partsReplaced phải là mảng chuỗi",
-          details: ["partsReplaced"],
+          message: `status không hợp lệ. Hỗ trợ: ${VALID_STATUSES.join(", ")}`,
+          details: ["status"],
         });
       }
-
-      const sanitizedParts = payload.partsReplaced
-        .filter((item) => item !== null && item !== undefined)
-        .map((item) => normalizeText(item))
-        .filter(Boolean);
-
-      if (sanitizedParts.length !== payload.partsReplaced.length) {
-        return sendError(res, {
-          statusCode: 400,
-          errorCode: "E400_VALIDATION",
-          message: "partsReplaced chỉ chấp nhận chuỗi không rỗng",
-          details: ["partsReplaced"],
-        });
-      }
-
-      partsReplaced = sanitizedParts;
+      status = normalizedStatus;
     }
 
+    // cost (optional, default 0)
     let cost = 0;
     if (payload.cost !== undefined) {
       const parsedCost = Number(payload.cost);
@@ -89,19 +90,7 @@ const createRepairLog = async (req, res) => {
       cost = parsedCost;
     }
 
-    let notes;
-    if (payload.notes !== undefined && payload.notes !== null) {
-      if (typeof payload.notes !== "string") {
-        return sendError(res, {
-          statusCode: 400,
-          errorCode: "E400_VALIDATION",
-          message: "notes phải là chuỗi",
-          details: ["notes"],
-        });
-      }
-      notes = normalizeText(payload.notes);
-    }
-
+    // Tìm warranty theo serialNumber
     const warranty = await Warranty.findOne({ serialNumber }).lean();
     if (!warranty) {
       return sendError(res, {
@@ -120,6 +109,7 @@ const createRepairLog = async (req, res) => {
       });
     }
 
+    // Lấy technicianWallet từ JWT token
     const technicianWallet = normalizeWallet(req.user?.walletAddress || "");
     if (!technicianWallet || !EVM_ADDRESS_REGEX.test(technicianWallet)) {
       return sendError(res, {
@@ -130,25 +120,14 @@ const createRepairLog = async (req, res) => {
       });
     }
 
-    const technicianUser = await User.findOne({
-      walletAddress: technicianWallet,
-    })
-      .select("fullName walletAddress")
-      .lean();
-
-    const technicianName =
-      normalizeText(technicianUser?.fullName || "") || technicianWallet;
-
     const repairLog = new RepairLog({
       warrantyId: warranty._id,
       serialNumber: warranty.serialNumber,
-      tokenId: warranty.tokenId || null,
       technicianWallet,
-      technicianName,
       repairContent,
-      partsReplaced,
+      isWarrantyCovered,
+      status,
       cost,
-      notes,
     });
 
     const savedRepairLog = await repairLog.save();
@@ -176,6 +155,7 @@ const createRepairLog = async (req, res) => {
   }
 };
 
+// GET /api/repair-logs/device/:serialNumber
 const getRepairLogsBySerialNumber = async (req, res) => {
   try {
     const serialNumber = normalizeText(req.params?.serialNumber || "");
@@ -222,6 +202,7 @@ const getRepairLogsBySerialNumber = async (req, res) => {
   }
 };
 
+// GET /api/repair-logs
 const getAllRepairLogs = async (req, res) => {
   try {
     const sortQuery = normalizeText(req.query?.sort || "desc").toLowerCase();
@@ -245,6 +226,7 @@ const getAllRepairLogs = async (req, res) => {
   }
 };
 
+// PATCH /api/repair-logs/:id — Cập nhật (admin hoặc chủ repair log)
 const updateRepairLog = async (req, res) => {
   try {
     const id = normalizeText(req.params?.id || "");
@@ -259,9 +241,9 @@ const updateRepairLog = async (req, res) => {
 
     const allowedFields = new Set([
       "repairContent",
-      "partsReplaced",
+      "isWarrantyCovered",
+      "status",
       "cost",
-      "notes",
     ]);
     const payload = Object.entries(req.body || {}).reduce(
       (acc, [key, value]) => {
@@ -318,31 +300,24 @@ const updateRepairLog = async (req, res) => {
       updates.repairContent = repairContent;
     }
 
-    if (payload.partsReplaced !== undefined) {
-      if (!Array.isArray(payload.partsReplaced)) {
+    if (payload.isWarrantyCovered !== undefined) {
+      updates.isWarrantyCovered = Boolean(
+        payload.isWarrantyCovered === true || payload.isWarrantyCovered === "true",
+      );
+    }
+
+    if (payload.status !== undefined) {
+      const VALID_STATUSES = ["pending", "in_progress", "done", "rejected"];
+      const normalizedStatus = normalizeText(payload.status).toLowerCase();
+      if (!VALID_STATUSES.includes(normalizedStatus)) {
         return sendError(res, {
           statusCode: 400,
           errorCode: "E400_VALIDATION",
-          message: "partsReplaced phải là mảng chuỗi",
-          details: ["partsReplaced"],
+          message: `status không hợp lệ. Hỗ trợ: ${VALID_STATUSES.join(", ")}`,
+          details: ["status"],
         });
       }
-
-      const sanitizedParts = payload.partsReplaced
-        .filter((item) => item !== null && item !== undefined)
-        .map((item) => normalizeText(item))
-        .filter(Boolean);
-
-      if (sanitizedParts.length !== payload.partsReplaced.length) {
-        return sendError(res, {
-          statusCode: 400,
-          errorCode: "E400_VALIDATION",
-          message: "partsReplaced chỉ chấp nhận chuỗi không rỗng",
-          details: ["partsReplaced"],
-        });
-      }
-
-      updates.partsReplaced = sanitizedParts;
+      updates.status = normalizedStatus;
     }
 
     if (payload.cost !== undefined) {
@@ -356,19 +331,6 @@ const updateRepairLog = async (req, res) => {
         });
       }
       updates.cost = parsedCost;
-    }
-
-    if (payload.notes !== undefined) {
-      if (payload.notes !== null && typeof payload.notes !== "string") {
-        return sendError(res, {
-          statusCode: 400,
-          errorCode: "E400_VALIDATION",
-          message: "notes phải là chuỗi hoặc null",
-          details: ["notes"],
-        });
-      }
-      updates.notes =
-        payload.notes === null ? null : normalizeText(payload.notes);
     }
 
     const updatedRepairLog = await RepairLog.findByIdAndUpdate(

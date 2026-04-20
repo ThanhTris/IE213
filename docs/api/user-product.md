@@ -165,33 +165,39 @@ Success 200:
 Header:
 
 - Authorization: Bearer <JWT_TOKEN>
+- Content-Type: multipart/form-data
 
-Request:
+Request Body (Fields):
 
-```json
-{
-  "productCode": "IP15-PRO-256",
-  "name": "iPhone 15 Pro 256GB",
-  "description": "Titanium, A17 Pro",
-  "warrantyMonths": 12
-}
-```
+- `productCode`: "IP15-PRO-256" (Bắt buộc)
+- `productName`: "iPhone 15 Pro 256GB" (Bắt buộc)
+- `brand`: "Apple" (Bắt buộc)
+- `color`: "Titanium"
+- `config`: "256GB, A17 Pro"
+- `price`: 29990000 (Số)
+- `warrantyMonths`: 12 (Số)
+- `description`: "Mô tả chi tiết sản phẩm"
+- `image`: [File ảnh] (Trường binary, tải lên Pinata IPFS)
 
 Success 201:
 
 ```json
 {
   "success": true,
-  "message": "Product created",
+  "message": "Tạo sản phẩm thành công",
   "data": {
-    "_id": "661100aa22bb33cc44dd6611",
+    "id": "661100aa22bb33cc44dd6611",
     "productCode": "IP15-PRO-256",
-    "name": "iPhone 15 Pro 256GB",
-    "description": "Titanium, A17 Pro",
+    "productName": "iPhone 15 Pro 256GB",
+    "brand": "Apple",
+    "color": "Titanium",
+    "config": "256GB, A17 Pro",
+    "imageUrl": "ipfs://bafybeic...",
+    "price": 29990000,
     "warrantyMonths": 12,
+    "description": "Mô tả chi tiết sản phẩm",
     "isActive": true,
-    "createdAt": "2026-04-05T10:20:00.000Z",
-    "updatedAt": "2026-04-05T10:20:00.000Z"
+    "createdAt": "2026-04-05T10:20:00.000Z"
   }
 }
 ```
@@ -203,13 +209,15 @@ Success 200:
 ```json
 {
   "success": true,
-  "message": "Products retrieved",
+  "message": "Lấy danh sách sản phẩm thành công",
   "data": [
     {
-      "_id": "661100aa22bb33cc44dd6611",
+      "id": "661100aa22bb33cc44dd6611",
       "productCode": "IP15-PRO-256",
-      "name": "iPhone 15 Pro 256GB",
-      "description": "Titanium, A17 Pro",
+      "productName": "iPhone 15 Pro 256GB",
+      "brand": "Apple",
+      "imageUrl": "ipfs://bafybeic...",
+      "price": 29990000,
       "warrantyMonths": 12,
       "isActive": true
     }
@@ -224,13 +232,18 @@ Success 200:
 ```json
 {
   "success": true,
-  "message": "Product found",
+  "message": "Lấy thông tin sản phẩm thành công",
   "data": {
-    "_id": "661100aa22bb33cc44dd6611",
+    "id": "661100aa22bb33cc44dd6611",
     "productCode": "IP15-PRO-256",
-    "name": "iPhone 15 Pro 256GB",
-    "description": "Titanium, A17 Pro",
+    "productName": "iPhone 15 Pro 256GB",
+    "brand": "Apple",
+    "color": "Titanium",
+    "config": "256GB, A17 Pro",
+    "imageUrl": "ipfs://bafybeic...",
+    "price": 29990000,
     "warrantyMonths": 12,
+    "description": "Mô tả chi tiết sản phẩm",
     "isActive": true
   }
 }
@@ -241,26 +254,24 @@ Success 200:
 Header:
 
 - Authorization: Bearer <JWT_TOKEN>
+- Content-Type: multipart/form-data (Nếu tải ảnh mới)
 
-Request:
+Request Body:
 
-```json
-{
-  "name": "iPhone 15 Pro 256GB (VN/A)",
-  "warrantyMonths": 18
-}
-```
+- `productName`: "iPhone 15 Pro 256GB (VN/A)"
+- `warrantyMonths`: 18
+- `image`: [File ảnh mới] (Tùy chọn)
 
 Success 200:
 
 ```json
 {
   "success": true,
-  "message": "Product updated",
+  "message": "Cập nhật sản phẩm thành công",
   "data": {
-    "_id": "661100aa22bb33cc44dd6611",
+    "id": "661100aa22bb33cc44dd6611",
     "productCode": "IP15-PRO-256",
-    "name": "iPhone 15 Pro 256GB (VN/A)",
+    "productName": "iPhone 15 Pro 256GB (VN/A)",
     "warrantyMonths": 18,
     "updatedAt": "2026-04-05T11:30:00.000Z"
   }
@@ -278,9 +289,9 @@ Success 200:
 ```json
 {
   "success": true,
-  "message": "Product deactivated",
+  "message": "Ẩn sản phẩm thành công",
   "data": {
-    "_id": "661100aa22bb33cc44dd6611",
+    "id": "661100aa22bb33cc44dd6611",
     "productCode": "IP15-PRO-256",
     "isActive": false,
     "updatedAt": "2026-04-05T11:40:00.000Z"
