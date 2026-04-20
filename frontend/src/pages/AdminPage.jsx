@@ -1,12 +1,21 @@
 import AdminDashboard from "./admin/AdminDashboard";
 import CreateWarranty from "./admin/CreateWarranty";
+import CreateNewProduct from "./admin/CreateNewProduct";
 import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
 import "../assets/views/admin-portal.css";
 
+import { useNavigate, Link } from "react-router-dom";
+
 function AdminPage({ adminActiveTab, onSetAdminTab }) {
+  const navigate = useNavigate();
   const activeTab = adminActiveTab ?? "create";
   const setActiveTab = onSetAdminTab ?? (() => {});
+
+  const handleReturnToPortal = () => {
+    setActiveTab("create");
+    navigate("/admin");
+  };
 
   const tabs = [
     {
@@ -45,13 +54,32 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
         </svg>
       ),
     },
+    {
+      id: "create-new-product",
+      label: "Create New Product",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      ),
+    },
   ];
 
   return (
     <>
       <div className="view active">
         {activeTab === "dashboard" ? (
-          <AdminDashboard onReturnToPortal={() => setActiveTab("create")} />
+          <AdminDashboard onReturnToPortal={handleReturnToPortal} />
         ) : (
           <div className="admin-page-wrapper">
             {/* Admin Header */}
@@ -62,60 +90,6 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
                   Issue warranties, log repairs, and manage your warranty
                   program
                 </p>
-              </div>
-              <div className="admin-header-actions">
-                <a
-                  href="/create-new-product"
-                  type="button"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 12,
-                    background:
-                      "linear-gradient(90deg, #10b981 0%, #16c784 100%)",
-                    color: "#fff",
-                    fontWeight: 700,
-                    fontSize: 20,
-                    border: "none",
-                    borderRadius: 32,
-                    padding: "14px 36px",
-                    boxShadow: "0 4px 24px #10b98122",
-                    cursor: "pointer",
-                    textDecoration: "none",
-                    transition: "background 0.2s",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.background =
-                      "linear-gradient(90deg, #16c784 0%, #10b981 100%)")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.background =
-                      "linear-gradient(90deg, #10b981 0%, #16c784 100%)")
-                  }
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#fff"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                  <span
-                    style={{
-                      textDecoration: "none",
-                      fontWeight: 700,
-                      fontSize: 20,
-                    }}
-                  >
-                    Create New Product
-                  </span>
-                </a>
               </div>
             </div>
 
@@ -139,6 +113,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
             <div className="admin-content">
               {activeTab === "create" && <CreateWarranty />}
               {activeTab === "log-repairs" && <LogRepairs />}
+              {activeTab === "create-new-product" && <CreateNewProduct />}
             </div>
           </div>
         )}

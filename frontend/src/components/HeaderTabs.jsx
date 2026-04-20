@@ -1,74 +1,85 @@
-
+import { NavLink, Link } from "react-router-dom";
 import { shortAddress } from "../utils/auth";
 
-function HeaderTabs({ activeView, onChangeView, auth, onLogout, adminActiveTab, onAdminAction }) {
+function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
   const isAuthenticated = Boolean(auth?.token);
   const role = auth?.role || "";
 
-  // Keep Home + Public Search visible always.
-  // When authenticated, show the correct portal tab based on role.
+  // Define tabs with their paths
   const tabs = [
-    { key: "home", label: "Home" },
-    { key: "guest", label: "Public Search" },
+    { key: "home", label: "Home", path: "/" },
+    { key: "guest", label: "Public Search", path: "/search" },
   ];
 
-  if (isAuthenticated && role === "admin") {
-    tabs.push({ key: "admin", label: "Admin Portal" });
-  } else if (isAuthenticated) {
-    tabs.push({ key: "user", label: "User Wallet" });
+  if (role === "admin") {
+    tabs.push({ key: "admin", label: "Admin Portal", path: "/admin" });
+  } else if (isAuthenticated && role === "user") {
+    tabs.push({ key: "user", label: "User Wallet", path: "/user" });
   }
 
   if (isAuthenticated) {
-    tabs.push({ key: "profile", label: "My Profile" });
+    tabs.push({ key: "settings", label: "Settings", path: "/settings" });
   }
 
   return (
     <header className="app-header">
       <div className="header-inner">
-        <button type="button" className="brand" onClick={() => onChangeView("home")}>
+        <Link to="/" className="brand">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ color: "var(--navy-primary)" }}
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
           <span className="brand-text">BlockWarranty</span>
-        </button>
+        </Link>
 
         <nav className="nav-tabs" role="tablist" aria-label="Application views">
           {tabs.map((tab) => (
-            <button
+            <NavLink
               key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={activeView === tab.key && adminActiveTab !== "dashboard"}
+              to={tab.path}
+              className={({ isActive }) => 
+                isActive && (tab.key !== "admin" || adminActiveTab !== "dashboard") 
+                ? "active" 
+                : ""
+              }
               onClick={() => {
-                // When switching away from dashboard back to admin portal, reset adminTab
-                if (tab.key === "admin" && adminActiveTab === "dashboard") {
+                if (tab.key === "admin") {
                   onAdminAction?.("create");
                 }
-                onChangeView(tab.key);
               }}
+              role="tab"
             >
               {tab.label}
-            </button>
+            </NavLink>
           ))}
 
-          {/* Dashboard tab — only shown when admin is logged in */}
           {isAuthenticated && role === "admin" && (
-            <button
-              type="button"
+            <NavLink
+              to="/admin/dashboard"
+              className={({ isActive }) => 
+                isActive || adminActiveTab === "dashboard" ? "nav-tab-dashboard active" : "nav-tab-dashboard"
+              }
               role="tab"
-              aria-selected={activeView === "admin" && adminActiveTab === "dashboard"}
-              className="nav-tab-dashboard"
-              onClick={() => {
-                onChangeView("admin");
-                onAdminAction?.("dashboard");
-              }}
+              onClick={() => onAdminAction?.("dashboard")}
             >
               Dashboard
-            </button>
+            </NavLink>
           )}
         </nav>
 
         {!isAuthenticated ? (
-          <button type="button" className="btn-login" onClick={() => onChangeView("auth")}>
+          <Link to="/auth" className="btn-login">
             Sign in
-          </button>
+          </Link>
         ) : (
           <div className="header-user">
             <span className="header-user-address" aria-label="Connected wallet">

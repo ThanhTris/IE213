@@ -1,231 +1,160 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { repairService } from "../../services/repairService";
+
+
+const STATUS_STYLES = {
+  completed: { background: "#10b981", color: "white" },
+  fixing: { background: "#f59e0b", color: "white" },
+  pending: { background: "#3b82f6", color: "white" },
+};
 
 function RepairHistory() {
-  const [repairRecords] = useState([
-    {
-      id: 1,
-      serialNumber: "FNQW8123XYZ",
-      productName: "iPhone 15 Pro Max",
-      owner: "John Doe (0x7426...08f)",
-      issueType: "Screen Damage",
-      repairDate: "2025-12-10",
-      completionDate: "2025-12-14",
-      status: "completed",
-      repairCost: "$149.00",
-      technician: "Tech Service Center #1",
-    },
-    {
-      id: 2,
-      serialNumber: "C0ZZ456LMD6",
-      productName: 'MacBook Pro 16"',
-      owner: "Jane Smith (0x8a3d...0bc2)",
-      issueType: "Battery Replacement",
-      repairDate: "2025-11-20",
-      completionDate: "2025-11-25",
-      status: "completed",
-      repairCost: "$199.00",
-      technician: "Apple Service",
-    },
-    {
-      id: 3,
-      serialNumber: "DMPH234ABC",
-      productName: "iPad Pro 12.9\"",
-      owner: "Sarah Williams (0x9c2b...de3)",
-      issueType: "Display Issue",
-      repairDate: "2025-12-01",
-      completionDate: null,
-      status: "in-progress",
-      repairCost: "Pending",
-      technician: "Tech Service Center #2",
-    },
-    {
-      id: 4,
-      serialNumber: "XYWZ567EFG",
-      productName: "AirPods Pro 2",
-      owner: "David Chen (0x7d4c...df2a)",
-      issueType: "Audio Problem",
-      repairDate: "2025-10-15",
-      completionDate: "2025-10-18",
-      status: "completed",
-      repairCost: "$99.00",
-      technician: "Apple Service",
-    },
-  ]);
-
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [repairs, setRepairs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const formatDate = (dateStr) => {
-    if (!dateStr || typeof dateStr !== 'string') return dateStr;
-    const regex = /^\d{4}-\d{2}-\d{2}$/;
-    if (regex.test(dateStr)) {
-      const [y, m, d] = dateStr.split("-");
-      return `${d}/${m}/${y}`;
+  const fetchRepairs = async () => {
+    try {
+      setLoading(true);
+      const res = await repairService.getAllRepairs();
+      setRepairs(res.data || []);
+    } catch (err) {
+      console.error("Lỗi khi tải lịch sử sửa chữa:", err);
+    } finally {
+      setLoading(false);
     }
-    return dateStr;
   };
+
+  useEffect(() => {
+    fetchRepairs();
+  }, []);
 
   const filteredRecords = useMemo(() => {
-    return repairRecords.filter((record) => {
-      // Filter by status
-      const statusMatch = filterStatus === "all" || record.status === filterStatus;
-
-      // Filter by search term
-      const searchMatch = searchTerm === "" ||
-        record.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.issueType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.technician.toLowerCase().includes(searchTerm.toLowerCase());
-
-      return statusMatch && searchMatch;
-    });
-  }, [repairRecords, filterStatus, searchTerm]);
-
-  const getStatusBadge = (status) => {
-    const styles = {
-      completed: { backgroundColor: "#10b981", color: "white" },
-      "in-progress": { backgroundColor: "#f59e0b", color: "white" },
-      pending: { backgroundColor: "#6b7280", color: "white" },
-    };
-    return (
-      <span
-        style={{
-          padding: "4px 12px",
-          borderRadius: "20px",
-          fontSize: "12px",
-          fontWeight: "bold",
-          whiteSpace: "nowrap",
-          display: "inline-block",
-          ...styles[status],
-        }}
-      >
-        {status === "in-progress" ? "In Progress" : status}
-      </span>
+    if (!searchTerm) return repairs;
+    return repairs.filter(
+      (r) =>
+        r.serialNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.repairContent?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.technicianWallet?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  };
+  }, [repairs, searchTerm]);
+
+  const coveredCount = repairs.filter((r) => r.isWarrantyCovered).length;
+  const notCoveredCount = repairs.filter((r) => !r.isWarrantyCovered).length;
 
   return (
     <div className="repair-history-container">
-      {/* Search and Filter Section */}
-      <div className="search-filter-section">
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            placeholder="Search by product name, serial, owner, issue type, or technician..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <span className="search-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </span>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>
+          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Complete Repair History</span>
         </div>
-
-        {/* Filter Tabs */}
-        <div className="filter-tabs">
-          <button
-            className={`filter-btn ${filterStatus === "all" ? "active" : ""}`}
-            onClick={() => setFilterStatus("all")}
-          >
-            All
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "completed" ? "active" : ""}`}
-            onClick={() => setFilterStatus("completed")}
-          >
-            Completed
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "in-progress" ? "active" : ""}`}
-            onClick={() => setFilterStatus("in-progress")}
-          >
-            In Progress
-          </button>
-        </div>
+        <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
+          {repairs.length} repairs
+        </span>
       </div>
 
-      {/* Record Count */}
-      <div className="record-count">
-        <span>{filteredRecords.length} repair record{filteredRecords.length !== 1 ? 's' : ''} found</span>
+      {/* Search */}
+      <div className="search-input-wrapper" style={{ marginBottom: 24 }}>
+        <input
+          type="text"
+          placeholder="Search by product, serial, customer, or repair type..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        <span className="search-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
       </div>
 
-      {/* Repair Table */}
+      {/* Table */}
       <div className="table-wrapper">
         <table className="repair-table">
           <thead>
             <tr>
-              <th>Device</th>
-              <th>Owner</th>
-              <th>Issue Type</th>
-              <th>Repair Date</th>
-              <th>Completion Date</th>
-              <th>Status</th>
-              <th>Cost</th>
-              <th>Technician</th>
-              <th>Actions</th>
+               <th>Serial Number</th>
+               <th>Repair Content</th>
+               <th>Cost</th>
+               <th>Technician</th>
+               <th>Date</th>
+               <th>Warranty</th>
+               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {filteredRecords.map((record) => (
               <tr key={record.id}>
+                 <td>
+                   <div style={{ fontWeight: 600, color: "#1e40af", fontSize: 13 }}>{record.serialNumber}</div>
+                 </td>
+                 <td>
+                   <div style={{ color: "#475569", fontSize: 13 }}>{record.repairContent}</div>
+                 </td>
+                 <td style={{ fontWeight: 700, color: "#0f172a", fontSize: 13 }}>
+                   {record.cost > 0 ? Number(record.cost).toLocaleString("vi-VN") + " ₫" : "Miễn phí"}
+                 </td>
+                 <td>
+                   <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis" }} title={record.technicianWallet}>
+                     {record.technicianWallet ? `${record.technicianWallet.slice(0, 6)}...${record.technicianWallet.slice(-4)}` : "N/A"}
+                   </div>
+                 </td>
+                 <td style={{ fontSize: 13, color: "#475569" }}>
+                   {record.repairDate ? new Date(record.repairDate).toLocaleDateString() : "-"}
+                 </td>
+                 <td>
+                   <span style={{
+                     display: "inline-block",
+                     background: record.isWarrantyCovered ? "#10b981" : "#ef4444",
+                     color: "white",
+                     borderRadius: 20, padding: "3px 12px",
+                     fontSize: 12, fontWeight: 700,
+                   }}>
+                     {record.isWarrantyCovered ? "Yes" : "No"}
+                   </span>
+                 </td>
                 <td>
-                  <div className="device-cell">
-                    <div className="device-name">{record.productName}</div>
-                    <div className="device-serial">{record.serialNumber}</div>
-                  </div>
-                </td>
-                <td>{record.owner}</td>
-                <td>
-                  <span className="issue-type">{record.issueType}</span>
-                </td>
-                <td>{formatDate(record.repairDate)}</td>
-                <td>{formatDate(record.completionDate) || "-"}</td>
-                <td>{getStatusBadge(record.status)}</td>
-                <td className="cost-cell">{record.repairCost}</td>
-                <td>{record.technician}</td>
-                <td>
-                  <div className="action-buttons">
-                    <button className="action-btn view-btn" title="View Details">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                    borderRadius: 20, padding: "4px 12px",
+                    fontSize: 12, fontWeight: 700,
+                    ...STATUS_STYLES[record.status],
+                  }}>
+                    {record.status === "completed" && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
-                    </button>
-                    <button className="action-btn edit-btn" title="Edit">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                      </svg>
-                    </button>
-                  </div>
+                    )}
+                    {record.status}
+                  </span>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {filteredRecords.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>No repair records found.</div>
+        )}
       </div>
 
-      {/* Statistics Footer */}
-      <div className="repair-stats">
+      {/* Stats Footer */}
+      <div className="repair-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
         <div className="stat-box">
           <span className="stat-label">Total Repairs</span>
-          <span className="stat-value">{repairRecords.length}</span>
+          <div className="stat-value" style={{ color: "#0f172a" }}>{repairs.length}</div>
         </div>
         <div className="stat-box">
-          <span className="stat-label">Avg Repair Time</span>
-          <span className="stat-value">4.2 days</span>
+          <span className="stat-label">Covered by Warranty</span>
+          <span className="stat-value" style={{ color: "#10b981" }}>{coveredCount}</span>
         </div>
         <div className="stat-box">
-          <span className="stat-label">Total Cost</span>
-          <span className="stat-value">$647.00</span>
-        </div>
-        <div className="stat-box">
-          <span className="stat-label">Success Rate</span>
-          <span className="stat-value">100%</span>
+          <span className="stat-label">Not Covered</span>
+          <span className="stat-value" style={{ color: "#ef4444" }}>{notCoveredCount}</span>
         </div>
       </div>
     </div>

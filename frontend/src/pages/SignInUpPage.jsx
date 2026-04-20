@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { connectMetaMask, isValidWalletAddress } from "../utils/web3";
-import { API_ROOT } from "../utils/api";
-import { persistAuthToken } from "../utils/auth";
-
-function extractBearerToken(headerValue = "") {
-  const v = String(headerValue || "");
-  if (!v) return "";
-  return v.startsWith("Bearer ") ? v.slice(7).trim() : v.trim();
-}
+import { persistAuthToken, getAuthFromToken } from "../utils/auth";
+import { userService } from "../services/userService";
 
 function SignInUpPage({ onAuthSuccess, onCancel }) {
   const [busy, setBusy] = useState(false);
@@ -18,44 +12,31 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
     setBusy(true);
     try {
       const addr = await connectMetaMask();
-      
       if (!isValidWalletAddress(addr)) {
-        setError("Invalid wallet address.");
+        setError("Địa chỉ ví không hợp lệ.");
         return;
       }
 
-      const res = await fetch(`${API_ROOT}/users/auth`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ walletAddress: addr }),
-      });
-
-      const json = await res.json().catch(() => null);
-      if (!res.ok) {
-        const msg = json?.error?.message || json?.message || "Authentication failed.";
-        setError(msg);
-        return;
-      }
-
-      const token =
-        json?.data?.accessToken ||
-        extractBearerToken(res.headers.get("authorization")) ||
-        extractBearerToken(res.headers.get("x-access-token")) ||
-        "";
+      // Sử dụng userService để đăng nhập
+      const res = await userService.login({ walletAddress: addr });
+      
+      // Với interceptor, res đã là response.data
+      const token = res.data?.accessToken;
 
       if (!token) {
-        setError("Authentication succeeded but token was not returned.");
+        setError("Đăng nhập thành công nhưng không nhận được token.");
         return;
       }
 
       const auth = persistAuthToken(token);
       if (!auth) {
-        setError("Unable to read auth payload.");
+        setError("Không thể đọc thông tin xác thực từ token.");
         return;
       }
       onAuthSuccess?.(auth);
     } catch (e) {
-      setError(e?.message || "Failed to connect wallet.");
+      console.error("[Login Error]", e);
+      setError(e?.message || "Kết nối ví thất bại.");
     } finally {
       setBusy(false);
     }

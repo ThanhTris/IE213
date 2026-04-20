@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { API_ROOT } from "../utils/api";
+import { useNavigate } from "react-router-dom";
+import { warrantyService } from "../services/warrantyService";
 import Footer from "../components/Footer";
 
-function GuestPage({ onChangeView, isAuthenticated }) {
+function GuestPage({ isAuthenticated }) {
+  const navigate = useNavigate();
   const initialPrefill = (() => {
     try {
       return sessionStorage.getItem("bw_search_prefill") || "SN-7K2M-2024-X9";
@@ -36,24 +38,19 @@ function GuestPage({ onChangeView, isAuthenticated }) {
     try {
       const tokenId = String(serialOrToken || "").trim();
       if (!tokenId) {
-        setError("Please enter a serial/token id.");
+        setError("Vui lòng nhập số Serial hoặc Token ID.");
         return;
       }
 
-      const res = await fetch(
-        `${API_ROOT}/warranties/${encodeURIComponent(tokenId)}`,
-      );
-      const json = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        setError(json?.error?.message || "Warranty not found.");
-        return;
+      const res = await warrantyService.verifyWarranty(tokenId);
+      
+      if (res && res.success) {
+        setResult(res.data);
+      } else {
+        setError(res?.message || "Không tìm thấy thông tin bảo hành.");
       }
-
-      // Backend returns: { success, data: warranty }
-      setResult(json?.data || json);
     } catch (e) {
-      setError(e?.message || "Search failed.");
+      setError(e?.message || "Tìm kiếm thất bại.");
     } finally {
       setLoading(false);
     }
@@ -142,7 +139,7 @@ function GuestPage({ onChangeView, isAuthenticated }) {
                 <button
                   type="button"
                   className="btn-login"
-                  onClick={() => onChangeView("auth")}
+                  onClick={() => navigate("/auth")}
                 >
                   Sign in
                 </button>

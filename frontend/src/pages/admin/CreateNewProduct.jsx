@@ -1,612 +1,360 @@
-import { useMemo, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { buildFakeHash } from "../../utils/hashPreview";
+import { useState, useEffect, useRef } from "react";
+
+const WRENCH_ICON = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>
+);
+
+const inputStyle = (hasError = false) => ({
+  width: "100%",
+  boxSizing: "border-box",
+  padding: "10px 14px",
+  border: `1.5px solid ${hasError ? "#ef4444" : "#d1d5db"}`,
+  borderRadius: 8,
+  fontSize: 14,
+  color: "#374151",
+  background: "white",
+  outline: "none",
+  fontFamily: "inherit",
+  transition: "border-color 0.2s, box-shadow 0.2s",
+});
+
+const labelStyle = {
+  display: "block",
+  fontWeight: 600,
+  fontSize: 13,
+  color: "#374151",
+  marginBottom: 6,
+};
 
 function CreateNewProduct() {
-  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
   const initialForm = {
-    productName: "iPhone 15 Pro Max",
-    manufacturer: "Apple Inc.",
-    modelNumber: "A2849",
-    serialNumber: "FNQW8123XYZ",
-    category: "smartphones",
-    condition: "new",
-    color: "Natural Titanium",
-    storage: "256GB",
-    purchaseDate: "2025-03-15",
+    productCode: "",
+    productName: "",
+    brand: "",
+    color: "",
+    config: "",
     warrantyPeriod: "12",
-    purchasePrice: "1199.00",
-    ownerName: "John Doe",
-    walletAddress: "0x7426...08f",
-    ownerEmail: "owner@example.com",
-    ownerPhone: "+1 (555) 123-4567",
-    retailerName: "Apple Store NYC",
-    retailerLocation: "Fifth Avenue, New York, NY",
-    processor: "A17 Pro",
-    memory: "8GB",
+    price: "",
+    description: "",
+    imageFile: null,
   };
 
   const [form, setForm] = useState(initialForm);
+  const [imagePreview, setImagePreview] = useState("");
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const previewHash = useMemo(() => buildFakeHash(form), [form]);
-  const issueDate = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const expiryDate = useMemo(() => {
-    if (!form.purchaseDate || !form.warrantyPeriod) return "Not set";
-    const d = new Date(form.purchaseDate);
-    d.setMonth(d.getMonth() + Number(form.warrantyPeriod));
-    return d.toISOString().slice(0, 10);
-  }, [form.purchaseDate, form.warrantyPeriod]);
-  const previewTokenId = useMemo(() => {
-    if (!previewHash) return "Not set";
-    return `0x${previewHash.slice(0, 5)}...${previewHash.slice(-4)}`;
-  }, [previewHash]);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Validation functions
-  const validateEmail = (email) => {
-    if (!email) return true;
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(email);
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
+  const updateField = (field) => (e) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const validateEthereumAddress = (address) => {
-    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  const handleImageSelect = (file) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setForm((prev) => ({ ...prev, imageFile: file }));
+    setImagePreview(URL.createObjectURL(file));
+    if (errors.imageFile) setErrors((prev) => ({ ...prev, imageFile: "" }));
   };
 
-  const validateForm = useCallback(() => {
-    const newErrors = {};
+  const handleImageChange = (e) => handleImageSelect(e.target.files[0]);
 
-    // Required fields
-    if (!form.productName.trim())
-      newErrors.productName = "Product name is required";
-    if (!form.manufacturer.trim())
-      newErrors.manufacturer = "Manufacturer is required";
-    if (!form.modelNumber.trim())
-      newErrors.modelNumber = "Model number is required";
-    if (!form.serialNumber.trim())
-      newErrors.serialNumber = "Serial number is required";
-    if (!form.category) newErrors.category = "Please select a category";
-    if (!form.purchaseDate)
-      newErrors.purchaseDate = "Purchase date is required";
-    if (!form.warrantyPeriod)
-      newErrors.warrantyPeriod = "Warranty period is required";
-    if (!form.ownerName.trim()) newErrors.ownerName = "Owner name is required";
-
-    // Wallet address validation
-    if (!form.walletAddress.trim()) {
-      newErrors.walletAddress = "Wallet address is required";
-    } else if (!validateEthereumAddress(form.walletAddress)) {
-      newErrors.walletAddress =
-        "Invalid Ethereum address (must be 0x followed by 40 hex characters)";
-    }
-
-    // Email validation (optional but must be valid if provided)
-    if (form.ownerEmail && !validateEmail(form.ownerEmail)) {
-      newErrors.ownerEmail = "Invalid email address";
-    }
-
-    // Purchase price validation (optional but must be positive if provided)
-    if (form.purchasePrice && parseFloat(form.purchasePrice) <= 0) {
-      newErrors.purchasePrice = "Purchase price must be greater than 0";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [form]);
-
-  const updateField = (field) => (event) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: event.target.value,
-    }));
-    // Clear error for this field when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "",
-      }));
-    }
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    handleImageSelect(e.dataTransfer.files[0]);
   };
 
-  const handleReset = () => {
-    setForm(initialForm);
-    setErrors({});
-    setSubmitted(false);
+  const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
+  const handleDragLeave = () => setIsDragging(false);
+
+  const removeImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setForm((prev) => ({ ...prev, imageFile: null }));
+    setImagePreview("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!form.productCode.trim()) errs.productCode = "Product Code is required";
+    if (!form.productName.trim()) errs.productName = "Product Name is required";
+    if (!form.brand.trim()) errs.brand = "Brand is required";
+    if (!form.price.trim()) errs.price = "Price is required";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validate()) return;
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const formData = new FormData();
+      Object.entries(form).forEach(([k, v]) => {
+        if (v !== null) formData.append(k, v);
+      });
+      await new Promise((r) => setTimeout(r, 800));
       setSubmitted(true);
-      setTimeout(() => {
-        setSubmitted(false);
-        // Optionally reset form after success
-        // setForm(initialForm);
-      }, 3000);
-      console.log("Warranty Created:", form);
-    } catch (error) {
-      console.error("Error creating warranty:", error);
-      setErrors({ submit: "Failed to create warranty. Please try again." });
+      setTimeout(() => setSubmitted(false), 3000);
+      const log = {};
+      for (let [k, v] of formData.entries()) log[k] = v instanceof File ? v.name : v;
+      console.log("Create Product Payload:", log);
+    } catch (err) {
+      console.error(err);
+      setErrors({ submit: "Failed to create product." });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleFocus = (e) => {
+    e.target.style.borderColor = "#3b82f6";
+    e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)";
+  };
+  const handleBlur = (e, hasError) => {
+    e.target.style.borderColor = hasError ? "#ef4444" : "#d1d5db";
+    e.target.style.boxShadow = "none";
+  };
+
   return (
-    <div
-      className="create-warranty-container"
-      style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 0" }}
-    >
-      {/* Banner Section */}
-      <div
-        style={{
-          background: "linear-gradient(120deg, #2242a6 0%, #2563eb 100%)",
-          borderRadius: 32,
-          padding: "36px 40px 32px 40px",
-          marginBottom: 36,
-          color: "#fff",
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          position: "relative",
-          minHeight: 180,
-        }}
-      >
-        <div>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            style={{
-              background: "rgba(255,255,255,0.13)",
-              border: "none",
-              borderRadius: 16,
-              padding: "14px 32px",
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 18,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 32,
-              boxShadow: "0 2px 8px #0002",
-              cursor: "pointer",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,0.22)")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,0.13)")
-            }
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="15 18 9 12 15 6"></polyline>
+    <div style={{ padding: "8px 0" }}>
+      <form onSubmit={handleSubmit}>
+        {/* Success / Error banners */}
+        {submitted && (
+          <div style={{ background: "#d1fae5", border: "1px solid #6ee7b7", borderRadius: 10, padding: "12px 16px", color: "#065f46", fontWeight: 600, fontSize: 14, marginBottom: 20 }}>
+            ✓ Product created successfully!
+          </div>
+        )}
+        {errors.submit && (
+          <div style={{ background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 10, padding: "12px 16px", color: "#991b1b", fontWeight: 600, fontSize: 14, marginBottom: 20 }}>
+            {errors.submit}
+          </div>
+        )}
+
+        {/* Main Card */}
+        <div style={{ background: "white", borderRadius: 16, padding: 32, border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", marginBottom: 24 }}>
+          {/* Section Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 28 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
             </svg>
-            Back
-          </button>
-          <h1
-            style={{
-              fontSize: 44,
-              fontWeight: 800,
-              margin: 0,
-              marginBottom: 10,
-              letterSpacing: -1,
-            }}
-          >
-            Create New Product
-          </h1>
-          <div style={{ fontSize: 18, opacity: 0.93, marginTop: 2 }}>
-            Fill in the product and warranty information below
+            <span style={{ fontWeight: 700, fontSize: 17, color: "#0f172a" }}>Product Information</span>
+          </div>
+
+          {/* Row 1: Product Code + Product Name */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 24px", marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Product Code <span style={{ color: "#ef4444" }}>*</span></label>
+              <input
+                type="text" value={form.productCode} onChange={updateField("productCode")}
+                placeholder="e.g., GLX-W-ULTRA"
+                style={inputStyle(!!errors.productCode)}
+                onFocus={handleFocus} onBlur={(e) => handleBlur(e, !!errors.productCode)}
+              />
+              {errors.productCode && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4, fontWeight: 500 }}>{errors.productCode}</div>}
+            </div>
+            <div>
+              <label style={labelStyle}>Product Name <span style={{ color: "#ef4444" }}>*</span></label>
+              <input
+                type="text" value={form.productName} onChange={updateField("productName")}
+                placeholder="e.g., Samsung Galaxy Watch Ultra"
+                style={inputStyle(!!errors.productName)}
+                onFocus={handleFocus} onBlur={(e) => handleBlur(e, !!errors.productName)}
+              />
+              {errors.productName && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4, fontWeight: 500 }}>{errors.productName}</div>}
+            </div>
+          </div>
+
+          {/* Row 2: Brand + Color */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 24px", marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Brand <span style={{ color: "#ef4444" }}>*</span></label>
+              <input
+                type="text" value={form.brand} onChange={updateField("brand")}
+                placeholder="e.g., Samsung"
+                style={inputStyle(!!errors.brand)}
+                onFocus={handleFocus} onBlur={(e) => handleBlur(e, !!errors.brand)}
+              />
+              {errors.brand && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4, fontWeight: 500 }}>{errors.brand}</div>}
+            </div>
+            <div>
+              <label style={labelStyle}>Color</label>
+              <input
+                type="text" value={form.color} onChange={updateField("color")}
+                placeholder="e.g., Titanium" style={inputStyle()}
+                onFocus={handleFocus} onBlur={(e) => handleBlur(e, false)}
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Config + Warranty Period */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 24px", marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Config</label>
+              <input
+                type="text" value={form.config} onChange={updateField("config")}
+                placeholder="e.g., 47mm, Titan, lặn sâu" style={inputStyle()}
+                onFocus={handleFocus} onBlur={(e) => handleBlur(e, false)}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Warranty Period (Months)</label>
+              <div style={{ position: "relative" }}>
+                <select
+                  value={form.warrantyPeriod} onChange={updateField("warrantyPeriod")}
+                  style={{ ...inputStyle(), appearance: "none", paddingRight: 36, cursor: "pointer" }}
+                  onFocus={handleFocus} onBlur={(e) => handleBlur(e, false)}
+                >
+                  {["6","12","18","24","36"].map(m => (
+                    <option key={m} value={m}>{m} months</option>
+                  ))}
+                </select>
+                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#94a3b8" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 4: Image Upload + Price */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 24px", marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>
+                Product Image <span style={{ color: "#94a3b8", fontWeight: 400 }}>(Upload from device)</span>
+              </label>
+
+              {/* Upload Zone */}
+              {!imagePreview ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  style={{
+                    border: `2px dashed ${isDragging ? "#3b82f6" : errors.imageFile ? "#ef4444" : "#d1d5db"}`,
+                    borderRadius: 8, padding: "20px 14px",
+                    textAlign: "center", cursor: "pointer",
+                    background: isDragging ? "#eff6ff" : "#f9fafb",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isDragging ? "#3b82f6" : "#94a3b8"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 8px", display: "block" }}>
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  <div style={{ fontSize: 13, color: isDragging ? "#3b82f6" : "#64748b", fontWeight: 500 }}>
+                    Click to upload or drag & drop
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>PNG, JPG, WebP up to 10MB</div>
+                </div>
+              ) : (
+                <div style={{ position: "relative", borderRadius: 8, overflow: "hidden", border: "1.5px solid #d1d5db" }}>
+                  <img src={imagePreview} alt="Preview" style={{ width: "100%", height: 120, objectFit: "cover", display: "block" }} />
+                  <button
+                    type="button" onClick={removeImage}
+                    style={{
+                      position: "absolute", top: 6, right: 6,
+                      background: "rgba(0,0,0,0.6)", color: "white",
+                      border: "none", borderRadius: "50%", width: 24, height: 24,
+                      cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 14, fontWeight: 700,
+                    }}
+                  >×</button>
+                  <div style={{ padding: "6px 10px", background: "#f8fafc", fontSize: 11, color: "#64748b", borderTop: "1px solid #e2e8f0" }}>
+                    {form.imageFile?.name}
+                  </div>
+                </div>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file" accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+              {errors.imageFile && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4, fontWeight: 500 }}>{errors.imageFile}</div>}
+            </div>
+
+            <div>
+              <label style={labelStyle}>Price (VND) <span style={{ color: "#ef4444" }}>*</span></label>
+              <input
+                type="text" value={form.price} onChange={updateField("price")}
+                placeholder="e.g., 25000000"
+                style={inputStyle(!!errors.price)}
+                onFocus={handleFocus} onBlur={(e) => handleBlur(e, !!errors.price)}
+              />
+              {errors.price && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4, fontWeight: 500 }}>{errors.price}</div>}
+            </div>
+          </div>
+
+          {/* Row 5: Description (full width) */}
+          <div style={{ marginBottom: 4 }}>
+            <label style={labelStyle}>Description</label>
+            <textarea
+              value={form.description} onChange={updateField("description")}
+              placeholder="Đồng hồ thông minh cao cấp..."
+              rows={4}
+              style={{ ...inputStyle(), resize: "vertical" }}
+              onFocus={handleFocus} onBlur={(e) => handleBlur(e, false)}
+            />
           </div>
         </div>
-        {/* You can add a status badge or icon here if needed */}
-      </div>
-      <div
-        className="create-warranty-layout"
-        style={{ maxWidth: 1000, margin: "0 auto" }}
-      >
-        <form
-          onSubmit={handleSubmit}
-          className={`warranty-form ${isLoading ? "form-loading" : ""}`}
-        >
-          {/* Error Message */}
-          {errors.submit && (
-            <div className="form-error" style={{ marginBottom: "20px" }}>
-              {errors.submit}
-            </div>
-          )}
 
-          {/* Success Message */}
-          {submitted && (
-            <div className="form-success" style={{ marginBottom: "20px" }}>
-              Warranty NFT created successfully and recorded on blockchain!
-            </div>
-          )}
+        {/* Bottom Action Bar */}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+          <button
+            type="submit"
+            disabled={isLoading || submitted}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: submitted ? "#10b981" : "linear-gradient(135deg, #10b981, #059669)",
+              color: "white", border: "none", borderRadius: 10,
+              padding: "12px 28px", fontWeight: 700, fontSize: 15,
+              cursor: isLoading ? "not-allowed" : "pointer",
+              opacity: isLoading ? 0.8 : 1,
+              boxShadow: "0 4px 16px rgba(16,185,129,0.3)",
+              transition: "all 0.2s",
+            }}
+            onMouseOver={(e) => { if (!isLoading && !submitted) e.currentTarget.style.boxShadow = "0 6px 20px rgba(16,185,129,0.4)"; }}
+            onMouseOut={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(16,185,129,0.3)"; }}
+          >
+            {isLoading ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "spin 1s linear infinite" }}>
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Creating...
+              </>
+            ) : submitted ? (
+              <>✓ Created!</>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+                Create Product
+              </>
+            )}
+          </button>
+        </div>
+      </form>
 
-          {/* Product Information Section */}
-          <div className="form-section">
-            <h3>📦 Product Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="productName">Product Name *</label>
-                <input
-                  id="productName"
-                  type="text"
-                  value={form.productName}
-                  onChange={updateField("productName")}
-                  placeholder="e.g., iPhone 15 Pro Max"
-                  className={errors.productName ? "is-invalid" : ""}
-                />
-                {errors.productName && (
-                  <div className="form-error">{errors.productName}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="manufacturer">Manufacturer *</label>
-                <input
-                  id="manufacturer"
-                  type="text"
-                  value={form.manufacturer}
-                  onChange={updateField("manufacturer")}
-                  placeholder="e.g., Apple Inc."
-                  className={errors.manufacturer ? "is-invalid" : ""}
-                />
-                {errors.manufacturer && (
-                  <div className="form-error">{errors.manufacturer}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="modelNumber">Model Number *</label>
-                <input
-                  id="modelNumber"
-                  type="text"
-                  value={form.modelNumber}
-                  onChange={updateField("modelNumber")}
-                  placeholder="e.g., A2849"
-                  className={errors.modelNumber ? "is-invalid" : ""}
-                />
-                {errors.modelNumber && (
-                  <div className="form-error">{errors.modelNumber}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="serialNumber">Serial Number *</label>
-                <input
-                  id="serialNumber"
-                  type="text"
-                  value={form.serialNumber}
-                  onChange={updateField("serialNumber")}
-                  placeholder="e.g., FNQW8123XYZ"
-                  className={errors.serialNumber ? "is-invalid" : ""}
-                />
-                {errors.serialNumber && (
-                  <div className="form-error">{errors.serialNumber}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="category">Category *</label>
-                <select
-                  id="category"
-                  value={form.category}
-                  onChange={updateField("category")}
-                  className={errors.category ? "is-invalid" : ""}
-                >
-                  <option value="">Select category</option>
-                  <option value="smartphones">Smartphones</option>
-                  <option value="laptops">Laptops</option>
-                  <option value="tablets">Tablets</option>
-                  <option value="wearables">Wearables</option>
-                  <option value="audio">Audio</option>
-                </select>
-                {errors.category && (
-                  <div className="form-error">{errors.category}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="condition">Condition</label>
-                <select
-                  id="condition"
-                  value={form.condition}
-                  onChange={updateField("condition")}
-                >
-                  <option value="new">New</option>
-                  <option value="refurbished">Refurbished</option>
-                  <option value="used">Used</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="color">Color</label>
-                <input
-                  id="color"
-                  type="text"
-                  value={form.color}
-                  onChange={updateField("color")}
-                  placeholder="e.g., Natural Titanium"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="storage">Storage/Capacity</label>
-                <input
-                  id="storage"
-                  type="text"
-                  value={form.storage}
-                  onChange={updateField("storage")}
-                  placeholder="e.g., 256GB"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Warranty Information Section */}
-          <div className="form-section">
-            <h3>🛡️ Warranty Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="purchaseDate">Purchase Date *</label>
-                <input
-                  id="purchaseDate"
-                  type="date"
-                  value={form.purchaseDate}
-                  onChange={updateField("purchaseDate")}
-                  className={errors.purchaseDate ? "is-invalid" : ""}
-                />
-                {errors.purchaseDate && (
-                  <div className="form-error">{errors.purchaseDate}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="warrantyPeriod">
-                  Warranty Period (months) *
-                </label>
-                <select
-                  id="warrantyPeriod"
-                  value={form.warrantyPeriod}
-                  onChange={updateField("warrantyPeriod")}
-                  className={errors.warrantyPeriod ? "is-invalid" : ""}
-                >
-                  <option value="">Select warranty period</option>
-                  <option value="6">6 months</option>
-                  <option value="12">12 months (1 year)</option>
-                  <option value="24">24 months (2 years)</option>
-                  <option value="36">36 months (3 years)</option>
-                </select>
-                {errors.warrantyPeriod && (
-                  <div className="form-error">{errors.warrantyPeriod}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="purchasePrice">Purchase Price</label>
-                <input
-                  id="purchasePrice"
-                  type="number"
-                  step="0.01"
-                  value={form.purchasePrice}
-                  onChange={updateField("purchasePrice")}
-                  placeholder="e.g., 1199.00"
-                  className={errors.purchasePrice ? "is-invalid" : ""}
-                />
-                {errors.purchasePrice && (
-                  <div className="form-error">{errors.purchasePrice}</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Owner Information Section */}
-          <div className="form-section">
-            <h3>👤 Owner Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="ownerName">Owner Name *</label>
-                <input
-                  id="ownerName"
-                  type="text"
-                  value={form.ownerName}
-                  onChange={updateField("ownerName")}
-                  placeholder="e.g., John Doe"
-                  className={errors.ownerName ? "is-invalid" : ""}
-                />
-                {errors.ownerName && (
-                  <div className="form-error">{errors.ownerName}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="walletAddress">Wallet Address *</label>
-                <input
-                  id="walletAddress"
-                  type="text"
-                  value={form.walletAddress}
-                  onChange={updateField("walletAddress")}
-                  placeholder="0x..."
-                  className={errors.walletAddress ? "is-invalid" : ""}
-                />
-                {errors.walletAddress && (
-                  <div className="form-error">{errors.walletAddress}</div>
-                )}
-                <div className="form-helping">
-                  Must be a valid Ethereum address (0x...)
-                </div>
-              </div>
-              <div className="form-group">
-                <label htmlFor="ownerEmail">Email</label>
-                <input
-                  id="ownerEmail"
-                  type="email"
-                  value={form.ownerEmail}
-                  onChange={updateField("ownerEmail")}
-                  placeholder="owner@example.com"
-                  className={errors.ownerEmail ? "is-invalid" : ""}
-                />
-                {errors.ownerEmail && (
-                  <div className="form-error">{errors.ownerEmail}</div>
-                )}
-              </div>
-              <div className="form-group">
-                <label htmlFor="ownerPhone">Phone</label>
-                <input
-                  id="ownerPhone"
-                  type="tel"
-                  value={form.ownerPhone}
-                  onChange={updateField("ownerPhone")}
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Retailer Information Section */}
-          <div className="form-section">
-            <h3>🏪 Retailer Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="retailerName">Retailer Name</label>
-                <input
-                  id="retailerName"
-                  type="text"
-                  value={form.retailerName}
-                  onChange={updateField("retailerName")}
-                  placeholder="e.g., Apple Store NYC"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="retailerLocation">Location</label>
-                <input
-                  id="retailerLocation"
-                  type="text"
-                  value={form.retailerLocation}
-                  onChange={updateField("retailerLocation")}
-                  placeholder="e.g., Fifth Avenue, New York, NY"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Technical Specifications */}
-          <div className="form-section">
-            <h3>⚙️ Technical Specifications</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="processor">Processor</label>
-                <input
-                  id="processor"
-                  type="text"
-                  value={form.processor}
-                  onChange={updateField("processor")}
-                  placeholder="e.g., A17 Pro"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="memory">Memory (RAM)</label>
-                <input
-                  id="memory"
-                  type="text"
-                  value={form.memory}
-                  onChange={updateField("memory")}
-                  placeholder="e.g., 8GB"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Form Actions */}
-          <div className="form-actions">
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={isLoading || submitted}
-            >
-              {isLoading
-                ? "Creating..."
-                : submitted
-                  ? "✓ Created Successfully!"
-                  : "Create Warranty NFT"}
-            </button>
-            <button
-              type="button"
-              className="btn-reset"
-              onClick={handleReset}
-              disabled={isLoading}
-            >
-              Reset
-            </button>
-            <button type="button" className="btn-cancel" disabled={isLoading}>
-              Cancel
-            </button>
-          </div>
-        </form>
-
-        <aside className="preview-panel">
-          <div className="preview-card">
-            <div className="preview-card-head">
-              <div>
-                <p className="preview-label">Warranty NFT Preview</p>
-                <h4>{form.productName || "Select Device Model"}</h4>
-                <p className="preview-subtitle">
-                  Serial: {form.serialNumber || "Not set"}
-                </p>
-              </div>
-              <span className="preview-badge">NFT</span>
-            </div>
-
-            <div className="preview-details-grid">
-              <div>
-                <span>Token ID</span>
-                <strong>{previewTokenId}</strong>
-              </div>
-              <div>
-                <span>Owner</span>
-                <strong>{form.ownerName || "Not set"}</strong>
-              </div>
-              <div>
-                <span>Issued</span>
-                <strong>{issueDate}</strong>
-              </div>
-              <div>
-                <span>Expires</span>
-                <strong>{expiryDate}</strong>
-              </div>
-            </div>
-
-            <div className="preview-hash-card">
-              <p>Blockchain Hash</p>
-              <code>{previewHash}</code>
-            </div>
-          </div>
-
-          <div className="preview-info-card">
-            <h4>Warranty Details</h4>
-            <ul>
-              <li>NFT minted on Ethereum blockchain</li>
-              <li>Transferable to new owners</li>
-              <li>Immutable proof of authenticity</li>
-              <li>Globally verifiable warranty status</li>
-            </ul>
-          </div>
-
-          <div className="preview-note">
-            Gas fees will be calculated at time of minting. Ensure wallet has
-            sufficient funds.
-          </div>
-        </aside>
-      </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

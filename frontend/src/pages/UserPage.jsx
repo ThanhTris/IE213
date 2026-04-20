@@ -1,13 +1,33 @@
-import { useMemo, useState } from "react";
-import { walletCards, transferRecords } from "../data/mockData";
+import { useMemo, useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
+import { warrantyService } from "../services/warrantyService";
 import Footer from "../components/Footer";
 
-function UserPage({ sideTab, onChangeSideTab }) {
+function UserPage() {
+  const { setModalOpen } = useOutletContext();
+  const [sideTab, setSideTab] = useState("devices");
+  const [warranties, setWarranties] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState("");
   const [transferMessage, setTransferMessage] = useState("");
+
+  useEffect(() => {
+    async function fetchWarranties() {
+      try {
+        setLoading(true);
+        const res = await warrantyService.getMyWarranties();
+        setWarranties(res.data || []);
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách bảo hành:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWarranties();
+  }, []);
 
   const formatDate = (dateStr) => {
     if (!dateStr || typeof dateStr !== "string") return dateStr;
@@ -28,18 +48,18 @@ function UserPage({ sideTab, onChangeSideTab }) {
   };
 
   const walletSummary = useMemo(() => {
-    const active = walletCards.filter(
-      (item) => item.status === "Active",
+    const active = warranties.filter(
+      (item) => item.status === true || item.status === "active" || item.status === "Active",
     ).length;
-    const expired = walletCards.filter(
-      (item) => item.status === "Expired",
+    const expired = warranties.filter(
+      (item) => item.status === false || item.status === "expired" || item.status === "Expired",
     ).length;
     return {
       active,
       expired,
-      total: walletCards.length,
+      total: warranties.length,
     };
-  }, []);
+  }, [warranties]);
 
   const handleSelectDevice = (device) => {
     setSelectedDevice(device);
@@ -76,14 +96,6 @@ function UserPage({ sideTab, onChangeSideTab }) {
             >
               My Devices
             </button>
-            {/* <button
-              type="button"
-              className={`side-link ${sideTab === "transfer" ? "active" : ""}`}
-              onClick={() => onChangeSideTab("transfer")}
-            >
-              Transfer History
-            </button> */}
-
             <div className="wallet-summary-card">
               <p className="summary-title">Wallet Status</p>
               <div className="summary-row">
@@ -116,221 +128,230 @@ function UserPage({ sideTab, onChangeSideTab }) {
               <>
                 {!selected ? (
                   <div className="cards-grid">
-                    {walletCards.map((card) => (
-                      <article
-                        key={card.id}
-                        className={`warranty-card ${card.status === "Expired" ? "expired-card" : "active-card"}`}
-                        tabIndex={0}
-                        role="button"
-                        onClick={() => handleSelectDevice(card)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            handleSelectDevice(card);
-                          }
-                        }}
-                      >
-                        <div className="card-header">
-                          <div className="device-icon">
-                            {card.name.toLowerCase().includes("iphone") && (
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <rect
-                                  x="5"
-                                  y="2"
-                                  width="14"
-                                  height="20"
-                                  rx="2"
-                                  ry="2"
-                                ></rect>
-                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                              </svg>
-                            )}
-                            {card.name.toLowerCase().includes("macbook") && (
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <rect
-                                  x="2"
-                                  y="3"
-                                  width="20"
-                                  height="14"
-                                  rx="2"
-                                  ry="2"
-                                ></rect>
-                                <path d="M2 17h20"></path>
-                              </svg>
-                            )}
-                            {card.name.toLowerCase().includes("watch") && (
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <circle cx="12" cy="12" r="7"></circle>
-                                <path d="M12 5V1M12 23v-4"></path>
-                              </svg>
-                            )}
-                          </div>
-                          <span
-                            className={`status-badge ${card.status.toLowerCase()}`}
-                          >
-                            {card.status}
-                          </span>
-                        </div>
-
-                        <div className="card-body">
-                          <h3>{card.name}</h3>
-                          <p className="serial">Serial: {card.serial}</p>
-                          <div className="card-field">
-                            <span>Token ID</span>
-                            <strong>{card.tokenId}</strong>
-                          </div>
-
-                          <div className="card-row">
-                            <div className="card-field small">
-                              <span>Purchased</span>
-                              <strong>{formatDate(card.purchased)}</strong>
-                            </div>
-                            <div className="card-field small">
-                              <span>Expires</span>
-                              <strong
-                                className={
-                                  card.status === "Expired"
-                                    ? "text-danger"
-                                    : "text-success"
-                                }
-                              >
-                                {formatDate(card.expires)}
-                              </strong>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="card-actions">
-                          <button
-                            type="button"
-                            className={`action-button ${card.status === "Expired" ? "outline full-width" : "view-button"}`}
-                            onClick={(event) => {
-                              event.stopPropagation();
+                    {warranties.map((card) => {
+                      const isActive =
+                        card.status === true ||
+                        card.status === "active" ||
+                        card.status === "Active";
+                      return (
+                        <article
+                          key={card._id || card.id}
+                          className={`warranty-card ${!isActive ? "expired-card" : "active-card"}`}
+                          tabIndex={0}
+                          role="button"
+                          onClick={() => handleSelectDevice(card)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
                               handleSelectDevice(card);
-                            }}
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              style={{ marginRight: "8px" }}
-                            >
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                              <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            View Details
-                          </button>
-                          {card.status !== "Expired" && (
-                            <div className="card-buttons-row">
-                              <button
-                                type="button"
-                                className="action-button outline-button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSelectDevice(card);
-                                  setTimeout(() => setShowQRModal(true), 0);
-                                }}
-                              >
+                            }
+                          }}
+                        >
+                          <div className="card-header">
+                            <div className="device-icon">
+                              {card.name?.toLowerCase().includes("iphone") && (
                                 <svg
-                                  width="18"
-                                  height="18"
+                                  width="24"
+                                  height="24"
                                   viewBox="0 0 24 24"
                                   fill="none"
                                   stroke="currentColor"
-                                  strokeWidth="2"
+                                  strokeWidth="1.5"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  style={{ marginRight: "8px" }}
                                 >
-                                  <rect x="3" y="3" width="7" height="7"></rect>
                                   <rect
-                                    x="14"
+                                    x="5"
+                                    y="2"
+                                    width="14"
+                                    height="20"
+                                    rx="2"
+                                    ry="2"
+                                  ></rect>
+                                  <line
+                                    x1="12"
+                                    y1="18"
+                                    x2="12.01"
+                                    y2="18"
+                                  ></line>
+                                </svg>
+                              )}
+                              {card.name?.toLowerCase().includes("macbook") && (
+                                <svg
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <rect
+                                    x="2"
                                     y="3"
-                                    width="7"
-                                    height="7"
+                                    width="20"
+                                    height="14"
+                                    rx="2"
+                                    ry="2"
                                   ></rect>
-                                  <rect
-                                    x="14"
-                                    y="14"
-                                    width="7"
-                                    height="7"
-                                  ></rect>
-                                  <rect
-                                    x="3"
-                                    y="14"
-                                    width="7"
-                                    height="7"
-                                  ></rect>
+                                  <path d="M2 17h20"></path>
                                 </svg>
-                                QR Code
-                              </button>
-                              <button
-                                type="button"
-                                className="action-button outline-button transfer-button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSelectDevice(card);
-                                  setTimeout(
-                                    () => setShowTransferModal(true),
-                                    0,
-                                  );
-                                }}
-                              >
+                              )}
+                              {card.name?.toLowerCase().includes("watch") && (
                                 <svg
-                                  width="18"
-                                  height="18"
+                                  width="24"
+                                  height="24"
                                   viewBox="0 0 24 24"
                                   fill="none"
                                   stroke="currentColor"
-                                  strokeWidth="2"
+                                  strokeWidth="1.5"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  style={{ marginRight: "8px" }}
                                 >
-                                  <polyline points="16 3 21 3 21 8"></polyline>
-                                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                                  <polyline points="8 21 3 21 3 16"></polyline>
-                                  <line x1="3" y1="21" x2="14" y2="10"></line>
+                                  <circle cx="12" cy="12" r="7"></circle>
+                                  <path d="M12 5V1M12 23v-4"></path>
                                 </svg>
-                                Transfer
-                              </button>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      </article>
-                    ))}
+                            <span
+                              className={`status-badge ${isActive ? "active" : "expired"}`}
+                            >
+                              {isActive ? "Active" : "Expired"}
+                            </span>
+                          </div>
+
+                          <div className="card-body">
+                            <h3>{card.name}</h3>
+                            <p className="serial">Serial: {card.serial}</p>
+                            <div className="card-field">
+                              <span>Token ID</span>
+                              <strong>{card.tokenId}</strong>
+                            </div>
+
+                            <div className="card-row">
+                              <div className="card-field small">
+                                <span>Purchased</span>
+                                <strong>{formatDate(card.purchased)}</strong>
+                              </div>
+                              <div className="card-field small">
+                                <span>Expires</span>
+                                <strong
+                                  className={
+                                    !isActive ? "text-danger" : "text-success"
+                                  }
+                                >
+                                  {formatDate(card.expires)}
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="card-actions">
+                            <button
+                              type="button"
+                              className={`action-button ${!isActive ? "outline full-width" : "view-button"}`}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleSelectDevice(card);
+                              }}
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                style={{ marginRight: "8px" }}
+                              >
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                              </svg>
+                              View Details
+                            </button>
+                            {isActive && (
+                              <div className="card-buttons-row">
+                                <button
+                                  type="button"
+                                  className="action-button outline-button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSelectDevice(card);
+                                    setTimeout(() => setShowQRModal(true), 0);
+                                  }}
+                                >
+                                  <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    style={{ marginRight: "8px" }}
+                                  >
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect
+                                      x="14"
+                                      y="3"
+                                      width="7"
+                                      height="7"
+                                    ></rect>
+                                    <rect
+                                      x="14"
+                                      y="14"
+                                      width="7"
+                                      height="7"
+                                    ></rect>
+                                    <rect
+                                      x="3"
+                                      y="14"
+                                      width="7"
+                                      height="7"
+                                    ></rect>
+                                  </svg>
+                                  QR Code
+                                </button>
+                                <button
+                                  type="button"
+                                  className="action-button outline-button transfer-button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSelectDevice(card);
+                                    setTimeout(
+                                      () => setShowTransferModal(true),
+                                      0,
+                                    );
+                                  }}
+                                >
+                                  <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    style={{ marginRight: "8px" }}
+                                  >
+                                    <polyline points="16 3 21 3 21 8"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                    <polyline points="8 21 3 21 3 16"></polyline>
+                                    <line x1="3" y1="21" x2="14" y2="10"></line>
+                                  </svg>
+                                  Transfer
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </article>
+                      );
+                    })}
                   </div>
                 ) : (
                   <section className="device-detail-page">
