@@ -18,7 +18,7 @@ function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
   }
 
   if (isAuthenticated) {
-    tabs.push({ key: "profile", label: "My Profile", path: "/profile" });
+    tabs.push({ key: "settings", label: "Settings", path: "/settings" });
   }
 
   return (

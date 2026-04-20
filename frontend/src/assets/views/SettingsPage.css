@@ -1,0 +1,743 @@
+/* ===== Settings Page ===== */
+.settings-page {
+  min-height: 100vh;
+  background: #f0f4f8;
+  padding: 2rem 2.5rem;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.settings-header {
+  margin-bottom: 2rem;
+}
+
+.settings-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a2b4a;
+  margin: 0 0 0.3rem;
+}
+
+.settings-header p {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ===== Layout ===== */
+.settings-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+/* ===== Left Profile Card ===== */
+.profile-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  width: 400px;
+  box-shadow: 0 2px 16px rgba(30, 64, 120, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.avatar-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b5fc0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.25);
+}
+
+.avatar-camera-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.avatar-camera-btn:hover {
+  background: #16a34a;
+}
+
+.avatar-camera-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: #fff;
+}
+
+.profile-card-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a2b4a;
+  margin: 0.25rem 0 0;
+  text-align: center;
+}
+
+.profile-card-email {
+  font-size: 0.85rem;
+  color: #64748b;
+  text-align: center;
+  margin: 0;
+}
+
+.wallet-section {
+  width: 100%;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.wallet-section label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.wallet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.wallet-addr {
+  font-size: 0.78rem;
+  color: #3b82f6;
+  font-family: "Courier New", monospace;
+  word-break: break-all;
+  flex: 1;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  color: #22c55e;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.copy-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.copy-btn:hover {
+  color: #16a34a;
+}
+
+.stats-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.stat-box {
+  flex: 1;
+  background: #f1f5f9;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2b4a;
+}
+
+.stat-value.active {
+  color: #22c55e;
+}
+
+/* ===== Right Settings Panel ===== */
+.settings-panel {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 16px rgba(30, 64, 120, 0.08);
+  overflow: hidden;
+  min-height: 420px;
+}
+
+/* ===== Tab Navigation ===== */
+.tab-nav {
+  display: flex;
+  padding: 1rem 1.5rem 0;
+  gap: 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 2rem;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
+}
+
+.tab-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tab-btn:hover {
+  color: #1e3a8a;
+  background: #f1f5f9;
+}
+
+.tab-btn.active {
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.tab-btn.active svg {
+  stroke: #ffffff;
+}
+
+/* ===== Tab Content ===== */
+.tab-content {
+  padding: 1.75rem 2rem;
+}
+
+.tab-pane {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Section Header ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-title svg {
+  width: 20px;
+  height: 20px;
+  stroke: #1e3a8a;
+}
+
+.section-title h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a2b4a;
+  margin: 0;
+}
+
+.section-header .section-title {
+  margin-bottom: 0;
+}
+
+/* ===== Buttons ===== */
+.btn-edit {
+  background: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-edit:hover {
+  background: #1e40af;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
+}
+
+.btn-save-profile {
+  background: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save-profile:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.btn-save-profile:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ===== Form Grid ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.85rem;
+  width: 16px;
+  height: 16px;
+  stroke: #94a3b8;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.input-icon.green {
+  stroke: #22c55e;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 0.7rem 0.9rem 0.7rem 2.5rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+  color: #1a2b4a;
+  background: #f8fafc;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.input-wrapper input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #fff;
+}
+
+.input-wrapper input:disabled {
+  background: #f8fafc;
+  color: #374151;
+  cursor: default;
+}
+
+.input-wrapper input.readonly-input {
+  font-family: "Courier New", monospace;
+  font-size: 0.78rem;
+  color: #22c55e;
+}
+
+/* ===== Alerts ===== */
+.alert-success {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #166534;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+/* ===== Notifications ===== */
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background 0.15s;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item:hover {
+  background: #f8fafc;
+}
+
+.notif-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.notif-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.notif-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* Toggle Button */
+.toggle-btn {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  background: #cbd5e1;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.toggle-btn.on {
+  background: #1e3a8a;
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.toggle-btn.on .toggle-knob {
+  transform: translateX(20px);
+}
+
+.tab-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.btn-save-notif {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save-notif svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-save-notif:hover:not(:disabled) {
+  background: #16a34a;
+}
+
+.btn-save-notif:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ===== Security ===== */
+.metamask-card {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.metamask-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.metamask-header svg {
+  width: 18px;
+  height: 18px;
+  stroke: #16a34a;
+}
+
+.metamask-header span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #166534;
+}
+
+.metamask-desc {
+  font-size: 0.82rem;
+  color: #4ade80;
+  margin: 0 0 0.3rem;
+}
+
+.metamask-addr {
+  font-size: 0.78rem;
+  font-family: "Courier New", monospace;
+  color: #374151;
+  margin: 0;
+  word-break: break-all;
+}
+
+.activity-section h4,
+.twofa-section h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2b4a;
+  margin: 0 0 0.75rem;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 1.75rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 1rem;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.activity-action {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a2b4a;
+}
+
+.activity-location {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.twofa-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.twofa-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.twofa-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1a2b4a;
+}
+
+.twofa-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.btn-enable-2fa {
+  background: #fff;
+  color: #1a2b4a;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.btn-enable-2fa:hover {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+
+/* ===== Loading ===== */
+.loading-state {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+
+  .profile-card {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .settings-page {
+    padding: 1.25rem 1rem;
+  }
+
+  .tab-btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+  }
+
+  .tab-content {
+    padding: 1.25rem 1rem;
+  }
+}
