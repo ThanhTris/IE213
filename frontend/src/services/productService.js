@@ -20,5 +20,20 @@ export const productService = {
    */
   createProduct: async (payload) => {
     return apiClient.post("/products", payload);
+  },
+
+  /**
+   * Update a product (Admin only)
+   */
+  updateProduct: async (idOrCode, payload) => {
+    // payload can be FormData if uploading image
+    return apiClient.put(`/products/${idOrCode}`, payload);
+  },
+
+  /**
+   * Delete a product (Admin only - Soft Delete)
+   */
+  deleteProduct: async (idOrCode) => {
+    return apiClient.delete(`/products/${idOrCode}`);
   }
 };

@@ -14,17 +14,18 @@ if (process.env.NODE_ENV !== "test" && !process.env.JEST_WORKER_ID) {
 app.use(express.json());
 
 // Routes
+const repairLogRoutes = require("./routes/repairLog.routes");
 const apiRoutes = require("./routes");
 const userRoutes = require("./routes/user.routes");
 const productRoutes = require("./routes/product.routes");
 const warrantyRoutes = require("./routes/warranty.routes");
-const repairLogRoutes = require("./routes/repairLog.routes");
 const transferRoutes = require("./routes/transfer.routes");
+
+app.use("/api/repair-logs", repairLogRoutes);
 app.use("/api", apiRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/warranties", warrantyRoutes);
-app.use("/api/repair-logs", repairLogRoutes);
 app.use("/api/transfers", transferRoutes);
 
 // Health check route

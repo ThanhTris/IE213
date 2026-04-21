@@ -37,6 +37,16 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // If unauthorized (401), logout and redirect to login
+    if (error.response?.status === 401) {
+      console.warn("[API 401] Unauthorized. Initializing logout redirect...");
+      localStorage.removeItem("bw_auth_token");
+      // Only redirect if not already on the auth page to avoid loops
+      if (!window.location.pathname.startsWith("/auth")) {
+        window.location.href = "/auth";
+      }
+    }
+
     const message = error.response?.data?.message || "Lỗi kết nối máy chủ";
     console.error("[API Error]", message);
     return Promise.reject(error.response?.data || { message });

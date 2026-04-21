@@ -16,6 +16,13 @@ export const repairService = {
   },
 
   /**
+   * Get repair history for all devices of a product model
+   */
+  getRepairsByModel: async (productCode) => {
+    return apiClient.get(`/repair-logs/history-by-model/${productCode}`);
+  },
+
+  /**
    * Create a new repair log (Admin/Staff/Technician only)
    */
   createRepair: async (payload) => {
