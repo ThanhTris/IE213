@@ -2,6 +2,7 @@ const express = require("express");
 const {
   createRepairLog,
   getRepairLogsBySerialNumber,
+  getRepairLogsByModel,
   getAllRepairLogs,
   updateRepairLog,
 } = require("../controllers/repairLog.controller");
@@ -12,6 +13,13 @@ const {
 } = require("../middleware/auth");
 
 const router = express.Router();
+
+router.get(
+  "/history-by-model/:productCode",
+  authenticate,
+  authorize(["admin"]),
+  getRepairLogsByModel,
+);
 
 router.post(
   "/",
@@ -27,17 +35,17 @@ router.get(
   getAllRepairLogs,
 );
 
+router.get(
+  "/device/:serialNumber",
+  optionalAuthenticate,
+  getRepairLogsBySerialNumber,
+);
+
 router.patch(
   "/:id",
   authenticate,
   authorize(["admin", "technician"]),
   updateRepairLog,
-);
-
-router.get(
-  "/device/:serialNumber",
-  optionalAuthenticate,
-  getRepairLogsBySerialNumber,
 );
 
 module.exports = router;

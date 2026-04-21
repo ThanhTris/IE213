@@ -362,9 +362,85 @@ const updateRepairLog = async (req, res) => {
   }
 };
 
+// GET /api/repair-logs/history-by-model/:productCode
+const getRepairLogsByModel = async (req, res) => {
+  try {
+    const { productCode } = req.params;
+
+    if (!productCode) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "productCode là trường bắt buộc",
+      });
+    }
+
+    const normalizedCode = productCode.trim().toUpperCase();
+
+    // 1. Trích xuất mã dòng máy gốc (Base Model Code)
+    const parts = normalizedCode.split("-");
+    const baseCode = parts.length >= 2 ? `${parts[0]}-${parts[1]}` : normalizedCode;
+    
+    // 2. Tìm tất cả Warranty thuộc dòng máy này (Regex)
+    const warranties = await Warranty.find({ 
+      productCode: { $regex: new RegExp("^" + baseCode) }
+    }).select("_id serialNumber productCode").lean();
+
+    const warrantyIds = warranties.map(w => w._id);
+    const serialNumbers = warranties.map(w => w.serialNumber).filter(Boolean);
+
+    if (warrantyIds.length === 0 && serialNumbers.length === 0) {
+      return sendSuccess(res, {
+        statusCode: 200,
+        message: "Dòng máy này chưa có thiết bị nào được kích hoạt bảo hành",
+        data: [],
+      });
+    }
+
+    // 3. Tìm tất cả RepairLog thuộc danh sách warrantyIds HOẶC serialNumbers
+    const rawRepairLogs = await RepairLog.find({
+      $or: [
+        { warrantyId: { $in: warrantyIds } },
+        { serialNumber: { $in: serialNumbers } }
+      ]
+    })
+    .sort({ repairDate: -1 })
+    .lean();
+
+    // 4. Khử trùng lặp dữ liệu trước khi gửi về FE
+    // Tiêu chí: Cùng serialNumber, cùng repairContent, cùng ngày sửa chữa
+    const uniqueLogsMap = new Map();
+    
+    rawRepairLogs.forEach(log => {
+      const dateKey = log.repairDate ? new Date(log.repairDate).toISOString().split("T")[0] : "no-date";
+      const uniqueKey = `${log.serialNumber}-${log.repairContent}-${dateKey}`;
+      
+      if (!uniqueLogsMap.has(uniqueKey)) {
+        uniqueLogsMap.set(uniqueKey, log);
+      }
+    });
+
+    const repairLogs = Array.from(uniqueLogsMap.values());
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy lịch sử sửa chữa theo dòng máy thành công",
+      data: repairLogs,
+    });
+  } catch (error) {
+    console.error("[RepairLog Controller] Error in getRepairLogsByModel:", error);
+    return sendError(res, {
+      statusCode: 500,
+      errorCode: "E500_INTERNAL",
+      message: "Lỗi nội bộ máy chủ",
+    });
+  }
+};
+
 module.exports = {
   createRepairLog,
   getRepairLogsBySerialNumber,
+  getRepairLogsByModel,
   getAllRepairLogs,
   updateRepairLog,
 };
