@@ -50,10 +50,10 @@ function RepairHistory() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>
-          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Complete Repair History</span>
+          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Lịch Sử Sửa Chữa Hệ Thống</span>
         </div>
         <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
-          {repairs.length} repairs
+          {repairs.length} lượt sửa chữa
         </span>
       </div>
 
@@ -61,7 +61,7 @@ function RepairHistory() {
       <div className="search-input-wrapper" style={{ marginBottom: 24 }}>
         <input
           type="text"
-          placeholder="Search by product, serial, customer, or repair type..."
+          placeholder="Tìm kiếm theo sản phẩm, serial, khách hàng hoặc nội dung..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
@@ -78,13 +78,13 @@ function RepairHistory() {
         <table className="repair-table">
           <thead>
             <tr>
-               <th>Serial Number</th>
-               <th>Repair Content</th>
-               <th>Cost</th>
-               <th>Technician</th>
-               <th>Date</th>
-               <th>Warranty</th>
-               <th>Status</th>
+               <th>Số Serial</th>
+               <th>Nội dung sửa chữa</th>
+               <th>Chi phí</th>
+               <th>Kỹ thuật viên</th>
+               <th>Ngày thực hiện</th>
+               <th>Bảo hành</th>
+               <th>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
@@ -115,7 +115,7 @@ function RepairHistory() {
                      borderRadius: 20, padding: "3px 12px",
                      fontSize: 12, fontWeight: 700,
                    }}>
-                     {record.isWarrantyCovered ? "Yes" : "No"}
+                     {record.isWarrantyCovered ? "Có" : "Không"}
                    </span>
                  </td>
                 <td>
@@ -125,12 +125,7 @@ function RepairHistory() {
                     fontSize: 12, fontWeight: 700,
                     ...STATUS_STYLES[record.status],
                   }}>
-                    {record.status === "completed" && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                    {record.status}
+                    {record.status === "completed" ? "Hoàn tất" : record.status === "fixing" ? "Đang sửa" : "Đang chờ"}
                   </span>
                 </td>
               </tr>
@@ -138,22 +133,22 @@ function RepairHistory() {
           </tbody>
         </table>
         {filteredRecords.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>No repair records found.</div>
+          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>Không tìm thấy ghi nhận sửa chữa nào.</div>
         )}
       </div>
 
       {/* Stats Footer */}
       <div className="repair-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
         <div className="stat-box">
-          <span className="stat-label">Total Repairs</span>
+          <span className="stat-label">Tổng Lượt Sửa Chữa</span>
           <div className="stat-value" style={{ color: "#0f172a" }}>{repairs.length}</div>
         </div>
         <div className="stat-box">
-          <span className="stat-label">Covered by Warranty</span>
+          <span className="stat-label">Trong Bảo Hành</span>
           <span className="stat-value" style={{ color: "#10b981" }}>{coveredCount}</span>
         </div>
         <div className="stat-box">
-          <span className="stat-label">Not Covered</span>
+          <span className="stat-label">Ngoài Bảo Hành</span>
           <span className="stat-value" style={{ color: "#ef4444" }}>{notCoveredCount}</span>
         </div>
       </div>

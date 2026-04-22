@@ -134,9 +134,9 @@ function UserManagement() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
           </svg>
-          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>All Users</span>
+          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Tất Cả Người Dùng</span>
           <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "3px 12px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
-            {filteredUsers.length} users
+            {filteredUsers.length} người dùng
           </span>
         </div>
         <button
@@ -153,7 +153,7 @@ function UserManagement() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" />
           </svg>
-          Add New User
+          Thêm Người Dùng
         </button>
       </div>
 
@@ -162,7 +162,7 @@ function UserManagement() {
         <div className="search-input-wrapper" style={{ flex: 1 }}>
           <input
             type="text"
-            placeholder="Search by name, email, or wallet address..."
+            placeholder="Tìm kiếm theo tên, email hoặc địa chỉ ví..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
@@ -177,7 +177,7 @@ function UserManagement() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
-          Filters
+          Bộ lọc
         </button>
       </div>
 
@@ -196,7 +196,7 @@ function UserManagement() {
                 : {}
             }
           >
-            {r === "all" ? "All Roles" : r.charAt(0).toUpperCase() + r.slice(1)}
+            {r === "all" ? "Tất Cả" : r === "admin" ? "Quản trị viên" : r === "user" ? "Người dùng" : "Khách"}
           </button>
         ))}
         <div style={{ width: 1, background: "#e2e8f0", margin: "0 4px" }} />
@@ -213,7 +213,7 @@ function UserManagement() {
                 : {}
             }
           >
-            {s === "all" ? "All Status" : s.charAt(0).toUpperCase() + s.slice(1)}
+            {s === "all" ? "Mọi Trạng Thái" : s === "active" ? "Hoạt động" : "Tạm dừng"}
           </button>
         ))}
       </div>
@@ -223,13 +223,13 @@ function UserManagement() {
         <table className="product-table">
           <thead>
             <tr>
-              <th>User</th>
-              <th>Wallet Address</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Phone</th>
-              <th>Warranties</th>
-              <th>Actions</th>
+              <th>Người dùng</th>
+              <th>Địa chỉ ví</th>
+              <th>Vai trò</th>
+              <th>Trạng thái</th>
+              <th>Số điện thoại</th>
+              <th>Bảo hành</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -283,7 +283,7 @@ function UserManagement() {
                         <circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
                       </svg>
                     )}
-                    {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                    {s === "active" ? "Hoạt động" : "Tạm dừng"}
                   </span>
                 </td>
                 <td style={{ color: "#475569", fontSize: 13 }}>{user.phone}</td>
@@ -316,7 +316,7 @@ function UserManagement() {
           </tbody>
         </table>
         {filteredUsers.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>No users found.</div>
+          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>Không tìm thấy người dùng nào.</div>
         )}
       </div>
 
@@ -324,12 +324,12 @@ function UserManagement() {
       {isAddOpen && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "white", borderRadius: 16, padding: 32, width: 480, boxShadow: "0 24px 60px rgba(0,0,0,0.2)" }}>
-            <h3 style={{ margin: "0 0 20px", color: "#0f172a", fontSize: 18, fontWeight: 700 }}>Add New User</h3>
+            <h3 style={{ margin: "0 0 20px", color: "#0f172a", fontSize: 18, fontWeight: 700 }}>Thêm Người Dùng Mới</h3>
             {[
-              { label: "Full Name", key: "fullName", type: "text", placeholder: "Enter full name" },
-              { label: "Email", key: "email", type: "email", placeholder: "Enter email" },
-              { label: "Wallet Address", key: "walletAddress", type: "text", placeholder: "0x..." },
-              { label: "Phone Number", key: "phone", type: "text", placeholder: "Enter phone number" },
+              { label: "Họ và tên", key: "fullName", type: "text", placeholder: "Nhập họ và tên" },
+              { label: "Email", key: "email", type: "email", placeholder: "Nhập email" },
+              { label: "Địa chỉ ví", key: "walletAddress", type: "text", placeholder: "0x..." },
+              { label: "Số điện thoại", key: "phone", type: "text", placeholder: "Nhập số điện thoại" },
             ].map(({ label, key, type, placeholder }) => (
               <div key={key} style={{ marginBottom: 16 }}>
                 <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>{label}</label>
@@ -344,20 +344,20 @@ function UserManagement() {
               </div>
             ))}
             <div style={{ marginBottom: 24 }}>
-              <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>Role</label>
+              <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>Vai trò</label>
               <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                 className="search-input" style={{ width: "100%", cursor: "pointer" }}>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-                <option value="guest">Guest</option>
+                <option value="admin">Quản trị viên</option>
+                <option value="user">Người dùng</option>
+                <option value="guest">Khách</option>
               </select>
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <button onClick={handleAddUser} style={{ flex: 1, background: "#10b981", color: "white", border: "none", borderRadius: 10, padding: "12px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                Add User
+                Thêm Người Dùng
               </button>
               <button onClick={() => setIsAddOpen(false)} style={{ background: "white", color: "#ef4444", border: "1.5px solid #ef4444", borderRadius: 10, padding: "12px 20px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                Cancel
+                Hủy bỏ
               </button>
             </div>
           </div>
@@ -368,10 +368,10 @@ function UserManagement() {
       {editUser && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "white", borderRadius: 16, padding: 32, width: 480, boxShadow: "0 24px 60px rgba(0,0,0,0.2)" }}>
-            <h3 style={{ margin: "0 0 20px", color: "#0f172a", fontSize: 18, fontWeight: 700 }}>Edit User</h3>
+            <h3 style={{ margin: "0 0 20px", color: "#0f172a", fontSize: 18, fontWeight: 700 }}>Chỉnh Sửa Người Dùng</h3>
             {[
               { label: "Email", key: "email", type: "email" },
-              { label: "Phone", key: "phone", type: "text" },
+              { label: "Số điện thoại", key: "phone", type: "text" },
             ].map(({ label, key, type }) => (
               <div key={key} style={{ marginBottom: 16 }}>
                 <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>{label}</label>
@@ -380,28 +380,28 @@ function UserManagement() {
               </div>
             ))}
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>Role</label>
+              <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>Vai trò</label>
               <select value={editUser.role} onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
                 className="search-input" style={{ width: "100%", cursor: "pointer" }}>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-                <option value="guest">Guest</option>
+                <option value="admin">Quản trị viên</option>
+                <option value="user">Người dùng</option>
+                <option value="guest">Khách</option>
               </select>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>Status</label>
+              <label style={{ display: "block", fontWeight: 600, fontSize: 13, marginBottom: 6, color: "#475569" }}>Trạng thái</label>
               <select value={editUser.status} onChange={(e) => setEditUser({ ...editUser, status: e.target.value })}
                 className="search-input" style={{ width: "100%", cursor: "pointer" }}>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">Hoạt động</option>
+                <option value="inactive">Tạm dừng</option>
               </select>
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <button onClick={handleSaveEdit} style={{ flex: 1, background: "#10b981", color: "white", border: "none", borderRadius: 10, padding: "12px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                Save Changes
+                Lưu Thay Đổi
               </button>
               <button onClick={() => setEditUser(null)} style={{ background: "white", color: "#ef4444", border: "1.5px solid #ef4444", borderRadius: 10, padding: "12px 20px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                Cancel
+                Hủy bỏ
               </button>
             </div>
           </div>
