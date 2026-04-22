@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "sonner";
 
 const resolveApiRoot = () => {
   const configured = String(import.meta.env.VITE_API_BASE_URL || "").trim();
@@ -39,16 +40,19 @@ apiClient.interceptors.response.use(
   (error) => {
     // If unauthorized (401), logout and redirect to login
     if (error.response?.status === 401) {
-      console.warn("[API 401] Unauthorized. Initializing logout redirect...");
+      toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
       localStorage.removeItem("bw_auth_token");
       // Only redirect if not already on the auth page to avoid loops
       if (!window.location.pathname.startsWith("/auth")) {
-        window.location.href = "/auth";
+        setTimeout(() => {
+          window.location.href = "/auth";
+        }, 1500);
       }
     }
 
     const message = error.response?.data?.message || "Lỗi kết nối máy chủ";
-    console.error("[API Error]", message);
+    // We don't show a global toast here for EVERY error to avoid double-toasts in components,
+    // but we ensure the error is passed back correctly.
     return Promise.reject(error.response?.data || { message });
   }
 );
