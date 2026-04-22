@@ -109,8 +109,8 @@ function DeleteConfirmModal({ product, onClose, onConfirm }) {
   if (!product) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div style={{ background: "white", borderRadius: 24, width: "100%", maxWidth: 400, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)", overflow: "hidden" }}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
+      <div style={{ background: "white", borderRadius: 24, width: "100%", maxWidth: 400, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)", overflow: "hidden" }} onClick={e => e.stopPropagation()}>
         <div style={{ padding: 32, textAlign: "center" }}>
           <div style={{ background: "#fef2f2", width: 64, height: 64, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", color: "#ef4444" }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -137,20 +137,21 @@ function DeleteConfirmModal({ product, onClose, onConfirm }) {
   );
 }
 
-function ProductEditModal({ product, onClose, onSave }) {
-  if (!product) return null;
-
+function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
+  const isAdd = mode === "add";
+  
   const [formData, setFormData] = useState({
-    productName: product.productName || "",
-    brand: product.brand || "",
-    price: product.price || 0,
-    warrantyMonths: product.warrantyMonths || 0,
-    config: product.config || "",
-    description: product.description || "",
-    isActive: product.isActive ?? true
+    productCode: product?.productCode || "",
+    productName: product?.productName || "",
+    brand: product?.brand || "",
+    price: product?.price || 0,
+    warrantyMonths: product?.warrantyMonths || 0,
+    config: product?.config || "",
+    description: product?.description || "",
+    isActive: product?.isActive ?? true
   });
   const [imageFile, setImageFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(product.imageUrl ? product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/") : null);
+  const [previewUrl, setPreviewUrl] = useState(product?.imageUrl ? product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/") : null);
   const [saving, setSaving] = useState(false);
 
   const handleImageChange = (e) => {
@@ -172,21 +173,28 @@ function ProductEditModal({ product, onClose, onSave }) {
       if (imageFile) {
         data.append("image", imageFile);
       }
-      await onSave(product.productCode, data);
+      
+      if (isAdd) {
+        await productService.createProduct(data);
+      } else {
+        await onSave(product.productCode, data);
+      }
       onClose();
     } catch (err) {
-      console.error("Lỗi khi cập nhật sản phẩm:", err);
-      alert("Cập nhật thất bại!");
+      console.error(isAdd ? "Lỗi khi tạo sản phẩm:" : "Lỗi khi cập nhật sản phẩm:", err);
+      alert(isAdd ? "Tạo sản phẩm thất bại!" : "Cập nhật thất bại!");
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(6px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(6px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
       <div style={{ background: "white", borderRadius: 32, width: "100%", maxWidth: 650, maxHeight: "90vh", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)", overflow: "hidden", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
         <div style={{ padding: "16px 32px", borderBottom: "1.5px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Chỉnh sửa sản phẩm</h3>
+          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
+            {isAdd ? "Thêm sản phẩm mới" : "Chỉnh sửa sản phẩm"}
+          </h3>
           <button onClick={onClose} style={{ border: "none", background: "#f1f5f9", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", color: "#64748b", fontSize: 20 }}>×</button>
         </div>
 
@@ -204,10 +212,11 @@ function ProductEditModal({ product, onClose, onSave }) {
               </div>
             </div>
 
-            <div style={{ gridColumn: "span 2" }}>
-              <label style={fieldLabel}>Tên sản phẩm</label>
+            <div style={{ gridColumn: isAdd ? "span 1" : "span 2" }}>
+              <label style={fieldLabel}>Tên sản phẩm <span style={{ color: "#ef4444" }}>*</span></label>
               <input 
                 type="text" 
+                placeholder="VD: iPhone 15 Pro Max"
                 value={formData.productName} 
                 onChange={e => setFormData({ ...formData, productName: e.target.value })} 
                 required
@@ -215,10 +224,25 @@ function ProductEditModal({ product, onClose, onSave }) {
               />
             </div>
 
+            {isAdd && (
+              <div>
+                <label style={fieldLabel}>Mã sản phẩm <span style={{ color: "#ef4444" }}>*</span></label>
+                <input 
+                  type="text" 
+                  placeholder="VD: APL-IP15PM"
+                  value={formData.productCode} 
+                  onChange={e => setFormData({ ...formData, productCode: e.target.value })} 
+                  required
+                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                />
+              </div>
+            )}
+
             <div>
-              <label style={fieldLabel}>Hãng sản xuất</label>
+              <label style={fieldLabel}>Hãng sản xuất <span style={{ color: "#ef4444" }}>*</span></label>
               <input 
                 type="text" 
+                placeholder="VD: Apple"
                 value={formData.brand} 
                 onChange={e => setFormData({ ...formData, brand: e.target.value })} 
                 required
@@ -227,7 +251,7 @@ function ProductEditModal({ product, onClose, onSave }) {
             </div>
 
             <div>
-              <label style={fieldLabel}>Giá tiền (VND)</label>
+              <label style={fieldLabel}>Giá tiền (VND) <span style={{ color: "#ef4444" }}>*</span></label>
               <input 
                 type="number" 
                 value={formData.price} 
@@ -238,7 +262,7 @@ function ProductEditModal({ product, onClose, onSave }) {
             </div>
 
             <div>
-              <label style={fieldLabel}>Thời gian bảo hành (Tháng)</label>
+              <label style={fieldLabel}>Bảo hành (Tháng) <span style={{ color: "#ef4444" }}>*</span></label>
               <input 
                 type="number" 
                 value={formData.warrantyMonths} 
@@ -248,37 +272,39 @@ function ProductEditModal({ product, onClose, onSave }) {
               />
             </div>
 
-            <div>
-              <label style={fieldLabel}>Trạng thái sản phẩm</label>
-              <div style={{ display: "flex", gap: 4, background: "#f1f5f9", padding: 4, borderRadius: 100 }}>
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, isActive: true })}
-                  style={{
-                    flex: 1, padding: "10px 16px", borderRadius: 100, border: "none", cursor: "pointer",
-                    fontSize: 12, fontWeight: 700, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    background: formData.isActive ? "#10b981" : "transparent",
-                    color: formData.isActive ? "white" : "#64748b",
-                    boxShadow: formData.isActive ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none"
-                  }}
-                >
-                  Hoạt động
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, isActive: false })}
-                  style={{
-                    flex: 1, padding: "10px 16px", borderRadius: 100, border: "none", cursor: "pointer",
-                    fontSize: 12, fontWeight: 700, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    background: !formData.isActive ? "#ef4444" : "transparent",
-                    color: !formData.isActive ? "white" : "#64748b",
-                    boxShadow: !formData.isActive ? "0 4px 12px rgba(239, 68, 68, 0.3)" : "none"
-                  }}
-                >
-                  Tạm khóa
-                </button>
+            {!isAdd && (
+              <div>
+                <label style={fieldLabel}>Trạng thái sản phẩm</label>
+                <div style={{ display: "flex", gap: 4, background: "#f1f5f9", padding: 4, borderRadius: 100 }}>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, isActive: true })}
+                    style={{
+                      flex: 1, padding: "10px 16px", borderRadius: 100, border: "none", cursor: "pointer",
+                      fontSize: 12, fontWeight: 700, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      background: formData.isActive ? "#10b981" : "transparent",
+                      color: formData.isActive ? "white" : "#64748b",
+                      boxShadow: formData.isActive ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none"
+                    }}
+                  >
+                    Hoạt động
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, isActive: false })}
+                    style={{
+                      flex: 1, padding: "10px 16px", borderRadius: 100, border: "none", cursor: "pointer",
+                      fontSize: 12, fontWeight: 700, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      background: !formData.isActive ? "#ef4444" : "transparent",
+                      color: !formData.isActive ? "white" : "#64748b",
+                      boxShadow: !formData.isActive ? "0 4px 12px rgba(239, 68, 68, 0.3)" : "none"
+                    }}
+                  >
+                    Tạm khóa
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div style={{ gridColumn: "span 2" }}>
               <label style={fieldLabel}>Cấu hình chi tiết</label>
@@ -312,7 +338,7 @@ function ProductEditModal({ product, onClose, onSave }) {
               disabled={saving}
               style={{ padding: "12px 32px", borderRadius: 14, border: "none", background: "#1e40af", color: "white", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.7 : 1 }}
             >
-              {saving ? "Đang lưu..." : "Lưu thay đổi"}
+              {saving ? "Đang xử lý..." : (isAdd ? "Tạo sản phẩm" : "Lưu thay đổi")}
             </button>
           </div>
         </form>
@@ -371,7 +397,7 @@ function ProductDetailModal({ product, onClose }) {
   ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
       {/* Container expanded to 1100px */}
       <div 
         style={{
@@ -521,6 +547,7 @@ function ProductList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null); // Click hàng xem chi tiết
   const [editingProduct, setEditingProduct] = useState(null);   // Click Sửa
+  const [isAddingProduct, setIsAddingProduct] = useState(false); // Click Thêm mới
   const [deletingProduct, setDeletingProduct] = useState(null); // Click Xóa
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -636,12 +663,24 @@ function ProductList() {
         onClose={() => setSelectedProduct(null)} 
       />
 
+      {/* Add Modal */}
+      {isAddingProduct && (
+        <ProductFormModal 
+          mode="add"
+          onClose={() => setIsAddingProduct(false)} 
+          onSave={fetchProducts}
+        />
+      )}
+
       {/* Edit Modal */}
-      <ProductEditModal 
-        product={editingProduct} 
-        onClose={() => setEditingProduct(null)} 
-        onSave={handleUpdateProduct}
-      />
+      {editingProduct && (
+        <ProductFormModal 
+          mode="edit"
+          product={editingProduct} 
+          onClose={() => setEditingProduct(null)} 
+          onSave={handleUpdateProduct}
+        />
+      )}
 
       {/* Delete Modal */}
       <DeleteConfirmModal 
@@ -663,16 +702,46 @@ function ProductList() {
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-            <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
-          </svg>
-          <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "#0f172a" }}>Tất Cả Sản Phẩm Bảo Hành</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ background: "#eff6ff", width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#1e40af" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
+            </svg>
+          </div>
+          <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.02em" }}>Danh sách sản phẩm</span>
         </div>
-        <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
-          {filteredProducts.length} sản phẩm
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button 
+            onClick={() => setIsAddingProduct(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: 8, padding: "0 20px", 
+              height: 40, borderRadius: 999, border: "none", background: "#1e40af", color: "white",
+              fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease",
+              boxShadow: "0 4px 10px rgba(30, 64, 175, 0.2)"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 6px 12px rgba(30, 64, 175, 0.25)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 10px rgba(30, 64, 175, 0.2)";
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Thêm sản phẩm
+          </button>
+          <span style={{ 
+            background: "#f1f5f9", border: "1.25px solid #e2e8f0", borderRadius: 999, 
+            height: 40, padding: "0 16px", display: "flex", alignItems: "center",
+            fontSize: 12, color: "#64748b", fontWeight: 600 
+          }}>
+            {filteredProducts.length} sản phẩm
+          </span>
+        </div>
       </div>
 
       {/* Search + Filter row */}
@@ -680,12 +749,13 @@ function ProductList() {
         <div className="search-input-wrapper" style={{ flex: 1 }}>
           <input
             type="text"
-            placeholder="Tìm kiếm theo tên, serial hoặc chủ sở hữu..."
+            placeholder="Tìm kiếm theo mã, tên sản phẩm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
+            style={{ height: 44, paddingLeft: 48, fontSize: 14 }}
           />
-          <span className="search-icon">
+          <span className="search-icon" style={{ left: 18 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -697,6 +767,7 @@ function ProductList() {
           style={{ 
             width: "auto", 
             padding: "0 24px", 
+            height: 44,
             gap: 8, 
             display: "flex", 
             alignItems: "center", 
@@ -707,7 +778,7 @@ function ProductList() {
             borderColor: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "#1e40af" : "#cbd5e1",
             color: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "white" : "#475569",
             transition: "all 0.3s ease",
-            boxShadow: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "0 4px 12px rgba(30, 64, 175, 0.25)" : "none"
+            boxShadow: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "0 4px 10px rgba(30, 64, 175, 0.2)" : "none"
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
