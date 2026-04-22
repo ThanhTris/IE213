@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { warrantyService } from "../services/warrantyService";
 import Footer from "../components/Footer";
 
@@ -47,10 +48,14 @@ function GuestPage({ isAuthenticated }) {
       if (res && res.success) {
         setResult(res.data);
       } else {
-        setError(res?.message || "Không tìm thấy thông tin bảo hành.");
+        const msg = res?.message || "Không tìm thấy thông tin bảo hành.";
+        setError(msg);
+        toast.error(msg);
       }
     } catch (e) {
-      setError(e?.message || "Tìm kiếm thất bại.");
+      const msg = e?.message || "Tìm kiếm thất bại.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

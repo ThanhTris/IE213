@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { userService } from "../services/userService";
 import "../assets/views/SettingsPage.css";
 
@@ -82,19 +83,17 @@ function SettingsPage({ auth }) {
 
   const handleSaveProfile = async () => {
     setProfileSaving(true);
-    setProfileMessage("");
-    setProfileError("");
     try {
       const res = await userService.updateProfile(editProfile);
       if (res && res.success) {
         setProfile({ ...editProfile });
-        setProfileMessage("Profile updated successfully!");
+        toast.success("Hồ sơ đã được cập nhật thành công!");
         setIsEditing(false);
       } else {
-        setProfileError(res?.message || "Failed to update profile");
+        toast.error(res?.message || "Cập nhật hồ sơ thất bại");
       }
-    } catch {
-      setProfileError("Connection error while updating profile");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Lỗi kết nối khi cập nhật hồ sơ");
     } finally {
       setProfileSaving(false);
     }
@@ -114,6 +113,7 @@ function SettingsPage({ auth }) {
     setNotifSaving(true);
     setTimeout(() => {
       setNotifSaving(false);
+      toast.success("Đã lưu tùy chọn thông báo!");
     }, 1000);
   };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { connectMetaMask, isValidWalletAddress } from "../utils/web3";
-import { persistAuthToken, getAuthFromToken } from "../utils/auth";
+import { persistAuthToken } from "../utils/auth";
+import { toast } from "sonner";
 import { userService } from "../services/userService";
 
 function SignInUpPage({ onAuthSuccess, onCancel }) {
@@ -13,30 +14,38 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
     try {
       const addr = await connectMetaMask();
       if (!isValidWalletAddress(addr)) {
-        setError("Địa chỉ ví không hợp lệ.");
+        const msg = "Địa chỉ ví không hợp lệ.";
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
       // Sử dụng userService để đăng nhập
       const res = await userService.login({ walletAddress: addr });
       
-      // Với interceptor, res đã là response.data
       const token = res.data?.accessToken;
 
       if (!token) {
-        setError("Đăng nhập thành công nhưng không nhận được token.");
+        const msg = "Đăng nhập thành công nhưng không nhận được token.";
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
       const auth = persistAuthToken(token);
       if (!auth) {
-        setError("Không thể đọc thông tin xác thực từ token.");
+        const msg = "Không thể đọc thông tin xác thực từ token.";
+        setError(msg);
+        toast.error(msg);
         return;
       }
+      toast.success("Đăng nhập thành công!");
       onAuthSuccess?.(auth);
     } catch (e) {
       console.error("[Login Error]", e);
-      setError(e?.message || "Kết nối ví thất bại.");
+      const msg = e?.message || "Kết nối ví thất bại.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setBusy(false);
     }

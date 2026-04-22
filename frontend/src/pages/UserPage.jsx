@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import { toast } from "sonner";
 import { warrantyService } from "../services/warrantyService";
 import Footer from "../components/Footer";
 
@@ -21,7 +22,7 @@ function UserPage() {
         const res = await warrantyService.getMyWarranties();
         setWarranties(res.data || []);
       } catch (err) {
-        console.error("Lỗi khi tải danh sách bảo hành:", err);
+        toast.error(err.response?.data?.message || "Lỗi khi tải danh sách bảo hành.");
       } finally {
         setLoading(false);
       }
@@ -73,15 +74,12 @@ function UserPage() {
     event.preventDefault();
 
     if (!recipientAddress.trim()) {
-      setTransferMessage("Please enter a recipient wallet address.");
+      toast.error("Vui lòng nhập địa chỉ ví người nhận.");
       return;
     }
 
-    setTransferMessage(
-      "Transfer request submitted. Confirm with your connected wallet.",
-    );
+    toast.success("Yêu cầu chuyển nhượng đã được gửi. Vui lòng xác nhận trên ví của bạn.");
     setRecipientAddress("");
-    setTimeout(() => setTransferMessage(""), 3500);
   };
 
   return (
