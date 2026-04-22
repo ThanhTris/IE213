@@ -3,7 +3,7 @@ import CreateWarranty from "./admin/CreateWarranty";
 import CreateNewProduct from "./admin/CreateNewProduct";
 import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
-import "../assets/views/admin-portal.css";
+import "../assets/views/admin-dashboard.css";
 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -20,7 +20,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
   const tabs = [
     {
       id: "create",
-      label: "Create Warranty",
+      label: "Cấp Bảo Hành",
       icon: (
         <svg
           width="20"
@@ -38,7 +38,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
     },
     {
       id: "log-repairs",
-      label: "Log Repairs",
+      label: "Ghi Nhận Sửa Chữa",
       icon: (
         <svg
           width="20"
@@ -56,7 +56,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
     },
     {
       id: "create-new-product",
-      label: "Create New Product",
+      label: "Thêm Sản Phẩm",
       icon: (
         <svg
           width="20"
@@ -85,10 +85,9 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
             {/* Admin Header */}
             <div className="admin-header">
               <div className="admin-header-content">
-                <h1>Admin Management Portal</h1>
+                <h1>Cổng Quản Trị Hệ Thống</h1>
                 <p>
-                  Issue warranties, log repairs, and manage your warranty
-                  program
+                  Cấp bảo hành, ghi nhận sửa chữa và quản lý chương trình bảo hành của bạn
                 </p>
               </div>
             </div>
