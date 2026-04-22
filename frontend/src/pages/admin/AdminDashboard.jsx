@@ -14,8 +14,8 @@ function LineChart({ data }) {
   const [hovered, setHovered] = useState(null);
   if (!data || data.length < 2) return <p style={{ color: "#94a3b8", textAlign: "center", padding: 20, fontSize: "2rem", fontWeight: 800 }}>0</p>;
 
-  const W = 500, H = 220;
-  const PAD = { t: 25, r: 24, b: 44, l: 44 };
+  const W = 500, H = 240;
+  const PAD = { t: 25, r: 24, b: 64, l: 44 };
   const plotW = W - PAD.l - PAD.r;
   const plotH = H - PAD.t - PAD.b;
   const maxVal = Math.max(...data.map((d) => d.value), 10);
@@ -71,9 +71,9 @@ function LineChart({ data }) {
           </g>
         )}
 
-        <g transform={`translate(${W / 2 - 32}, ${H - 6})`}>
+        <g transform={`translate(${W / 2 - 32}, ${H - 12})`}>
           <circle cx="5" cy="0" r="5" fill="white" stroke="#1e40af" strokeWidth="2.5" />
-          <text x="16" y="5" fontSize="0.8rem" fontWeight="600" fill="#64748b">Repairs</text>
+          <text x="16" y="5" fontSize="0.85rem" fontWeight="700" fill="#475569">Repairs</text>
         </g>
       </svg>
     </div>
