@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { toast } from "sonner";
 import { repairService } from "../../services/repairService";
 
 
@@ -18,8 +19,9 @@ function RepairHistory() {
       setLoading(true);
       const res = await repairService.getAllRepairs();
       setRepairs(res.data || []);
+      toast.success("Đã tải lịch sử sửa chữa.");
     } catch (err) {
-      console.error("Lỗi khi tải lịch sử sửa chữa:", err);
+      toast.error("Lỗi khi tải lịch sử sửa chữa: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }

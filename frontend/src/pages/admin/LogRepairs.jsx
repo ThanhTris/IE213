@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { repairService } from "../../services/repairService";
 
 const WrenchIcon = () => (
@@ -55,6 +56,7 @@ function LogRepairs() {
         // but we could pass them if needed.
       };
       await repairService.createRepair(payload);
+      toast.success("Đã ghi nhận bản ghi sửa chữa thành công!");
       setSubmitted(true);
       setForm({
         serialNumber: "",
@@ -65,7 +67,7 @@ function LogRepairs() {
       });
       setTimeout(() => setSubmitted(false), 3000);
     } catch (err) {
-      alert("Lỗi khi lưu bản ghi sửa chữa: " + (err.message || "Không xác định"));
+      toast.error("Lỗi khi lưu bản ghi sửa chữa: " + (err.message || "Không xác định"));
     } finally {
       setLoading(false);
     }

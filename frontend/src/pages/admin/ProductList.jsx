@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { productService } from "../../services/productService";
 import { repairService } from "../../services/repairService";
 
@@ -176,13 +177,15 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
       
       if (isAdd) {
         await productService.createProduct(data);
+        toast.success("Tạo sản phẩm thành công!");
       } else {
         await onSave(product.productCode, data);
+        toast.success("Cập nhật sản phẩm thành công!");
       }
       onClose();
     } catch (err) {
-      console.error(isAdd ? "Lỗi khi tạo sản phẩm:" : "Lỗi khi cập nhật sản phẩm:", err);
-      alert(isAdd ? "Tạo sản phẩm thất bại!" : "Cập nhật thất bại!");
+      const errorMsg = err.response?.data?.message || (isAdd ? "Tạo sản phẩm thất bại!" : "Cập nhật thất bại!");
+      toast.error(errorMsg);
     } finally {
       setSaving(false);
     }
@@ -563,8 +566,9 @@ function ProductList() {
       setLoading(true);
       const res = await productService.getAllProducts();
       setProducts(res.data || []);
+      toast.success("Đã tải danh sách sản phẩm.");
     } catch (err) {
-      console.error("Lỗi khi tải dữ liệu Admin:", err);
+      toast.error("Lỗi khi tải dữ liệu Admin: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -582,11 +586,12 @@ function ProductList() {
   const handleDeleteProduct = async (product) => {
     try {
       await productService.deleteProduct(product.productCode);
+      toast.success(`Đã xóa sản phẩm ${product.productName}`);
       setDeletingProduct(null);
       await fetchProducts(); // Refresh list
     } catch (err) {
-      console.error("Lỗi khi xóa sản phẩm:", err);
-      alert("Xóa thất bại!");
+      const errorMsg = err.response?.data?.message || "Xóa thất bại!";
+      toast.error(errorMsg);
     }
   };
 

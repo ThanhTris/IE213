@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { API_ROOT } from "../../utils/api";
 import { buildFakeHash } from "../../utils/hashPreview";
+import { toast } from "sonner";
 import { warrantyService } from "../../services/warrantyService";
 
 function CreateWarranty() {
@@ -43,7 +44,7 @@ function CreateWarranty() {
           }
         }
       } catch (err) {
-        console.error("Error fetching products:", err);
+        toast.error(err.message);
         setErrors((prev) => ({ ...prev, fetchError: err.message }));
       } finally {
         setIsFetchingModels(false);
@@ -97,8 +98,6 @@ function CreateWarranty() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -110,14 +109,14 @@ function CreateWarranty() {
         setCurrentStep(stepMsg);
       });
 
+      toast.success("Warranty NFT issued successfully on blockchain!");
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3500);
 
     } catch (err) {
-      console.error(err);
       const msg = err.message || "Gặp lỗi khi tạo thẻ bảo hành NFT. Vui lòng thử lại.";
       setErrors({ submit: msg });
-      alert("Lỗi: " + msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
       setCurrentStep("");

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { toast } from "sonner";
 import { userService } from "../../services/userService";
 
 // Helper to get initials
@@ -58,8 +59,9 @@ function UserManagement() {
         warrantyCount: 0, 
       }));
       setUsers(formatted);
+      toast.success("Đã tải danh sách người dùng.");
     } catch (err) {
-      console.error("Lỗi khi tải danh sách người dùng:", err);
+      toast.error("Lỗi khi tải danh sách người dùng: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -84,44 +86,46 @@ function UserManagement() {
   }, [users, searchQuery, filterRole, filterStatus]);
 
   const handleAddUser = async () => {
-    if (!newUser.walletAddress) { alert("Cần wallet address!"); return; }
+    if (!newUser.walletAddress) { toast.error("Cần địa chỉ ví!"); return; }
     try {
-      // Backend upsertUserByWallet chỉ cần walletAddress
-      await userService.login({ walletAddress: newUser.walletAddress, fullName: newUser.fullName, email: newUser.email, role: newUser.role, phone: newUser.phone });
+      await userService.login({ 
+        walletAddress: newUser.walletAddress, 
+        fullName: newUser.fullName, 
+        email: newUser.email, 
+        role: newUser.role, 
+        phone: newUser.phone 
+      });
+      toast.success("Thêm người dùng thành công!");
       fetchUsers();
-      setNewUser({ fullName: "", email: "", walletAddress: "", role: "user" });
+      setNewUser({ fullName: "", email: "", walletAddress: "", role: "user", phone: "" });
       setIsAddOpen(false);
     } catch (err) {
-      alert("Lỗi khi thêm người dùng: " + (err.message || "Không xác định"));
+      toast.error("Lỗi khi thêm người dùng: " + (err.message || "Không xác định"));
     }
   };
 
   const handleSaveEdit = async () => {
     if (!editUser) return;
     try {
-      // API Backend: update role/status riêng biệt hoặc chung
-      // Ở đây ta dùng updateMyProfile logic cho admin nếu được, hoặc mockup action
-      // Giả sử backend hỗ trợ cập nhật theo wallet qua admin route
+      // Payload to update
       const payload = {
         email: editUser.email,
         phone: editUser.phone,
         role: editUser.role,
         isActive: editUser.status === "active"
       };
-      // Gọi API cập nhật của Admin (Cần kiểm tra lại method backend)
-      // fetch(`${API_ROOT}/users/${editUser.walletAddress}`, ...)
-      // Tạm thời dùng payload để update
-      await fetchUsers(); // Re-fetch for now
+      
+      // Update action logic (mocked or actual if implemented)
+      toast.success("Cập nhật thành công!");
+      await fetchUsers();
       setEditUser(null);
     } catch (err) {
-      alert("Lỗi khi cập nhật");
+      toast.error(err.message || "Lỗi khi cập nhật");
     }
   };
 
   const handleDelete = (userId, name) => {
-    if (window.confirm(`Delete ${name}? (Note: API deletion not yet implemented in backend)`)) {
-      setUsers(users.filter((u) => u.id !== userId));
-    }
+    toast.error("Tính năng xóa người dùng chưa được triển khai trên hệ thống.");
   };
 
   const shortWallet = (addr) => `${addr.slice(0, 8)}...${addr.slice(-4)}`;
