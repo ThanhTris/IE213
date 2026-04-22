@@ -4,8 +4,6 @@
 
 .admin-page-wrapper {
   width: 100%;
-  max-width: 1480px;
-  margin: 0 auto;
   padding: 24px 24px 40px;
   display: grid;
   gap: 24px;
@@ -156,7 +154,7 @@
 .admin-tab {
   background: transparent;
   border: none;
-  padding: 12px 20px;
+  padding: 10px 24px;
   font-size: 14px;
   font-weight: 700;
   color: #475569;
@@ -164,7 +162,7 @@
   transition: all 0.25s ease;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   white-space: nowrap;
   border-radius: 999px;
 }
@@ -420,16 +418,19 @@
 }
 
 .filter-btn {
-  padding: 10px 18px;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
+  padding: 10px 24px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 999px;
   background: white;
   color: #64748b;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filter-btn:hover {
@@ -439,10 +440,10 @@
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  background: #1e40af;
   color: white;
-  border-color: transparent;
-  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+  border-color: #1e40af;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
 }
 
 .product-count,
@@ -1368,12 +1369,14 @@
 
 .search-input {
   width: 100%;
-  padding: 10px 16px 10px 42px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 14px;
+  padding: 12px 20px 12px 48px;
   background: #f8fafc;
-  transition: all 0.2s ease;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 999px;
+  font-size: 14px;
+  color: #0f172a;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
 .search-input:focus {
@@ -1394,7 +1397,7 @@
   color: #94a3b8;
 }
 
-.search-input:focus + .search-icon {
+.search-input:focus+.search-icon {
   color: #1e40af;
 }
 
@@ -1435,6 +1438,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -1445,6 +1449,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

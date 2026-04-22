@@ -5,6 +5,7 @@ import UserManagement from "./UserManagement";
 import { productService } from "../../services/productService";
 import { warrantyService } from "../../services/warrantyService";
 import { repairService } from "../../services/repairService";
+import { Package, ShieldCheck, Wrench, CheckCircle, TrendingUp, TrendingDown, Activity, Check } from "lucide-react";
 
 
 // ─── SVG LINE CHART ───────────────────────────────────────────────────────────
@@ -218,7 +219,7 @@ function BarChart({ data }) {
 const tabs = [
   {
     id: "products",
-    label: "Product List",
+    label: "Danh sách Sản phẩm",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
@@ -228,7 +229,7 @@ const tabs = [
   },
   {
     id: "repair-history",
-    label: "Repair History",
+    label: "Lịch sử Sửa chữa",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
@@ -237,7 +238,7 @@ const tabs = [
   },
   {
     id: "user-management",
-    label: "User Management",
+    label: "Quản lý Người dùng",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
@@ -276,7 +277,7 @@ function AdminDashboard() {
         const completedRepairs = repairs.filter(r => r.status === "completed" || r.status === "done").length;
 
         // 1. Logic for LineChart (Dynamic Last 6 Months)
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
         const today = new Date();
         const last6Months = [];
         
@@ -326,7 +327,7 @@ function AdminDashboard() {
 
         if (othersCount > 0) {
           newPieData.push({
-            label: "Other",
+            label: "Khác",
             pct: Math.round((othersCount / totalProds) * 100),
             color: COLORS[5]
           });
@@ -336,10 +337,10 @@ function AdminDashboard() {
         // 3. Logic for BarChart (Intelligent Repair Categorization)
         // 3. Logic for BarChart (Intelligent Repair Categorization)
         const CATEGORIES = {
-          "Display": ["màn hình", "kính", "cảm ứng", "screen", "display"],
-          "Battery/Power": ["pin", "nguồn", "sạc", "battery", "power"],
-          "Hardware": ["main", "board", "chip", "ram", "ssd", "ổ cứng", "loa", "mic"],
-          "Software": ["phần mềm", "ios", "windows", "cài lại", "software", "unlock"]
+          "Màn hình": ["màn hình", "kính", "cảm ứng", "screen", "display"],
+          "Pin/Nguồn": ["pin", "nguồn", "sạc", "battery", "power"],
+          "Phần cứng": ["main", "board", "chip", "ram", "ssd", "ổ cứng", "loa", "mic"],
+          "Phần mềm": ["phần mềm", "ios", "windows", "cài lại", "software", "unlock"]
         };
 
         const repairTypeCounts = repairs.reduce((acc, r) => {
@@ -352,7 +353,7 @@ function AdminDashboard() {
               break;
             }
           }
-          if (!matched) acc["Other"] = (acc["Other"] || 0) + 1;
+          if (!matched) acc["Khác"] = (acc["Khác"] || 0) + 1;
           return acc;
         }, {});
 
@@ -372,50 +373,36 @@ function AdminDashboard() {
 
         setMetrics([
           {
-            label: "Total Products",
+            label: "Tổng Sản Phẩm",
             value: products.length,
-            trend: "+12%",
+            trend: "+0%",
             up: true,
-            icon: (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
-              </svg>
-            ),
+            icon: <Package size={20} color="#2563eb" />,
+            bgColor: "#eff6ff",
           },
           {
-            label: "Active Warranties",
+            label: "Bảo Hành Hiệu Lực",
             value: activeWarranties,
-            trend: `${warrantyRate}% Healthy`,
-            up: warrantyRate > 50,
-            icon: (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
-              </svg>
-            ),
-          },
-          {
-            label: "Total Repairs",
-            value: repairs.length,
-            trend: "Active System",
+            trend: "Thời gian thực",
             up: true,
-            icon: (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-              </svg>
-            ),
+            icon: <ShieldCheck size={20} color="#059669" />,
+            bgColor: "#ecfdf5",
           },
           {
-            label: "Completed Repairs",
+            label: "Tổng Lượt Sửa Chữa",
+            value: repairs.length,
+            trend: "Tất cả",
+            up: true,
+            icon: <Wrench size={20} color="#4f46e5" />,
+            bgColor: "#eef2ff",
+          },
+          {
+            label: "Sửa Chữa Hoàn Tất",
             value: completedRepairs,
-            trend: `${repairRate}% Fixed`,
-            up: repairRate > 70,
-            icon: (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            ),
+            trend: "Đã xong",
+            up: true,
+            icon: <CheckCircle size={20} color="#0d9488" />,
+            bgColor: "#f0fdfa",
           },
         ]);
       } catch (err) {
@@ -429,53 +416,89 @@ function AdminDashboard() {
 
   const card = {
     background: "white",
-    borderRadius: 14,
-    padding: "var(--card-padding)",
+    borderRadius: "1rem",
+    padding: "2rem",
     border: "1px solid #e2e8f0",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.04)",
   };
 
   return (
     <div className="admin-page-wrapper">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "var(--admin-padding-y)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem", marginBottom: "2rem" }}>
         {metrics.map((m, i) => (
-          <div key={i} style={card}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                {/* Clone element to inject larger size if it's an SVG-like node */}
+          <div 
+            key={i} 
+            style={{
+              background: "white",
+              borderRadius: "1rem",
+              padding: "1.5rem",
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.04)",
+              transition: "all 0.3s ease",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-0.25rem)";
+              e.currentTarget.style.boxShadow = "0 12px 20px rgba(0,0,0,0.08)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.04)";
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ 
+                width: "3rem", 
+                height: "3rem", 
+                borderRadius: "0.75rem", 
+                background: m.bgColor,
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center" 
+              }}>
                 {m.icon}
               </div>
               <div style={{
-                padding: "4px 10px",
-                background: m.up ? "#ecfdf5" : "#fff7ed",
-                color: m.up ? "#10b981" : "#f97316",
-                borderRadius: "20px",
-                fontSize: "0.8rem",
-                fontWeight: "800",
                 display: "flex",
                 alignItems: "center",
-                gap: 4,
+                gap: "0.35rem",
+                padding: "0.5rem 1.125rem",
+                borderRadius: "999px",
+                fontSize: "0.875rem",
+                fontWeight: 800,
+                background: m.up ? "#ecfdf5" : "#fff7ed",
+                color: m.up ? "#059669" : "#ea580c",
                 border: `1px solid ${m.up ? "#d1fae5" : "#ffedd5"}`
               }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                  {m.up ? (
-                    <>
-                      <line x1="12" y1="20" x2="12" y2="4" />
-                      <polyline points="6 10 12 4 18 10" />
-                    </>
-                  ) : (
-                    <>
-                      <line x1="12" y1="4" x2="12" y2="20" />
-                      <polyline points="18 14 12 20 6 14" />
-                    </>
-                  )}
-                </svg>
+                {m.up ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                 {m.trend}
               </div>
             </div>
 
-            <div style={{ fontSize: "1.25rem", color: "#1e293b", fontWeight: 800, marginBottom: 8, letterSpacing: "-0.01em" }}>{m.label}</div>
-            <div style={{ fontSize: "2.5rem", fontWeight: 900, color: "#0f172a", lineHeight: 1, letterSpacing: "-0.02em" }}>{m.value}</div>
+            <div>
+              <p style={{ 
+                color: "#1e293b", 
+                fontSize: "1.5rem", 
+                fontWeight: 800, 
+                margin: "0 0 0.5rem 0",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.2
+              }}>
+                {m.label}
+              </p>
+              <h3 style={{ 
+                fontSize: "3rem", 
+                fontWeight: 900, 
+                color: "#0f172a", 
+                margin: 0,
+                letterSpacing: "-0.03em",
+                lineHeight: 1
+              }}>
+                {m.value}
+              </h3>
+            </div>
           </div>
         ))}
       </div>
@@ -484,35 +507,35 @@ function AdminDashboard() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))", gap: 16, marginBottom: 24, maxWidth: "100%" }}>
         {/* Line Chart */}
         <div style={card}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: 0, paddingLeft: "0.5rem" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
             </svg>
-            <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "#0f172a" }}>Monthly Repair Trends</span>
+            <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.01em" }}>Xu Hướng Sửa Chữa Hàng Tháng</span>
           </div>
           <LineChart data={lineData} />
         </div>
 
         {/* Pie Chart */}
         <div style={card}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: 0, paddingLeft: "0.5rem" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
               <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
             </svg>
-            <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "#0f172a" }}>Product Categories Distribution</span>
+            <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.01em" }}>Phân Bố Danh Mục Sản Phẩm</span>
           </div>
           <PieChart data={pieData} />
         </div>
       </div>
 
       {/* ── Charts Row 2 (Full Width) ────────────────────────────────────── */}
-      <div style={{ ...card, marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <div style={{ ...card, marginBottom: "2rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: 0, paddingLeft: "0.5rem" }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>
-          <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "#0f172a" }}>Repair Types Distribution</span>
+          <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.01em" }}>Phân Bố Loại Hình Sửa Chữa</span>
         </div>
         <BarChart data={barData} />
       </div>
