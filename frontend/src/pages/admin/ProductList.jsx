@@ -668,10 +668,10 @@ function ProductList() {
             <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
             <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
           </svg>
-          <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "#0f172a" }}>All Warranty Products</span>
+          <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "#0f172a" }}>Tất Cả Sản Phẩm Bảo Hành</span>
         </div>
         <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
-          {filteredProducts.length} products
+          {filteredProducts.length} sản phẩm
         </span>
       </div>
 
@@ -680,7 +680,7 @@ function ProductList() {
         <div className="search-input-wrapper" style={{ flex: 1 }}>
           <input
             type="text"
-            placeholder="Search by name, serial, or owner..."
+            placeholder="Tìm kiếm theo tên, serial hoặc chủ sở hữu..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -777,7 +777,7 @@ function ProductList() {
               <th style={{ width: "105px", fontSize: "0.85rem", textTransform: "none" }}>Bảo hành</th>
               <th style={{ width: "170px", fontSize: "0.85rem", textTransform: "none" }}>Cấu hình</th>
               <th style={{ width: "auto", fontSize: "0.85rem", textTransform: "none" }}>Nội dung sửa chữa</th>
-              <th style={{ width: "100px", fontSize: "0.85rem", textTransform: "none" }}>Thao tác</th>
+              <th style={{ width: "120px", fontSize: "0.85rem", textTransform: "none", textAlign: "center" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -849,7 +849,7 @@ function ProductList() {
                     fontSize: "0.85rem", color: "#475569", maxWidth: 170, 
                     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" 
                   }} title={product.config}>
-                    {product.config || "Standard"}
+                    {product.config || "Tiêu chuẩn"}
                   </div>
                 </td>
                 <td>
@@ -869,8 +869,8 @@ function ProductList() {
                     <div style={{ fontSize: "0.85rem", color: "#cbd5e1" }}>Chưa sửa chữa</div>
                   )}
                 </td>
-                <td>
-                  <div className="action-buttons">
+                <td style={{ textAlign: "center" }}>
+                  <div className="action-buttons" style={{ justifyContent: "center", display: "flex", gap: "8px" }}>
                     {/* Nút Sửa */}
                     <button
                       className="action-btn view-btn"
@@ -879,9 +879,13 @@ function ProductList() {
                         e.stopPropagation();
                         setEditingProduct(product);
                       }}
-                      style={{ borderColor: "#1e40af", color: "#1e40af" }}
+                      style={{ 
+                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #1e40af", 
+                        color: "#1e40af", background: "white", display: "flex", alignItems: "center", 
+                        justifyContent: "center", cursor: "pointer" 
+                      }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                     </button>
@@ -893,9 +897,13 @@ function ProductList() {
                         e.stopPropagation();
                         setDeletingProduct(product);
                       }}
-                      style={{ borderColor: "#ef4444", color: "#ef4444" }}
+                      style={{ 
+                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444", 
+                        color: "#ef4444", background: "white", display: "flex", alignItems: "center", 
+                        justifyContent: "center", cursor: "pointer" 
+                      }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                       </svg>
                     </button>
@@ -906,7 +914,7 @@ function ProductList() {
           </tbody>
         </table>
         {filteredProducts.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>No products found.</div>
+          <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>Không tìm thấy sản phẩm nào.</div>
         )}
       </div>
 
