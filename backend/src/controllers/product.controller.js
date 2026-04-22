@@ -204,9 +204,9 @@ const listProducts = async (req, res, next) => {
     const filter = (req.user && req.user.role && req.user.role !== "user") ? {} : { isActive: true };
 
     // Debug context
-    console.log(`[Database Debug] Current DB: ${mongoose.connection.name}`);
-    const colls = await mongoose.connection.db.listCollections().toArray();
-    console.log(`[Database Debug] Collections: ${colls.map(c => c.name).join(", ")}`);
+    // console.log(`[Database Debug] Current DB: ${mongoose.connection.name}`);
+    // const colls = await mongoose.connection.db.listCollections().toArray();
+    // console.log(`[Database Debug] Collections: ${colls.map(c => c.name).join(", ")}`);
 
     // Sử dụng Aggregation nguyên bản: Tận dụng cơ chế Array Lookup của MongoDB
     const products = await Product.aggregate([
@@ -256,11 +256,13 @@ const listProducts = async (req, res, next) => {
     ]);
 
     // Debug log chi tiết để kiểm tra trường thời gian
+    /*
     if (products.length > 0) {
       const foundCount = products.filter(p => p.latestRepair).length;
       const hasTimeCount = products.filter(p => p.createdAt || p.updatedAt).length;
       console.log(`[Debug] Products: ${products.length}, latestRepair: ${foundCount}, hasTimestamps: ${hasTimeCount}`);
     }
+    */
 
     return sendSuccess(res, {
       statusCode: 200,
