@@ -7,13 +7,12 @@ import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import SignInUpPage from "./pages/SignInUpPage";
 import MyProfilePage from "./pages/MyProfilePage";
-import "./assets/views/styles.css";
-import "./assets/views/shared.css";
-import "./assets/views/home.css";
-import "./assets/views/guest.css";
-import "./assets/views/user.css";
-import "./assets/views/admin.css";
-import "./assets/views/auth.css";
+import "./assets/css/main.css";
+import "./assets/css/home.css";
+import "./assets/css/guest.css";
+import "./assets/css/user.css";
+// import "./assets/css/admin.css"; // Deleted
+import "./assets/css/auth.css";
 import { clearAuthStorage, loadAuthFromStorage } from "./utils/auth";
 
 function BlockWarrantyApp() {

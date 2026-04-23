@@ -3,7 +3,7 @@ import CreateWarranty from "./admin/CreateWarranty";
 import CreateNewProduct from "./admin/CreateNewProduct";
 import LogRepairs from "./admin/LogRepairs";
 import Footer from "../components/Footer";
-import "../assets/views/admin-dashboard.css";
+import "../assets/css/admin-views.css";
 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -14,7 +14,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
 
   const handleReturnToPortal = () => {
     setActiveTab("create");
-    navigate("/admin");
+    navigate("/admin/workspace");
   };
 
   const tabs = [
@@ -85,9 +85,9 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
             {/* Admin Header */}
             <div className="admin-header">
               <div className="admin-header-content">
-                <h1>Cổng Quản Trị Hệ Thống</h1>
+                <h1>Workspace</h1>
                 <p>
-                  Cấp bảo hành, ghi nhận sửa chữa và quản lý chương trình bảo hành của bạn
+                  Cấp bảo hành, ghi nhận sửa chữa và quản lý sản phẩm của bạn
                 </p>
               </div>
             </div>

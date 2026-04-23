@@ -23,7 +23,7 @@ function HomePage({ isAuthenticated, role }) {
     if (!isAuthenticated) {
       navigate("/auth");
     } else {
-      navigate(role === "admin" ? "/admin" : "/user");
+      navigate(role === "admin" ? "/admin/workspace" : "/user");
     }
   };
 

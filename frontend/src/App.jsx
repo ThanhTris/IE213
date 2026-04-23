@@ -18,13 +18,12 @@ import CreateNewProduct from "./pages/admin/CreateNewProduct";
 
 // Utils & Styles
 import { clearAuthStorage, loadAuthFromStorage } from "./utils/auth";
-import "./assets/views/styles.css";
-import "./assets/views/shared.css";
-import "./assets/views/home.css";
-import "./assets/views/guest.css";
-import "./assets/views/user.css";
-import "./assets/views/admin.css";
-import "./assets/views/auth.css";
+import "./assets/css/main.css";
+import "./assets/css/home.css";
+import "./assets/css/guest.css";
+import "./assets/css/user.css";
+// import "./assets/css/admin.css"; // Deleted and consolidated
+import "./assets/css/auth.css";
 
 /**
  * Main Layout component that includes the Header
@@ -89,7 +88,7 @@ function App() {
 
   const handleAuthSuccess = (nextAuth) => {
     setAuth(nextAuth);
-    navigate(nextAuth?.role === "admin" ? "/admin" : "/user");
+    navigate(nextAuth?.role === "admin" ? "/admin/workspace" : "/user");
   };
 
   return (
@@ -129,7 +128,7 @@ function App() {
         />
 
         <Route
-          path="/admin"
+          path="/admin/workspace"
           element={
             <ProtectedRoute
               isAuthenticated={isAuthenticated}
@@ -176,7 +175,7 @@ function App() {
         element={
           isAuthenticated ? (
             <Navigate
-              to={auth?.role === "admin" ? "/admin" : "/user"}
+              to={auth?.role === "admin" ? "/admin/workspace" : "/user"}
               replace
             />
           ) : (
