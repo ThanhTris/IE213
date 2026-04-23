@@ -1,3 +1,5 @@
+@import "./main.css";
+
 .bw-hero {
   background: linear-gradient(165deg, var(--navy-primary) 0%, #1e40af 45%, var(--navy-primary-dark) 100%);
   padding: 3.5rem 1.5rem 4.5rem;
@@ -595,50 +597,7 @@
   color: var(--navy-primary);
 }
 
-.bw-footer {
-  background: var(--navy-primary-dark);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 3rem 1.5rem 2rem;
-}
-
-.bw-footer-grid {
-  max-width: 1120px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.3fr repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.bw-footer-brand strong {
-  font-size: 1.15rem;
-}
-
-.bw-footer-col h5 {
-  margin: 0 0 0.6rem;
-}
-
-.bw-footer-col ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0.4rem;
-}
-
-.bw-footer a {
-  color: rgba(255, 255, 255, 0.82);
-  text-decoration: none;
-}
-
-.bw-footer a:hover {
-  text-decoration: underline;
-}
-
-.bw-footer-copy {
-  text-align: center;
-  margin: 2rem 0 0;
-  color: rgba(255, 255, 255, 0.7);
-}
+/* Footer removed - now in shared.css */
 
 .bw-step-card {
   background: var(--white);

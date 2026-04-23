@@ -6,6 +6,7 @@ import { productService } from "../../services/productService";
 import { warrantyService } from "../../services/warrantyService";
 import { repairService } from "../../services/repairService";
 import { Package, ShieldCheck, Wrench, CheckCircle, TrendingUp, TrendingDown, Activity, Check } from "lucide-react";
+import "../../assets/css/admin-views.css";
 
 
 // ─── SVG LINE CHART ───────────────────────────────────────────────────────────

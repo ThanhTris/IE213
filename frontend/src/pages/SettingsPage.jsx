@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { userService } from "../services/userService";
-import "../assets/views/SettingsPage.css";
+import "../assets/css/SettingsPage.css";
 
 function SettingsPage({ auth }) {
   const [activeTab, setActiveTab] = useState("profile");

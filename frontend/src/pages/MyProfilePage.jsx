@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { userService } from "../services/userService";
-import "../assets/views/MyProfilePage.css";
+import "../assets/css/MyProfilePage.css";
 
 function MyProfilePage({ auth }) {
   const [profile, setProfile] = useState({
