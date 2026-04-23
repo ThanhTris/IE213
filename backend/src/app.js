@@ -21,12 +21,12 @@ const productRoutes = require("./routes/product.routes");
 const warrantyRoutes = require("./routes/warranty.routes");
 const transferRoutes = require("./routes/transfer.routes");
 
+app.use("/api/warranties", warrantyRoutes);
 app.use("/api/repair-logs", repairLogRoutes);
-app.use("/api", apiRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/warranties", warrantyRoutes);
 app.use("/api/transfers", transferRoutes);
+app.use("/api", apiRoutes);
 
 // Health check route
 app.get("/health", health.getHealthStatus);

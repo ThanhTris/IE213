@@ -35,6 +35,12 @@ router.put(
   authorize(["admin", "staff", "technician"]),
   updateUserByWallet,
 );
+router.patch(
+  "/:walletAddress",
+  authenticate,
+  authorize(["admin", "staff", "technician"]),
+  updateUserByWallet,
+);
 
 // Admin update role / isActive via dedicated endpoints
 router.patch(

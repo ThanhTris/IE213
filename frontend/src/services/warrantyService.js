@@ -12,6 +12,20 @@ export const warrantyService = {
   },
 
   /**
+   * Count warranties by wallet address (Admin only)
+   */
+  countWarrantiesByWallet: async (walletAddress) => {
+    return apiClient.get(`/warranties/count/${walletAddress}`);
+  },
+
+  /**
+   * Get all warranties of a specific user (Admin only)
+   */
+  getWarrantiesByUser: async (walletAddress) => {
+    return apiClient.get(`/warranties/user/${walletAddress}`);
+  },
+
+  /**
    * Get current user's warranties
    */
   getMyWarranties: async () => {

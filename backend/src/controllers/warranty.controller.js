@@ -520,6 +520,79 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
   }
 };
 
+// GET /api/warranties/count/:walletAddress — Đếm số lượng bảo hành của một ví (Admin/Staff)
+// GET /api/warranties/count/:walletAddress — Đếm số lượng bảo hành của một ví (Admin/Staff)
+const countWarrantiesByWallet = async (req, res) => {
+  try {
+    const { walletAddress } = req.params;
+    const normalizedWallet = String(walletAddress || "").trim().toLowerCase();
+
+    if (!normalizedWallet) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "walletAddress là bắt buộc",
+      });
+    }
+
+    const count = await Warranty.countDocuments({ ownerWallet: normalizedWallet });
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Đếm số lượng bảo hành thành công",
+      data: { count },
+    });
+  } catch (error) {
+    return sendError(res, {
+      statusCode: 500,
+      message: "Lỗi nội bộ máy chủ",
+    });
+  }
+};
+
+// GET /api/warranties/user/:walletAddress — Lấy danh sách bảo hành của một người dùng (Admin/Staff)
+const getWarrantiesByWallet = async (req, res) => {
+  try {
+    const { walletAddress } = req.params;
+    const normalizedWallet = String(walletAddress || "").trim().toLowerCase();
+
+    if (!normalizedWallet) {
+      return sendError(res, {
+        statusCode: 400,
+        message: "walletAddress là bắt buộc",
+      });
+    }
+
+    const warranties = await Warranty.find({ ownerWallet: normalizedWallet })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Map thêm thông tin sản phẩm từ Product model nếu cần, 
+    // nhưng ở đây Warranty đã có productCode. Để hiển thị ảnh và tên, 
+    // ta nên join với Product.
+    const populatedWarranties = await Promise.all(
+      warranties.map(async (w) => {
+        const product = await Product.findOne({ productCode: w.productCode }).lean();
+        return {
+          ...w,
+          productName: product?.productName || "Sản phẩm không xác định",
+          productImage: product?.imageUrl || null,
+        };
+      })
+    );
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy danh sách bảo hành của người dùng thành công",
+      data: populatedWarranties,
+    });
+  } catch (error) {
+    return sendError(res, {
+      statusCode: 500,
+      message: "Lỗi nội bộ máy chủ",
+    });
+  }
+};
+
 module.exports = {
   createWarranty,
   updateMintInfo,
@@ -528,4 +601,6 @@ module.exports = {
   updateWarrantyStatus,
   getMyWarranties,
   verifyWarrantyBySerialNumber,
+  countWarrantiesByWallet,
+  getWarrantiesByWallet,
 };

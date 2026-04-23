@@ -30,6 +30,27 @@ export const userService = {
   },
 
   /**
+   * Update any user's profile (Admin only)
+   */
+  updateUser: async (walletAddress, payload) => {
+    return apiClient.patch(`/users/${walletAddress}`, payload);
+  },
+
+  /**
+   * Update any user's role (Admin only)
+   */
+  updateUserRole: async (walletAddress, role) => {
+    return apiClient.patch(`/users/${walletAddress}/role`, { role });
+  },
+
+  /**
+   * Update any user's active status (Admin only)
+   */
+  updateUserStatus: async (walletAddress, isActive) => {
+    return apiClient.patch(`/users/${walletAddress}/is-active`, { isActive });
+  },
+
+  /**
    * Get user statistics (Admin only)
    */
   getStats: async () => {

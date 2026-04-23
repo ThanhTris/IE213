@@ -7,6 +7,8 @@ const {
   updateWarrantyStatus,
   getMyWarranties,
   verifyWarrantyBySerialNumber,
+  countWarrantiesByWallet,
+  getWarrantiesByWallet,
 } = require("../controllers/warranty.controller");
 const { authenticate: verifyToken, authorize } = require("../middleware/auth");
 const { uploadSingleImage } = require("../middleware/multer");
@@ -50,6 +52,22 @@ router.patch(
   updateWarrantyStatus,
 );
 
+// GET /api/warranties/count/:walletAddress (admin/staff)
+router.get(
+  "/count/:walletAddress",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  countWarrantiesByWallet,
+);
+
+// GET /api/warranties/user/:walletAddress (admin/staff)
+router.get(
+  "/user/:walletAddress",
+  verifyToken,
+  authorizeRoles("admin", "staff"),
+  getWarrantiesByWallet,
+);
+
 // GET /api/warranties/:id — chi tiết (admin/staff)
 router.get(
   "/:id",
@@ -57,5 +75,6 @@ router.get(
   authorizeRoles("admin", "staff"),
   getWarrantyByIdAdmin,
 );
+
 
 module.exports = router;
