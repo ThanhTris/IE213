@@ -145,6 +145,7 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
     productCode: product?.productCode || "",
     productName: product?.productName || "",
     brand: product?.brand || "",
+    color: product?.color || "",
     price: product?.price || 0,
     warrantyMonths: product?.warrantyMonths || 0,
     config: product?.config || "",
@@ -249,6 +250,17 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
                 value={formData.brand} 
                 onChange={e => setFormData({ ...formData, brand: e.target.value })} 
                 required
+                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+              />
+            </div>
+
+            <div>
+              <label style={fieldLabel}>Màu sắc</label>
+              <input 
+                type="text" 
+                placeholder="VD: Titan xanh"
+                value={formData.color} 
+                onChange={e => setFormData({ ...formData, color: e.target.value })} 
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
             </div>
