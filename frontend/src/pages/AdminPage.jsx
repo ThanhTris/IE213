@@ -10,7 +10,7 @@ import { useNavigate, Link } from "react-router-dom";
 function AdminPage({ adminActiveTab, onSetAdminTab }) {
   const navigate = useNavigate();
   const activeTab = adminActiveTab ?? "create";
-  const setActiveTab = onSetAdminTab ?? (() => {});
+  const setActiveTab = onSetAdminTab ?? (() => { });
 
   const handleReturnToPortal = () => {
     setActiveTab("create");
@@ -82,16 +82,6 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
           <AdminDashboard onReturnToPortal={handleReturnToPortal} />
         ) : (
           <div className="admin-page-wrapper">
-            {/* Admin Header */}
-            <div className="admin-header">
-              <div className="admin-header-content">
-                <h1>Workspace</h1>
-                <p>
-                  Cấp bảo hành, ghi nhận sửa chữa và quản lý sản phẩm của bạn
-                </p>
-              </div>
-            </div>
-
             {/* Tab Navigation */}
             <div className="admin-tabs-container">
               <div className="admin-tabs">
