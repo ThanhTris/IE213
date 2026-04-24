@@ -163,7 +163,7 @@ function App() {
           path="/settings"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <SettingsPage auth={auth} />
+              <SettingsPage auth={auth} onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
