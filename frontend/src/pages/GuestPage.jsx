@@ -1,63 +1,125 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { warrantyService } from "../services/warrantyService";
+import { repairService } from "../services/repairService";
 import Footer from "../components/Footer";
 
-function GuestPage({ isAuthenticated }) {
+function GuestPage() {
   const navigate = useNavigate();
+  const { id: urlSerialNumber } = useParams();
+
   const initialPrefill = (() => {
     try {
-      return sessionStorage.getItem("bw_search_prefill") || "SN-7K2M-2024-X9";
+      return urlSerialNumber || sessionStorage.getItem("bw_search_prefill") || "W01-APL-IP15PM-001";
     } catch (_e) {
-      return "SN-7K2M-2024-X9";
+      return urlSerialNumber || "W01-APL-IP15PM-001";
     }
   })();
   const [serialOrToken, setSerialOrToken] = useState(initialPrefill);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const [repairLogs, setRepairLogs] = useState([]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const d = new Date(dateString);
+    return d.toLocaleDateString("vi-VN");
+  };
 
   const formatExpiry = (expiryDateNumber) => {
     const epochSeconds = Number(expiryDateNumber);
-    if (!epochSeconds || Number.isNaN(epochSeconds)) return "";
+    if (!epochSeconds || Number.isNaN(epochSeconds)) return "N/A";
     const d = new Date(epochSeconds * 1000);
-    return d.toLocaleDateString();
+    return d.toLocaleDateString("vi-VN");
   };
 
-  const doSearch = async () => {
+  const getDaysRemaining = (expiryDateNumber) => {
+    const epochSeconds = Number(expiryDateNumber);
+    if (!epochSeconds || Number.isNaN(epochSeconds)) return 0;
+    const expiry = epochSeconds * 1000;
+    const now = Date.now();
+    const diff = expiry - now;
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const performSearch = useCallback(async (tokenId) => {
     setError("");
     setLoading(true);
     setResult(null);
-
-    if (!isAuthenticated) {
-      setLoading(false);
-      setError("Please sign in to perform warranty search.");
-      return;
-    }
+    setRepairLogs([]);
 
     try {
-      const tokenId = String(serialOrToken || "").trim();
       if (!tokenId) {
-        setError("Vui lòng nhập số Serial hoặc Token ID.");
+        setLoading(false);
         return;
       }
 
+      // 1. Verify Warranty (Includes Product and Owner Info now)
       const res = await warrantyService.verifyWarranty(tokenId);
       
       if (res && res.success) {
         setResult(res.data);
+        
+        // 2. Fetch Repair Logs
+        try {
+          const repairRes = await repairService.getRepairsBySerial(res.data.serialNumber);
+          if (repairRes && repairRes.success) {
+            setRepairLogs(repairRes.data || []);
+          }
+        } catch (repairErr) {
+          console.error("Failed to fetch repair logs:", repairErr);
+        }
       } else {
         const msg = res?.message || "Không tìm thấy thông tin bảo hành.";
         setError(msg);
         toast.error(msg);
       }
     } catch (e) {
-      const msg = e?.message || "Tìm kiếm thất bại.";
+      const msg = e?.response?.data?.message || e?.message || "Tìm kiếm thất bại.";
       setError(msg);
       toast.error(msg);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  // Effect to handle URL parameter changes
+  useEffect(() => {
+    if (urlSerialNumber) {
+      setSerialOrToken(urlSerialNumber);
+      performSearch(urlSerialNumber);
+    }
+  }, [urlSerialNumber, performSearch]);
+
+  const handleSearchSubmit = () => {
+    const tokenId = String(serialOrToken || "").trim();
+    if (!tokenId) {
+      setError("Vui lòng nhập số Serial hoặc Token ID.");
+      return;
+    }
+    // Navigate to URL with the serial number - this will trigger the useEffect
+    navigate(`/search/${tokenId}`);
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "pending": return "Chờ xử lý";
+      case "in_progress": return "Đang sửa chữa";
+      case "done": return "Hoàn tất";
+      case "rejected": return "Từ chối";
+      default: return status;
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "done": return "status-done";
+      case "in_progress": return "status-progress";
+      case "pending": return "status-pending";
+      case "rejected": return "status-rejected";
+      default: return "";
     }
   };
 
@@ -65,128 +127,216 @@ function GuestPage({ isAuthenticated }) {
     <>
       <div className="view active">
         <div className="guest-wrap">
-          <div className="guest-head">
-            <h1>Track Your Warranty</h1>
-            <p>Enter a device serial/token id to verify warranty status.</p>
-          </div>
-          <div className="search-bar-wrap">
-            <div className="search-bar">
-              <span className="search-input-icon" aria-hidden="true">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="M21 21l-4.35-4.35" />
-                </svg>
-              </span>
-              <input
-                type="search"
-                placeholder="Enter Device Serial Number / Token ID"
-                value={serialOrToken}
-                onChange={(e) => setSerialOrToken(e.target.value)}
-                disabled={loading}
-              />
-              <div className="search-actions">
-                <button
-                  type="button"
-                  className="icon-btn"
-                  title="Scan QR"
-                  aria-label="Scan QR code"
-                  disabled
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2" />
-                    <rect x="7" y="7" width="5" height="5" />
-                    <rect x="12" y="12" width="5" height="5" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="search-submit"
-                  onClick={doSearch}
-                  disabled={loading}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden="true"
-                    style={{ marginRight: 8 }}
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="M21 21l-4.35-4.35" />
-                  </svg>
-                  {loading ? "Searching..." : "Search Warranty"}
-                </button>
+          {!urlSerialNumber && (
+            <>
+              <div className="guest-head">
+                <h1>Track Your Warranty</h1>
+                <p>Enter a device serial/token id to verify warranty status.</p>
               </div>
-            </div>
-            <p className="guest-search-hint">
-              Or scan QR code from product packaging.
-            </p>
-            {!isAuthenticated && (
-              <p className="guest-search-hint">
-                Search is available after signing in.{" "}
-                <button
-                  type="button"
-                  className="btn-login"
-                  onClick={() => navigate("/auth")}
-                >
-                  Sign in
-                </button>
-              </p>
-            )}
-            {error && (
-              <p
-                className="guest-search-hint"
-                style={{ color: "#b42318", fontWeight: 700 }}
-              >
-                {error}
-              </p>
-            )}
-          </div>
-
-          <article className="result-card" aria-label="Warranty result">
-            {result ? (
-              <div className="result-top">
-                <div className="result-meta">
-                  <span className="warranty-badge">
-                    {result.status ? "Active Warranty" : "Inactive Warranty"}
+              
+              <div className="search-bar-wrap">
+                <div className="search-bar">
+                  <span className="search-input-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="M21 21l-4.35-4.35" />
+                    </svg>
                   </span>
-                  <h2 className="device-name">
-                    {result.productInfo?.productName || "Warranty record"}
-                  </h2>
-                  <p className="serial-muted">Serial - {result.serialNumber}</p>
-                  <span className="token-id">Token ID - {result.tokenId}</span>
-                  <p className="serial-muted">
-                    Expiry - {formatExpiry(result.expiryDate)}
-                  </p>
+                  <input
+                    type="search"
+                    placeholder="Enter Device Serial Number / Token ID"
+                    value={serialOrToken}
+                    onChange={(e) => setSerialOrToken(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+                    disabled={loading}
+                  />
+                  <div className="search-actions">
+                    <button type="button" className="search-submit" onClick={handleSearchSubmit} disabled={loading}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 8 }}>
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                      </svg>
+                      {loading ? "Searching..." : "Search Warranty"}
+                    </button>
+                  </div>
                 </div>
+                {error && <p className="guest-search-hint error-msg">{error}</p>}
               </div>
-            ) : (
-              <div className="result-top">
-                <div className="result-meta">
-                  <span className="warranty-badge">Waiting for search</span>
-                  <h2 className="device-name">Enter a serial/token id</h2>
-                  <p className="serial-muted">No result yet.</p>
+            </>
+          )}
+
+          {result ? (
+            <div className="dashboard-layout">
+              {/* Left Column: Repair Timeline */}
+              <aside className="timeline-sidebar">
+                <div className="timeline-card">
+                  <div className="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 8v4l3 3" />
+                      <circle cx="12" cy="12" r="9" />
+                    </svg>
+                    <h3>Lịch sử sửa chữa</h3>
+                  </div>
+                  <div className="timeline-content">
+                    {repairLogs.length > 0 ? (
+                      <div className="timeline-list">
+                        {repairLogs.map((log, index) => (
+                          <div key={log.id} className="timeline-item">
+                            <div className="timeline-dot-wrap">
+                              <div className="timeline-dot"></div>
+                              {index !== repairLogs.length - 1 && <div className="timeline-line"></div>}
+                            </div>
+                            <div className="timeline-details">
+                              <div className="timeline-meta">
+                                <span className="timeline-date">{formatDate(log.repairDate)}</span>
+                                <span className={`status-badge ${getStatusClass(log.status)}`}>
+                                  {getStatusText(log.status)}
+                                </span>
+                              </div>
+                              <p className="timeline-desc">{log.repairContent}</p>
+                              
+                              {log.statusHistory && log.statusHistory.length > 1 && (
+                                <div className="sub-timeline">
+                                  {log.statusHistory.slice(0, -1).reverse().map((h, i) => (
+                                    <div key={i} className="sub-item">
+                                      <span className="sub-date">{formatDate(h.updatedAt)}</span>
+                                      <span className="sub-status">{getStatusText(h.status)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="empty-state">
+                        <p>Chưa có lịch sử sửa chữa cho thiết bị này.</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
+              </aside>
+
+              {/* Middle Column: Product Information */}
+              <div className="info-main">
+                <article className="info-card product-info-v2">
+                  <div className="card-header">
+                    <h3>Product Information</h3>
+                  </div>
+                  <div className="card-body-v2">
+                    <div className="product-main-row">
+                      <div className="product-visual-large">
+                        <img 
+                          src={result.productInfo?.imageUrl?.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/") || "https://placehold.co/400x400?text=Product"} 
+                          alt={result.productInfo?.productName} 
+                        />
+                      </div>
+                      <div className="product-primary-details">
+                        <div className="info-item-box">
+                          <span className="label">Tên sản phẩm</span>
+                          <p className="value-important">{result.productInfo?.productName}</p>
+                        </div>
+                        <div className="info-item-box">
+                          <span className="label">Màu sắc</span>
+                          <p className="value-important">{result.productInfo?.color || "N/A"}</p>
+                        </div>
+                        <div className="info-item-box">
+                          <span className="label">Mã sản phẩm</span>
+                          <p className="value-important">{result.productInfo?.productCode}</p>
+                        </div>
+                        <div className="info-item-box">
+                          <span className="label">Hãng sản xuất</span>
+                          <p className="value-important">{result.productInfo?.brand || "N/A"}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="product-secondary-details">
+                      <div className="info-item-box">
+                        <span className="label">Cấu hình máy</span>
+                        <p className="value-important">{result.productInfo?.config || "N/A"}</p>
+                      </div>
+                      <div className="info-item-box">
+                        <span className="label">Thời hạn bảo hành</span>
+                        <p className="value-important">{result.productInfo?.warrantyMonths || 12} tháng</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
               </div>
-            )}
-          </article>
+
+              {/* Right Column: Owner & Other Details */}
+              <aside className="owner-column">
+                {/* Owner Information */}
+                <article className="info-card owner-info">
+                  <div className="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <h3>Owner Information</h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="data-block">
+                      <span className="label">Name</span>
+                      <p className="value-large">{result.ownerInfo?.fullName || "Chưa cập nhật"}</p>
+                    </div>
+                    <div className="data-block">
+                      <span className="label">Wallet Address</span>
+                      <p className="value-mono">{result.ownerInfo?.walletAddress}</p>
+                    </div>
+                  </div>
+                </article>
+
+                {/* Warranty Details */}
+                <article className="info-card warranty-details">
+                  <div className="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    <h3>Warranty Details</h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="stats-grid">
+                      <div className="stat-box">
+                        <span className="label">Purchase Date</span>
+                        <p className="value-bold">{formatDate(result.purchaseDate)}</p>
+                      </div>
+                      <div className="stat-box">
+                        <span className="label">Warranty Period</span>
+                        <p className="value-bold">{result.productInfo?.warrantyMonths || 12}m</p>
+                      </div>
+                      <div className="stat-box">
+                        <span className="label">Expiry Date</span>
+                        <p className="value-bold text-success">{formatExpiry(result.expiryDate)}</p>
+                      </div>
+                      <div className="stat-box">
+                        <span className="label">Days Remaining</span>
+                        <p className="value-bold text-success">{getDaysRemaining(result.expiryDate)}d</p>
+                      </div>
+                    </div>
+                    {result.isMinted && (
+                      <div className="blockchain-proof">
+                        <div className="proof-tag">Verified on Blockchain</div>
+                        <p className="token-link">Token ID: {result.tokenId}</p>
+                      </div>
+                    )}
+                  </div>
+                </article>
+              </aside>
+            </div>
+          ) : (
+            <div className="empty-search-state">
+              {!loading && !error && (
+                <div className="welcome-msg">
+                  <div className="welcome-icon">🔍</div>
+                  <h2>Tìm kiếm thông tin thiết bị</h2>
+                  <p>Nhập số Serial hoặc Token ID để xem chi tiết sản phẩm và lịch sử bảo hành.</p>
+                </div>
+              )}
+              {loading && <div className="loader">Đang tải dữ liệu...</div>}
+            </div>
+          )}
         </div>
       </div>
       <Footer />
@@ -195,3 +345,4 @@ function GuestPage({ isAuthenticated }) {
 }
 
 export default GuestPage;
+

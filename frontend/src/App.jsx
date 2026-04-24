@@ -113,6 +113,10 @@ function App() {
           path="/search"
           element={<GuestPage isAuthenticated={isAuthenticated} />}
         />
+        <Route
+          path="/search/:id"
+          element={<GuestPage isAuthenticated={isAuthenticated} />}
+        />
 
         {/* Protected Routes */}
         <Route

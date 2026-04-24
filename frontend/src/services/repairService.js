@@ -12,7 +12,7 @@ export const repairService = {
    * Get repair history for a specific serial number
    */
   getRepairsBySerial: async (serialNumber) => {
-    return apiClient.get(`/repair-logs/verify/${serialNumber}`);
+    return apiClient.get(`/repair-logs/device/${serialNumber}`);
   },
 
   /**
