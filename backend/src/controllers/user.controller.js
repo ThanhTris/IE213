@@ -6,16 +6,17 @@ const normalizeWallet = (walletAddress = "") =>
   walletAddress.trim().toLowerCase();
 
 const toUserResponse = (user, options = {}) => {
-  const { includeCreatedAt = false, includeUpdatedAt = false } = options;
+  const { includeCreatedAt = true, includeUpdatedAt = false } = options;
   const safeUser = {
     _id: user._id,
     walletAddress: user.walletAddress,
     fullName: user.fullName,
     email: user.email,
     phone: user.phone,
+    role: user.role,
+    isActive: user.isActive,
   };
 
-  // Contract sample includes timestamps only in selected endpoints.
   if (includeCreatedAt) safeUser.createdAt = user.createdAt;
   if (includeUpdatedAt) safeUser.updatedAt = user.updatedAt;
 
@@ -138,7 +139,7 @@ const updateMyProfile = async (req, res, next) => {
     const payload = req.body || {};
     const walletAddress = normalizeWallet(req.user?.walletAddress || "");
 
-    const forbiddenProfileFields = ["role", "isactive", "isactiver"];
+    const forbiddenProfileFields = ["role"];
     const forbiddenField = Object.keys(payload).find((key) =>
       forbiddenProfileFields.includes(String(key).toLowerCase()),
     );
@@ -147,7 +148,7 @@ const updateMyProfile = async (req, res, next) => {
       return sendError(res, {
         statusCode: 400,
         errorCode: "E400_VALIDATION",
-        message: "Không được phép cập nhật role hoặc isActive ở endpoint này",
+        message: "Không được phép cập nhật role ở endpoint này",
         details: [forbiddenField],
       });
     }
@@ -175,6 +176,10 @@ const updateMyProfile = async (req, res, next) => {
 
     if (payload.phone !== undefined) {
       updates.phone = normalizeText(payload.phone);
+    }
+
+    if (payload.isActive !== undefined) {
+      updates.isActive = Boolean(payload.isActive);
     }
 
     if (Object.keys(updates).length === 0) {

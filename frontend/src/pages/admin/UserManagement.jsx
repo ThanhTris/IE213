@@ -218,6 +218,17 @@ function UserManagement() {
     }
   };
 
+  const handleUnlock = async (user) => {
+    try {
+      await userService.updateUserStatus(user.walletAddress, true);
+      toast.success(`Đã mở khóa người dùng ${user.fullName || "Unnamed"} thành công.`);
+      fetchUsers();
+    } catch (err) {
+      const msg = err.error?.message || err.message || "Lỗi khi mở khóa";
+      toast.error("Lỗi: " + msg);
+    }
+  };
+
   const shortWallet = (addr) => addr ? `${addr.slice(0, 8)}...${addr.slice(-4)}` : "N/A";
 
   return (
@@ -392,46 +403,71 @@ function UserManagement() {
                 <td style={{ color: "#475569", fontSize: 13, fontWeight: 500 }}>{user.phone}</td>
                 <td style={{ fontWeight: 800, color: "#0f172a", fontSize: 14 }}>{user.warrantyCount}</td>
                 <td style={{ textAlign: "center" }}>
-                  <div className="action-buttons" style={{ justifyContent: "center", display: "flex", gap: "8px" }}>
-                    <button
-                      className="action-btn"
-                      title="Chỉnh sửa"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditUser({ ...user });
-                      }}
-                      style={{ 
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #1e40af", 
-                        color: "#1e40af", background: "white", display: "flex", alignItems: "center", 
-                        justifyContent: "center", cursor: "pointer", transition: "all 0.2s" 
-                      }}
-                      onMouseOver={(e) => { e.currentTarget.style.background = "#eff6ff"; }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                      </svg>
-                    </button>
-                    <button
-                      className="action-btn"
-                      title="Xóa người dùng"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(user);
-                      }}
-                      style={{ 
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444", 
-                        color: "#ef4444", background: "white", display: "flex", alignItems: "center", 
-                        justifyContent: "center", cursor: "pointer", transition: "all 0.2s" 
-                      }}
-                      onMouseOver={(e) => { e.currentTarget.style.background = "#fef2f2"; }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        className="action-btn"
+                        title="Chỉnh sửa"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditUser({ ...user });
+                        }}
+                        style={{ 
+                          width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #3b82f6", 
+                          display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6",
+                          background: "white", cursor: "pointer", transition: "0.2s"
+                        }}
+                        onMouseOver={(e) => { e.currentTarget.style.background = "#eff6ff"; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                      </button>
+
+                      {user.isActive ? (
+                        <button
+                          className="action-btn"
+                          title="Khóa người dùng"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(user);
+                          }}
+                          style={{ 
+                            width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444", 
+                            display: "flex", alignItems: "center", justifyContent: "center", color: "#ef4444",
+                            background: "white", cursor: "pointer", transition: "0.2s"
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = "#fef2f2"; }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          className="action-btn"
+                          title="Mở khóa người dùng"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUnlock(user);
+                          }}
+                          style={{ 
+                            width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #10b981", 
+                            display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981",
+                            background: "white", cursor: "pointer", transition: "0.2s"
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = "#f0fdf4"; }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                 </td>
               </tr>
             ))}
