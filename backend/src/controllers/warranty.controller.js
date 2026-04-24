@@ -593,6 +593,30 @@ const getWarrantiesByWallet = async (req, res) => {
   }
 };
 
+// GET /api/warranties/stats/me
+const getWarrantyStats = async (req, res) => {
+  try {
+    const walletAddress = req.user.walletAddress.toLowerCase();
+
+    const total = await Warranty.countDocuments({ ownerWallet: walletAddress });
+    const active = await Warranty.countDocuments({ 
+      ownerWallet: walletAddress,
+      status: true 
+    });
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      data: { total, active },
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy thống kê bảo hành:", error);
+    return sendError(res, {
+      statusCode: 500,
+      message: "Không thể lấy thống kê bảo hành",
+    });
+  }
+};
+
 module.exports = {
   createWarranty,
   updateMintInfo,
@@ -603,4 +627,5 @@ module.exports = {
   verifyWarrantyBySerialNumber,
   countWarrantiesByWallet,
   getWarrantiesByWallet,
+  getWarrantyStats,
 };

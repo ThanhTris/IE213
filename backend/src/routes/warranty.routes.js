@@ -9,6 +9,7 @@ const {
   verifyWarrantyBySerialNumber,
   countWarrantiesByWallet,
   getWarrantiesByWallet,
+  getWarrantyStats,
 } = require("../controllers/warranty.controller");
 const { authenticate: verifyToken, authorize } = require("../middleware/auth");
 const { uploadSingleImage } = require("../middleware/multer");
@@ -16,6 +17,9 @@ const { uploadSingleImage } = require("../middleware/multer");
 const router = express.Router();
 
 const authorizeRoles = (...roles) => authorize(roles);
+
+// Get warranty stats for current user
+router.get("/stats/me", verifyToken, getWarrantyStats);
 
 // Static routes trước dynamic routes
 router.get("/my-warranties", verifyToken, getMyWarranties);

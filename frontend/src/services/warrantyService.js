@@ -26,6 +26,13 @@ export const warrantyService = {
   },
 
   /**
+   * Get warranty stats for current user
+   */
+  getMyStats: async () => {
+    return apiClient.get("/warranties/stats/me");
+  },
+
+  /**
    * Get current user's warranties
    */
   getMyWarranties: async () => {
