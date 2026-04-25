@@ -1,5 +1,5 @@
 const RepairLog = require("../models/RepairLogModel");
-const { REPAIR_STATUSES, VALID_TRANSITIONS } = require("../models/RepairLogModel");
+const { REPAIR_STATUSES, VALID_TRANSITIONS, REPAIR_TYPES } = require("../models/RepairLogModel");
 const Warranty = require("../models/WarrantyModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 const mongoose = require("mongoose");
@@ -32,6 +32,7 @@ const createRepairLog = async (req, res) => {
     const allowedFields = new Set([
       "serialNumber",
       "note",
+      "type",
       "isWarrantyCovered",
       "cost",
     ]);
@@ -121,6 +122,7 @@ const createRepairLog = async (req, res) => {
       serialNumber: warranty.serialNumber,
       technicianWallet,
       currentStatus: "pending",
+      type: REPAIR_TYPES.includes(payload.type) ? payload.type : "other",
       isWarrantyCovered,
       cost,
       timeline: [
@@ -177,6 +179,7 @@ const updateRepairLog = async (req, res) => {
     const allowedFields = new Set([
       "status",
       "note",
+      "type",
       "isWarrantyCovered",
       "cost",
     ]);
@@ -280,11 +283,11 @@ const updateRepairLog = async (req, res) => {
       setFields.cost = parsedCost;
     }
 
-    // ── Cập nhật isWarrantyCovered (nếu có) ──
-    if (payload.isWarrantyCovered !== undefined) {
-      setFields.isWarrantyCovered = Boolean(
-        payload.isWarrantyCovered === true || payload.isWarrantyCovered === "true",
-      );
+    // ── Cập nhật type (nếu có) ──
+    if (payload.type !== undefined) {
+      if (REPAIR_TYPES.includes(payload.type)) {
+        setFields.type = payload.type;
+      }
     }
 
     // ── Gán $set nếu có fields cần update ──

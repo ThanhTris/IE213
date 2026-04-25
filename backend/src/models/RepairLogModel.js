@@ -15,6 +15,15 @@ const REPAIR_STATUSES = [
   "cancelled",      // Hủy
 ];
 
+const REPAIR_TYPES = [
+  "screen",    // Màn hình
+  "battery",   // Pin
+  "camera",    // Camera
+  "hardware",  // Phần cứng
+  "software",  // Phần mềm
+  "other",     // Khác
+];
+
 // Luồng chuyển trạng thái hợp lệ
 // delivered & cancelled là trạng thái kết thúc, không chuyển tiếp
 const VALID_TRANSITIONS = {
@@ -85,6 +94,13 @@ const repairLogSchema = new mongoose.Schema(
       default: "pending",
       index: true,
     },
+    // Loại hình sửa chữa
+    type: {
+      type: String,
+      enum: REPAIR_TYPES,
+      default: "other",
+      index: true,
+    },
     // true = được bảo hành miễn phí, false = phải trả phí sửa chữa
     isWarrantyCovered: {
       type: Boolean,
@@ -140,3 +156,4 @@ const RepairLog = mongoose.model("RepairLog", repairLogSchema);
 module.exports = RepairLog;
 module.exports.REPAIR_STATUSES = REPAIR_STATUSES;
 module.exports.VALID_TRANSITIONS = VALID_TRANSITIONS;
+module.exports.REPAIR_TYPES = REPAIR_TYPES;
