@@ -1,6 +1,7 @@
 const RepairLog = require("../models/RepairLogModel");
-const { REPAIR_STATUSES, VALID_TRANSITIONS } = require("../models/RepairLogModel");
+const { REPAIR_STATUSES, VALID_TRANSITIONS, REPAIR_TYPES } = require("../models/RepairLogModel");
 const Warranty = require("../models/WarrantyModel");
+const Product = require("../models/ProductModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 const mongoose = require("mongoose");
 
@@ -23,6 +24,23 @@ const DEFAULT_STATUS_LABELS = {
 };
 
 // ──────────────────────────────────────────────────────────
+// Helper: Format RepairLog cho FE
+// ──────────────────────────────────────────────────────────
+const toRepairResponse = (log) => {
+  if (!log) return null;
+  
+  // Lấy note của bước pending đầu tiên làm nội dung sửa chữa chính
+  const pendingEntry = (log.timeline || []).find(t => t.status === "pending");
+  const repairContent = pendingEntry ? pendingEntry.note : (log.note || "");
+
+  return {
+    ...log,
+    status: log.currentStatus,
+    repairContent: repairContent,
+  };
+};
+
+// ──────────────────────────────────────────────────────────
 // POST /api/repair-logs
 // Khởi tạo phiếu sửa chữa mới, tự động đẩy bước "pending"
 // vào timeline
@@ -34,6 +52,7 @@ const createRepairLog = async (req, res) => {
       "note",
       "isWarrantyCovered",
       "cost",
+      "type",
     ]);
     const payload = Object.entries(req.body || {}).reduce(
       (acc, [key, value]) => {
@@ -82,6 +101,17 @@ const createRepairLog = async (req, res) => {
       cost = parsedCost;
     }
 
+    // ── type (optional, default "Khác") ──
+    const type = normalizeText(payload.type) || "Khác";
+    if (payload.type && !REPAIR_TYPES.includes(type)) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: `type không hợp lệ. Hỗ trợ: ${REPAIR_TYPES.join(", ")}`,
+        details: ["type"],
+      });
+    }
+
     // ── note cho bước pending (optional) ──
     const note = normalizeText(payload.note) || DEFAULT_STATUS_LABELS.pending;
 
@@ -123,6 +153,7 @@ const createRepairLog = async (req, res) => {
       currentStatus: "pending",
       isWarrantyCovered,
       cost,
+      type,
       timeline: [
         {
           status: "pending",
@@ -137,7 +168,7 @@ const createRepairLog = async (req, res) => {
     return sendSuccess(res, {
       statusCode: 201,
       message: "Tạo phiếu sửa chữa thành công",
-      data: savedRepairLog,
+      data: toRepairResponse(savedRepairLog.toObject()),
     });
   } catch (error) {
     if (error?.name === "ValidationError") {
@@ -179,6 +210,7 @@ const updateRepairLog = async (req, res) => {
       "note",
       "isWarrantyCovered",
       "cost",
+      "type",
     ]);
     const payload = Object.entries(req.body || {}).reduce(
       (acc, [key, value]) => {
@@ -287,6 +319,20 @@ const updateRepairLog = async (req, res) => {
       );
     }
 
+    // ── Cập nhật type (nếu có) ──
+    if (payload.type !== undefined) {
+      const type = normalizeText(payload.type);
+      if (!REPAIR_TYPES.includes(type)) {
+        return sendError(res, {
+          statusCode: 400,
+          errorCode: "E400_VALIDATION",
+          message: `type không hợp lệ. Hỗ trợ: ${REPAIR_TYPES.join(", ")}`,
+          details: ["type"],
+        });
+      }
+      setFields.type = type;
+    }
+
     // ── Gán $set nếu có fields cần update ──
     if (Object.keys(setFields).length > 0) {
       updateOps.$set = setFields;
@@ -310,7 +356,7 @@ const updateRepairLog = async (req, res) => {
     return sendSuccess(res, {
       statusCode: 200,
       message: "Cập nhật phiếu sửa chữa thành công",
-      data: updatedRepairLog,
+      data: toRepairResponse(updatedRepairLog.toObject()),
     });
   } catch (error) {
     if (error?.name === "ValidationError") {
@@ -370,7 +416,7 @@ const getRepairLogsBySerialNumber = async (req, res) => {
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy lịch sử sửa chữa theo serialNumber thành công",
-      data: repairLogs,
+      data: repairLogs.map(toRepairResponse),
     });
   } catch (error) {
     return sendError(res, {
@@ -397,7 +443,58 @@ const getAllRepairLogs = async (req, res) => {
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy toàn bộ lịch sử sửa chữa thành công",
-      data: repairLogs,
+      data: repairLogs.map(toRepairResponse),
+    });
+  } catch (error) {
+    return sendError(res, {
+      statusCode: 500,
+      errorCode: "E500_INTERNAL",
+      message: "Lỗi nội bộ máy chủ",
+    });
+  }
+};
+
+// ──────────────────────────────────────────────────────────
+// GET /api/repair-logs/history-by-model/:productCode
+// Lấy lịch sử sửa chữa cho tất cả thiết bị thuộc dòng máy
+// ──────────────────────────────────────────────────────────
+const getRepairLogsByModel = async (req, res) => {
+  try {
+    const productCode = normalizeText(req.params?.productCode || "");
+    if (!productCode) {
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_MISSING_FIELD",
+        message: "productCode là trường bắt buộc",
+      });
+    }
+
+    // 1. Tìm tất cả serialNumber của dòng máy này trong bảng Warranty
+    const warranties = await Warranty.find({ productCode })
+      .select("serialNumber")
+      .lean();
+    
+    if (warranties.length === 0) {
+      return sendSuccess(res, {
+        statusCode: 200,
+        message: "Dòng máy này chưa có phiếu bảo hành/sửa chữa nào",
+        data: [],
+      });
+    }
+
+    const serialNumbers = warranties.map(w => w.serialNumber);
+
+    // 2. Tìm tất cả repair_log thuộc danh sách serialNumbers
+    const repairLogs = await RepairLog.find({
+      serialNumber: { $in: serialNumbers }
+    })
+    .sort({ repairDate: -1 })
+    .lean();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: "Lấy lịch sử sửa chữa theo dòng máy thành công",
+      data: repairLogs.map(toRepairResponse),
     });
   } catch (error) {
     return sendError(res, {
@@ -413,4 +510,5 @@ module.exports = {
   getRepairLogsBySerialNumber,
   getAllRepairLogs,
   updateRepairLog,
+  getRepairLogsByModel,
 };
