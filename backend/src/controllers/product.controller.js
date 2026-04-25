@@ -232,7 +232,7 @@ const listProducts = async (req, res, next) => {
       // Bước 3: Lấy bản ghi mới nhất
       {
         $addFields: {
-          latestRepair: {
+          latestRepairRaw: {
             $reduce: {
               input: "$allRepairs",
               initialValue: null,
@@ -252,7 +252,44 @@ const listProducts = async (req, res, next) => {
           }
         }
       },
-      { $project: { warrantyDocs: 0, allRepairs: 0 } }
+      {
+        $addFields: {
+          latestRepair: {
+            $cond: [
+              { $eq: ["$latestRepairRaw", null] },
+              null,
+              {
+                $mergeObjects: [
+                  "$latestRepairRaw",
+                  {
+                    repairContent: {
+                      $let: {
+                        vars: {
+                          pendingEntry: {
+                            $filter: {
+                              input: { $ifNull: ["$latestRepairRaw.timeline", []] },
+                              as: "t",
+                              cond: { $eq: ["$$t.status", "pending"] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: [
+                            { $gt: [{ $size: "$$pendingEntry" }, 0] },
+                            { $arrayElemAt: ["$$pendingEntry.note", 0] },
+                            ""
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      { $project: { warrantyDocs: 0, allRepairs: 0, latestRepairRaw: 0 } }
     ]);
 
     // Debug log chi tiết để kiểm tra trường thời gian
