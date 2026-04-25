@@ -2,7 +2,6 @@ const express = require("express");
 const {
   createRepairLog,
   getRepairLogsBySerialNumber,
-  getRepairLogsByModel,
   getAllRepairLogs,
   updateRepairLog,
 } = require("../controllers/repairLog.controller");
@@ -14,13 +13,7 @@ const {
 
 const router = express.Router();
 
-router.get(
-  "/history-by-model/:productCode",
-  authenticate,
-  authorize(["admin"]),
-  getRepairLogsByModel,
-);
-
+// POST   /api/repair-logs          — Tạo phiếu sửa chữa mới (admin, technician)
 router.post(
   "/",
   authenticate,
@@ -28,6 +21,7 @@ router.post(
   createRepairLog,
 );
 
+// GET    /api/repair-logs          — Lấy tất cả phiếu sửa chữa (admin, staff, technician)
 router.get(
   "/",
   authenticate,
@@ -35,17 +29,19 @@ router.get(
   getAllRepairLogs,
 );
 
-router.get(
-  "/device/:serialNumber",
-  optionalAuthenticate,
-  getRepairLogsBySerialNumber,
-);
-
+// PATCH  /api/repair-logs/:id      — Cập nhật tiến độ sửa chữa (admin, technician)
 router.patch(
   "/:id",
   authenticate,
   authorize(["admin", "technician"]),
   updateRepairLog,
+);
+
+// GET    /api/repair-logs/device/:serialNumber — Lịch sử sửa chữa theo thiết bị
+router.get(
+  "/device/:serialNumber",
+  optionalAuthenticate,
+  getRepairLogsBySerialNumber,
 );
 
 module.exports = router;
