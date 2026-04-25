@@ -3,7 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { warrantyService } from "../services/warrantyService";
 import { repairService } from "../services/repairService";
+import { getStatusConfig } from "../utils/statusStyles";
 import Footer from "../components/Footer";
+
 
 function GuestPage() {
   const navigate = useNavigate();
@@ -103,25 +105,11 @@ function GuestPage() {
     navigate(`/search/${tokenId}`);
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case "pending": return "Chờ xử lý";
-      case "in_progress": return "Đang sửa chữa";
-      case "done": return "Hoàn tất";
-      case "rejected": return "Từ chối";
-      default: return status;
-    }
-  };
+  // Trạng thái đã được quản lý tập trung trong statusStyles.js
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "done": return "status-done";
-      case "in_progress": return "status-progress";
-      case "pending": return "status-pending";
-      case "rejected": return "status-rejected";
-      default: return "";
-    }
-  };
+
+  // Các style đã được quản lý tập trung trong statusStyles.js
+
 
   return (
     <>
@@ -189,23 +177,41 @@ function GuestPage() {
                             <div className="timeline-details">
                               <div className="timeline-meta">
                                 <span className="timeline-date">{formatDate(log.repairDate)}</span>
-                                <span className={`status-badge ${getStatusClass(log.status)}`}>
-                                  {getStatusText(log.status)}
+                                <span style={{
+                                  padding: "2px 8px",
+                                  borderRadius: "6px",
+                                  fontSize: "0.7rem",
+                                  fontWeight: 700,
+                                  background: getStatusConfig(log.status).background,
+                                  color: getStatusConfig(log.status).color,
+                                  border: `1px solid ${getStatusConfig(log.status).borderColor}`,
+                                  textTransform: "uppercase"
+                                }}>
+                                  {getStatusConfig(log.status).label}
                                 </span>
                               </div>
                               <p className="timeline-desc">{log.repairContent}</p>
                               
-                              {log.statusHistory && log.statusHistory.length > 1 && (
+                              {log.timeline && log.timeline.length > 0 && (
                                 <div className="sub-timeline">
-                                  {log.statusHistory.slice(0, -1).reverse().map((h, i) => (
-                                    <div key={i} className="sub-item">
-                                      <span className="sub-date">{formatDate(h.updatedAt)}</span>
-                                      <span className="sub-status">{getStatusText(h.status)}</span>
+                                  {log.timeline.map((h, i) => (
+                                    <div key={i} className="sub-item-v3">
+                                      <div className="sub-dot-v3" style={{ background: getStatusConfig(h.status).color }}></div>
+                                      <div className="sub-content-v3">
+                                        <div className="sub-header-v3">
+                                          <span className="sub-status-v3" style={{ color: getStatusConfig(h.status).color }}>
+                                            {getStatusConfig(h.status).label}
+                                          </span>
+                                          <span className="sub-date-v3">{formatDate(h.timestamp)}</span>
+                                        </div>
+                                        <p className="sub-note-v3">{h.note}</p>
+                                      </div>
                                     </div>
                                   ))}
                                 </div>
                               )}
                             </div>
+
                           </div>
                         ))}
                       </div>
