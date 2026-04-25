@@ -2,6 +2,8 @@
 
 > File này định nghĩa các quy tắc bắt buộc, workflow, và skills được áp dụng cho toàn bộ dự án.
 > Nguồn skills: https://github.com/sickn33/antigravity-awesome-skills
+>
+> **Skills đã tích hợp**: `concise-planning` · `git-pr-workflows-git-workflow` · `nodejs-best-practices` · `frontend-dev-guidelines` · `frontend-api-integration-patterns` · `cc-skill-frontend-patterns` · `e2e-testing-patterns`
 
 ---
 
@@ -139,6 +141,121 @@ const action = async (req, res) => {
     return sendError(res, { statusCode: 500, errorCode: 'E500_INTERNAL', message: '...' });
   }
 };
+```
+
+---
+
+## 🎨 SKILL 4: Frontend Development Guidelines
+
+> Tích hợp từ skills: `frontend-dev-guidelines` · `frontend-api-integration-patterns` · `cc-skill-frontend-patterns`
+
+### Stack FE của dự án:
+- **Framework**: React + Vite
+- **Style**: CSS thuần (không dùng Tailwind trừ khi được yêu cầu)
+- **State**: React hooks (`useState`, `useEffect`, `useContext`)
+- **API calls**: Axios với token JWT trong header
+- **Routing**: React Router DOM
+
+### Nguyên tắc bắt buộc khi viết FE:
+
+#### 1. Tổ chức Component
+- **Composition over inheritance**: Chia nhỏ component, tránh component quá lớn
+- Component tái sử dụng → để trong `components/`
+- Page-specific logic → để trong `pages/`
+- Không được hard-code API URL — luôn dùng biến môi trường hoặc file config
+
+#### 2. Gọi API chuẩn (từ skill `frontend-api-integration-patterns`)
+```js
+// ✅ ĐÚNG: Tách API layer riêng
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// Interceptor tự động gắn token
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+```
+
+#### 3. Xử lý loading / error state
+```jsx
+// ✅ ĐÚNG: Luôn xử lý 3 trạng thái
+if (loading) return <LoadingSpinner />;
+if (error) return <ErrorMessage message={error} />;
+return <DataComponent data={data} />;
+```
+
+#### 4. Performance
+- Dùng `React.memo` cho component render nhiều lần
+- Dùng `useCallback` cho handler function truyền vào props
+- Lazy load route với `React.lazy` + `Suspense`
+- Không gọi API trong vòng lặp
+
+#### 5. Quy tắc đặt tên
+- Component: PascalCase (`RepairTimeline.jsx`)
+- Hook tự tạo: camelCase bắt đầu bằng `use` (`useRepairLogs.js`)
+- File CSS: tên giống component (`RepairTimeline.css`)
+- Constant: UPPER_SNAKE_CASE
+
+#### 6. Cấu trúc thư mục FE
+```
+frontend/src/
+├── pages/
+│   ├── admin/       ← Trang dành cho Admin
+│   └── user/        ← Trang dành cho User
+├── components/      ← Component dùng chung
+├── assets/
+│   ├── views/       ← File CSS của từng trang
+│   └── images/
+├── hooks/           ← Custom hooks (nếu cần)
+├── services/        ← API client & service functions
+└── utils/           ← Hàm tiện ích
+```
+
+---
+
+## 🧪 SKILL 5: Testing Guidelines
+
+> Tích hợp từ skill `e2e-testing-patterns` của antigravity-awesome-skills
+
+### Chiến lược kiểm thử cho dự án:
+
+| Loại test | Tool | Phạm vi |
+|---|---|---|
+| **Unit test BE** | Jest (Node.js) | Controller logic, validator, utility functions |
+| **Integration test** | Supertest + Jest | API endpoints end-to-end |
+| **E2E test FE** | Playwright / Cypress | Luồng người dùng quan trọng |
+
+### Các luồng E2E quan trọng cần test:
+1. **Đăng nhập** bằng wallet address → nhận JWT token
+2. **Tra cứu bảo hành** theo serialNumber
+3. **Tạo phiếu sửa chữa** → xem timeline
+4. **Cập nhật trạng thái** sửa chữa → push timeline
+5. **Admin quản lý** sản phẩm, người dùng
+
+### Quy tắc khi viết test:
+- ❌ **KHÔNG** test trực tiếp production database
+- ✅ Dùng dữ liệu test riêng biệt (mock hoặc DB test)
+- ✅ Mỗi test case phải **độc lập** (không phụ thuộc thứ tự chạy)
+- ✅ Đặt tên test theo format: `should <hành động> when <điều kiện>`
+- ✅ Luôn test cả **happy path** và **error path**
+
+### Pattern test API (Supertest):
+```js
+describe('POST /api/repair-logs', () => {
+  it('should create repair log when valid data provided', async () => {
+    const res = await request(app)
+      .post('/api/repair-logs')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ serialNumber: 'W01-...', isWarrantyCovered: true });
+    expect(res.status).toBe(201);
+    expect(res.body.data.timeline).toHaveLength(1);
+    expect(res.body.data.timeline[0].status).toBe('pending');
+  });
+});
 ```
 
 ---
