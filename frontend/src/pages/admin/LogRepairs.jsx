@@ -32,6 +32,7 @@ function LogRepairs() {
     repairContent: "",
     warrantyCovered: "yes",
     status: "pending",
+    type: "Khác",
     cost: 0,
   });
 
@@ -92,9 +93,10 @@ function LogRepairs() {
       setLoading(true);
       const payload = {
         serialNumber: form.serialNumber,
-        repairContent: form.repairContent,
+        note: form.repairContent,
         isWarrantyCovered: form.warrantyCovered === "yes",
         status: form.status,
+        type: form.type,
         cost: Number(form.cost) || 0,
       };
       await repairService.createRepair(payload);
@@ -105,6 +107,7 @@ function LogRepairs() {
         repairContent: "",
         warrantyCovered: "yes",
         status: "pending",
+        type: "Khác",
         cost: 0,
       });
       setSearchTerm("");
@@ -242,18 +245,20 @@ function LogRepairs() {
               </div>
 
               <div className="lr-field">
-                <label className="lr-label">Status</label>
+                <label className="lr-label">Trạng thái hiện tại</label>
                 <div className="lr-select-wrap">
                   <select
                     className="lr-select"
                     value={form.status}
                     onChange={updateField("status")}
                   >
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="done">Done</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="pending">Tiếp nhận</option>
+                    <option value="waiting_parts">Chờ linh kiện</option>
+                    <option value="fixing">Đang sửa</option>
+                    <option value="completed">Sửa xong</option>
+                    <option value="delivered">Đã giao</option>
                   </select>
+
                   <span className="lr-select-arrow-fixed">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="6 9 12 15 18 9" />
@@ -262,6 +267,31 @@ function LogRepairs() {
                 </div>
               </div>
             </div>
+
+            {/* Split row for Repair Type and Cost */}
+            <div className="lr-row-split">
+              <div className="lr-field">
+                <label className="lr-label">Loại hình sửa chữa</label>
+                <div className="lr-select-wrap">
+                  <select
+                    className="lr-select"
+                    value={form.type}
+                    onChange={updateField("type")}
+                  >
+                    <option value="screen">Màn hình</option>
+                    <option value="battery">Pin/Nguồn</option>
+                    <option value="hardware">Phần cứng</option>
+                    <option value="software">Phần mềm</option>
+                    <option value="other">Khác</option>
+                  </select>
+
+                  <span className="lr-select-arrow-fixed">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
 
             {/* Cost */}
             <div className="lr-field">
@@ -277,6 +307,7 @@ function LogRepairs() {
                 />
               </div>
             </div>
+          </div>
 
             {/* Submit Button */}
             <button
