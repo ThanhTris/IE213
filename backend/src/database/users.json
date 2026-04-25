@@ -7,17 +7,8 @@
     "phone": "0901234567",
     "role": "admin",
     "isActive": true,
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "_id": "69b0afe5309d0d59b3f7524d",
-    "walletAddress": "0x3456789012345678901234567890123456789012",
-    "email": "tranthib@gmail.com",
-    "fullName": "Trần Thị B",
-    "phone": "0923456789",
-    "role": "user",
-    "isActive": true,
-    "createdAt": "2024-01-20T14:15:00.000Z"
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2026-04-18T08:03:49.462Z"
   },
   {
     "_id": "69b0afe5309d0d59b3f7524c",
@@ -27,18 +18,30 @@
     "phone": "0912345678",
     "role": "user",
     "isActive": true,
-    "createdAt": "2024-01-15T10:30:00.000Z"
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2026-04-18T08:03:50.112Z"
+  },
+  {
+    "_id": "69b0afe5309d0d59b3f7524d",
+    "walletAddress": "0x3456789012345678901234567890123456789012",
+    "email": "tranthib@gmail.com",
+    "fullName": "Trần Thị B",
+    "phone": "0923456789",
+    "role": "user",
+    "isActive": true,
+    "createdAt": "2024-01-20T14:15:00.000Z",
+    "updatedAt": "2026-04-18T08:03:49.942Z"
   },
   {
     "_id": "69b972137ca90377110b5c33",
     "walletAddress": "0xabcdef1234567890abcdef1234567890abcdef12",
     "email": "nguyenvana@example.com",
-    "fullName": "Nguyễn Văn Á",
+    "fullName": "Nguyễn Tấn",
     "phone": "0912345679",
     "role": "technician",
-    "isActive": false,
+    "isActive": true,
     "createdAt": "2026-03-17T15:24:03.321Z",
-    "updatedAt": "2026-03-29T13:28:18.604Z"
+    "updatedAt": "2026-04-24T06:48:36.380Z"
   },
   {
     "_id": "69c1480656dbeabb813aafc2",
@@ -46,7 +49,7 @@
     "role": "staff",
     "isActive": true,
     "createdAt": "2026-03-23T14:02:46.878Z",
-    "updatedAt": "2026-03-29T10:05:23.304Z",
+    "updatedAt": "2026-04-18T08:03:50.343Z",
     "email": "abc@example.com",
     "fullName": "Nguyễn Văn Cừ"
   },
@@ -56,7 +59,8 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-04-06T15:06:54.144Z",
-    "updatedAt": "2026-04-06T15:06:54.144Z"
+    "updatedAt": "2026-04-24T06:49:00.370Z",
+    "fullName": "Văn Tiến"
   },
   {
     "_id": "69d4c9d24779b2ae646ea2ed",
@@ -64,7 +68,8 @@
     "role": "user",
     "isActive": true,
     "createdAt": "2026-04-07T09:09:38.206Z",
-    "updatedAt": "2026-04-07T09:09:38.206Z"
+    "updatedAt": "2026-04-24T06:47:42.180Z",
+    "fullName": "Thùy Trang"
   },
   {
     "_id": "69d8d43a93b98861dd150c2c",
@@ -72,6 +77,7 @@
     "role": "admin",
     "isActive": true,
     "createdAt": "2026-04-10T10:43:06.039Z",
-    "updatedAt": "2026-04-10T10:43:06.039Z"
+    "updatedAt": "2026-04-23T17:32:22.689Z",
+    "fullName": "Thanh Trí"
   }
 ]

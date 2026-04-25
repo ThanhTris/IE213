@@ -1,548 +1,861 @@
 [
   {
-    "_id": "69e333d30675bed8e47009fa",
-    "warrantyId": "69e3330c0675bed8e47009b0",
-    "serialNumber": "W12-DEL-XPS15-012",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Sửa lỗi màn hình bị nhấp nháy",
-    "isWarrantyCovered": true,
-    "status": "pending",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:33:39.078Z",
-    "createdAt": "2026-04-18T07:33:39.079Z",
-    "updatedAt": "2026-04-18T07:33:39.079Z"
-  },
-  {
-    "_id": "69e334ed9d59b858e51b8721",
+    "_id": "69ecbe31424aebfe591bdffa",
     "warrantyId": "69e3324b0675bed8e4700958",
     "serialNumber": "W01-APL-IP15PM-001",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay màn hình do vỡ",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:21.831Z",
-    "createdAt": "2026-04-18T07:38:21.836Z",
-    "updatedAt": "2026-04-18T07:38:21.836Z"
+    "cost": 8500000,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Khách mang máy đến, màn hình vỡ nặng do rơi, cảm ứng không hoạt động",
+        "timestamp": "2026-04-25T13:14:25.138Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt màn hình OLED chính hãng Apple, ETA 3-5 ngày",
+        "timestamp": "2026-04-25T13:14:25.807Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Đã nhận màn hình, tiến hành tháo máy và thay thế",
+        "timestamp": "2026-04-25T13:14:26.469Z"
+      },
+      {
+        "status": "completed",
+        "note": "Thay màn hình xong, test cảm ứng OK, Face ID bình thường",
+        "timestamp": "2026-04-25T13:14:31.939Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách đã nhận máy, hài lòng",
+        "timestamp": "2026-04-25T13:14:32.592Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:25.142Z",
+    "createdAt": "2026-04-25T13:14:25.146Z",
+    "updatedAt": "2026-04-25T13:14:32.592Z"
   },
   {
-    "_id": "69e334ee9d59b858e51b8724",
-    "warrantyId": "69e332610675bed8e4700960",
-    "serialNumber": "W02-APL-IP15-002",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay pin, hao mòn tự nhiên sau 18 tháng sử dụng",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:22.482Z",
-    "createdAt": "2026-04-18T07:38:22.484Z",
-    "updatedAt": "2026-04-18T07:38:22.484Z"
-  },
-  {
-    "_id": "69e334ef9d59b858e51b8727",
-    "warrantyId": "69e3326d0675bed8e4700968",
-    "serialNumber": "W03-APL-IP14P-003",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Vệ sinh quạt tản nhiệt, thay keo tản nhiệt CPU",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:23.026Z",
-    "createdAt": "2026-04-18T07:38:23.027Z",
-    "updatedAt": "2026-04-18T07:38:23.027Z"
-  },
-  {
-    "_id": "69e334ef9d59b858e51b872a",
-    "warrantyId": "69e332860675bed8e4700970",
-    "serialNumber": "W04-SAM-S24U-004",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay màn hình cảm ứng bị lỗi cảm ứng",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:23.693Z",
-    "createdAt": "2026-04-18T07:38:23.693Z",
-    "updatedAt": "2026-04-18T07:38:23.693Z"
-  },
-  {
-    "_id": "69e334f09d59b858e51b872d",
-    "warrantyId": "69e332930675bed8e4700978",
-    "serialNumber": "W05-SAM-ZF5-005",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Lỗi không nhận SIM, vệ sinh khay SIM và chân tiếp xúc",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:24.232Z",
-    "createdAt": "2026-04-18T07:38:24.233Z",
-    "updatedAt": "2026-04-18T07:38:24.233Z"
-  },
-  {
-    "_id": "69e334f09d59b858e51b8730",
-    "warrantyId": "69e332a00675bed8e4700980",
-    "serialNumber": "W06-SAM-A54-006",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Bảo dưỡng định kỳ, vệ sinh máy",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:24.867Z",
-    "createdAt": "2026-04-18T07:38:24.868Z",
-    "updatedAt": "2026-04-18T07:38:24.868Z"
-  },
-  {
-    "_id": "69e334f19d59b858e51b8733",
-    "warrantyId": "69e332b40675bed8e4700988",
-    "serialNumber": "W07-OPP-R10P-007",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay ổ cứng HDD sang SSD (nâng cấp có tính phí)",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:25.511Z",
-    "createdAt": "2026-04-18T07:38:25.512Z",
-    "updatedAt": "2026-04-18T07:38:25.512Z"
-  },
-  {
-    "_id": "69e334f29d59b858e51b8736",
-    "warrantyId": "69e332c10675bed8e4700990",
-    "serialNumber": "W08-XIA-14P-008",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay mặt kính đồng hồ bị trầy xước nặng",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:26.057Z",
-    "createdAt": "2026-04-18T07:38:26.057Z",
-    "updatedAt": "2026-04-18T07:38:26.057Z"
-  },
-  {
-    "_id": "69e334f29d59b858e51b8739",
-    "warrantyId": "69e332cd0675bed8e4700998",
-    "serialNumber": "W09-APL-MBP16-009",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay dây đeo đồng hồ bị đứt",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:26.558Z",
-    "createdAt": "2026-04-18T07:38:26.559Z",
-    "updatedAt": "2026-04-18T07:38:26.559Z"
-  },
-  {
-    "_id": "69e334f39d59b858e51b873d",
-    "warrantyId": "69e332e60675bed8e47009a8",
-    "serialNumber": "W11-APL-IPDPM2-011",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Vệ sinh, thay mới đệm tai bị bong tróc",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:27.295Z",
-    "createdAt": "2026-04-18T07:38:27.296Z",
-    "updatedAt": "2026-04-18T07:38:27.296Z"
-  },
-  {
-    "_id": "69e334f39d59b858e51b8740",
-    "warrantyId": "69e3330c0675bed8e47009b0",
-    "serialNumber": "W12-DEL-XPS15-012",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Sửa lỗi màn hình bị nhấp nháy",
-    "isWarrantyCovered": true,
-    "status": "pending",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:27.841Z",
-    "createdAt": "2026-04-18T07:38:27.841Z",
-    "updatedAt": "2026-04-18T07:38:27.841Z"
-  },
-  {
-    "_id": "69e334f49d59b858e51b8743",
-    "warrantyId": "69e3332f0675bed8e47009c0",
-    "serialNumber": "W14-LEN-LP5-014",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Bản lề gập bị kêu, tra keo và vệ sinh bản lề",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:28.690Z",
-    "createdAt": "2026-04-18T07:38:28.691Z",
-    "updatedAt": "2026-04-18T07:38:28.691Z"
-  },
-  {
-    "_id": "69e334f59d59b858e51b8746",
-    "warrantyId": "69e333480675bed8e47009c8",
-    "serialNumber": "W15-APL-AW9-015",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Camera bị mờ, vệ sinh lens và cập nhật firmware",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:38:29.342Z",
-    "createdAt": "2026-04-18T07:38:29.343Z",
-    "updatedAt": "2026-04-18T07:38:29.343Z"
-  },
-  {
-    "_id": "69e3358a386c5c8027ba8c9c",
+    "_id": "69ecbe39424aebfe591be005",
     "warrantyId": "69e3324b0675bed8e4700958",
     "serialNumber": "W01-APL-IP15PM-001",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay màn hình do vỡ",
-    "isWarrantyCovered": false,
-    "status": "done",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
     "cost": 0,
-    "repairDate": "2026-04-18T07:40:58.400Z",
-    "createdAt": "2026-04-18T07:40:58.403Z",
-    "updatedAt": "2026-04-18T07:40:58.403Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Khách báo pin tụt nhanh, sức khỏe pin còn 78%",
+        "timestamp": "2026-04-25T13:14:33.240Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Tiến hành thay pin chính hãng theo bảo hành",
+        "timestamp": "2026-04-25T13:14:33.886Z"
+      },
+      {
+        "status": "completed",
+        "note": "Thay pin xong, sức khỏe 100%, test sạc OK",
+        "timestamp": "2026-04-25T13:14:34.534Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy, pin hoạt động tốt",
+        "timestamp": "2026-04-25T13:14:35.183Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:33.240Z",
+    "createdAt": "2026-04-25T13:14:33.241Z",
+    "updatedAt": "2026-04-25T13:14:35.184Z"
   },
   {
-    "_id": "69e3358a386c5c8027ba8c9f",
+    "_id": "69ecbe3b424aebfe591be00e",
     "warrantyId": "69e332610675bed8e4700960",
     "serialNumber": "W02-APL-IP15-002",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay pin, hao mòn tự nhiên sau 18 tháng sử dụng",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:40:58.903Z",
-    "createdAt": "2026-04-18T07:40:58.905Z",
-    "updatedAt": "2026-04-18T07:40:58.905Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Cổng USB-C không nhận sạc, đã thử nhiều cáp khác nhau",
+        "timestamp": "2026-04-25T13:14:35.835Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Vệ sinh cổng sạc, phát hiện bụi bẩn kẹt bên trong",
+        "timestamp": "2026-04-25T13:14:36.479Z"
+      },
+      {
+        "status": "completed",
+        "note": "Vệ sinh xong, sạc hoạt động bình thường",
+        "timestamp": "2026-04-25T13:14:37.122Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:14:37.772Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:35.836Z",
+    "createdAt": "2026-04-25T13:14:35.837Z",
+    "updatedAt": "2026-04-25T13:14:37.772Z"
   },
   {
-    "_id": "69e3358b386c5c8027ba8ca2",
+    "_id": "69ecbe3e424aebfe591be017",
+    "warrantyId": "69e332610675bed8e4700960",
+    "serialNumber": "W02-APL-IP15-002",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "completed",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Camera chính 48MP chụp ảnh bị mờ, nghi lỗi module camera",
+        "timestamp": "2026-04-25T13:14:38.417Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt module camera chính hãng, ETA 5-7 ngày",
+        "timestamp": "2026-04-25T13:14:39.076Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Đã nhận linh kiện, đang thay module camera",
+        "timestamp": "2026-04-25T13:14:39.726Z"
+      },
+      {
+        "status": "completed",
+        "note": "Thay camera xong, chụp ảnh sắc nét, test video 4K OK",
+        "timestamp": "2026-04-25T13:14:40.378Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:38.418Z",
+    "createdAt": "2026-04-25T13:14:38.420Z",
+    "updatedAt": "2026-04-25T13:14:40.379Z"
+  },
+  {
+    "_id": "69ecbe41424aebfe591be020",
     "warrantyId": "69e3326d0675bed8e4700968",
     "serialNumber": "W03-APL-IP14P-003",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Vệ sinh quạt tản nhiệt, thay keo tản nhiệt CPU",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:40:59.487Z",
-    "createdAt": "2026-04-18T07:40:59.489Z",
-    "updatedAt": "2026-04-18T07:40:59.489Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Dynamic Island bị đen 1 phần, xuất hiện điểm chết trên màn hình",
+        "timestamp": "2026-04-25T13:14:41.027Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt tấm nền OLED thay thế từ Apple",
+        "timestamp": "2026-04-25T13:14:41.679Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Tiến hành thay tấm nền OLED",
+        "timestamp": "2026-04-25T13:14:42.343Z"
+      },
+      {
+        "status": "completed",
+        "note": "Thay xong, Dynamic Island hiển thị hoàn hảo",
+        "timestamp": "2026-04-25T13:14:42.999Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy, xác nhận OK",
+        "timestamp": "2026-04-25T13:14:43.645Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:41.028Z",
+    "createdAt": "2026-04-25T13:14:41.030Z",
+    "updatedAt": "2026-04-25T13:14:43.645Z"
   },
   {
-    "_id": "69e3358b386c5c8027ba8ca5",
+    "_id": "69ecbe46424aebfe591be02b",
+    "warrantyId": "69e3326d0675bed8e4700968",
+    "serialNumber": "W03-APL-IP14P-003",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "fixing",
+    "isWarrantyCovered": false,
+    "cost": 4200000,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Face ID ngừng hoạt động sau va đập nhẹ",
+        "timestamp": "2026-04-25T13:14:46.819Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt module TrueDepth camera từ Apple, ETA 7 ngày",
+        "timestamp": "2026-04-25T13:14:47.463Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Đang thay module TrueDepth và calibrate Face ID",
+        "timestamp": "2026-04-25T13:14:48.114Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:46.819Z",
+    "createdAt": "2026-04-25T13:14:46.820Z",
+    "updatedAt": "2026-04-25T13:14:48.114Z"
+  },
+  {
+    "_id": "69ecbe48424aebfe591be032",
     "warrantyId": "69e332860675bed8e4700970",
     "serialNumber": "W04-SAM-S24U-004",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay màn hình cảm ứng bị lỗi cảm ứng",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:40:59.995Z",
-    "createdAt": "2026-04-18T07:40:59.996Z",
-    "updatedAt": "2026-04-18T07:40:59.996Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "S Pen bị kẹt trong khe, không rút ra được",
+        "timestamp": "2026-04-25T13:14:48.765Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Tháo máy lấy S Pen, vệ sinh khe cắm bút",
+        "timestamp": "2026-04-25T13:14:49.418Z"
+      },
+      {
+        "status": "completed",
+        "note": "S Pen hoạt động bình thường, khe cắm đã vệ sinh",
+        "timestamp": "2026-04-25T13:14:50.063Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:14:50.705Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:48.766Z",
+    "createdAt": "2026-04-25T13:14:48.767Z",
+    "updatedAt": "2026-04-25T13:14:50.706Z"
   },
   {
-    "_id": "69e3358c386c5c8027ba8ca8",
+    "_id": "69ecbe4b424aebfe591be03b",
+    "warrantyId": "69e332860675bed8e4700970",
+    "serialNumber": "W04-SAM-S24U-004",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "waiting_parts",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Màn hình bị burn-in nhẹ ở thanh navigation bar",
+        "timestamp": "2026-04-25T13:14:51.348Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt tấm nền Dynamic AMOLED 2X, ETA 5-7 ngày",
+        "timestamp": "2026-04-25T13:14:51.992Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:51.348Z",
+    "createdAt": "2026-04-25T13:14:51.349Z",
+    "updatedAt": "2026-04-25T13:14:51.992Z"
+  },
+  {
+    "_id": "69ecbe4c424aebfe591be040",
     "warrantyId": "69e332930675bed8e4700978",
     "serialNumber": "W05-SAM-ZF5-005",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Lỗi không nhận SIM, vệ sinh khay SIM và chân tiếp xúc",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:00.473Z",
-    "createdAt": "2026-04-18T07:41:00.473Z",
-    "updatedAt": "2026-04-18T07:41:00.473Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Nếp gập màn hình trong ngày càng rõ, ảnh hưởng trải nghiệm",
+        "timestamp": "2026-04-25T13:14:52.634Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt tấm nền gập từ Samsung, ETA 7-10 ngày",
+        "timestamp": "2026-04-25T13:14:53.283Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Đã nhận linh kiện, tháo máy thay tấm nền gập",
+        "timestamp": "2026-04-25T13:14:53.931Z"
+      },
+      {
+        "status": "completed",
+        "note": "Thay xong, nếp gập giảm đáng kể, test gập mở 50 lần OK",
+        "timestamp": "2026-04-25T13:14:54.573Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy, hài lòng",
+        "timestamp": "2026-04-25T13:14:55.217Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:52.635Z",
+    "createdAt": "2026-04-25T13:14:52.637Z",
+    "updatedAt": "2026-04-25T13:14:55.217Z"
   },
   {
-    "_id": "69e3358c386c5c8027ba8cab",
+    "_id": "69ecbe4f424aebfe591be04b",
+    "warrantyId": "69e332930675bed8e4700978",
+    "serialNumber": "W05-SAM-ZF5-005",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "fixing",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Bản lề kêu lạo xạo khi gập/mở, nghi hao mòn cơ học",
+        "timestamp": "2026-04-25T13:14:55.859Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Tháo bản lề, tra dầu bôi trơn và siết ốc",
+        "timestamp": "2026-04-25T13:14:56.506Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:55.860Z",
+    "createdAt": "2026-04-25T13:14:55.862Z",
+    "updatedAt": "2026-04-25T13:14:56.506Z"
+  },
+  {
+    "_id": "69ecbe51424aebfe591be050",
     "warrantyId": "69e332a00675bed8e4700980",
     "serialNumber": "W06-SAM-A54-006",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Bảo dưỡng định kỳ, vệ sinh máy",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:00.985Z",
-    "createdAt": "2026-04-18T07:41:00.986Z",
-    "updatedAt": "2026-04-18T07:41:00.986Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Loa ngoài phát âm thanh bị rè khi mở volume lớn",
+        "timestamp": "2026-04-25T13:14:57.160Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Thay module loa ngoài",
+        "timestamp": "2026-04-25T13:14:57.808Z"
+      },
+      {
+        "status": "completed",
+        "note": "Loa mới hoạt động tốt, test nhạc ở volume max OK",
+        "timestamp": "2026-04-25T13:14:58.463Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:14:59.111Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:57.160Z",
+    "createdAt": "2026-04-25T13:14:57.162Z",
+    "updatedAt": "2026-04-25T13:14:59.112Z"
   },
   {
-    "_id": "69e3358d386c5c8027ba8cae",
+    "_id": "69ecbe53424aebfe591be059",
     "warrantyId": "69e332b40675bed8e4700988",
     "serialNumber": "W07-OPP-R10P-007",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay ổ cứng HDD sang SSD (nâng cấp có tính phí)",
-    "isWarrantyCovered": false,
-    "status": "done",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:01.472Z",
-    "createdAt": "2026-04-18T07:41:01.473Z",
-    "updatedAt": "2026-04-18T07:41:01.473Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "SUPERVOOC 67W không hoạt động, chỉ sạc thường 10W",
+        "timestamp": "2026-04-25T13:14:59.759Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Kiểm tra IC sạc, phát hiện lỗi chip quản lý nguồn",
+        "timestamp": "2026-04-25T13:15:00.406Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt IC quản lý nguồn từ Oppo",
+        "timestamp": "2026-04-25T13:15:01.053Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Đã nhận linh kiện, thay IC sạc nhanh",
+        "timestamp": "2026-04-25T13:15:04.089Z"
+      },
+      {
+        "status": "completed",
+        "note": "SUPERVOOC 67W hoạt động trở lại, test sạc 0-50% trong 18 phút",
+        "timestamp": "2026-04-25T13:15:04.735Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:15:05.379Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:14:59.760Z",
+    "createdAt": "2026-04-25T13:14:59.761Z",
+    "updatedAt": "2026-04-25T13:15:05.379Z"
   },
   {
-    "_id": "69e3358d386c5c8027ba8cb1",
+    "_id": "69ecbe5a424aebfe591be066",
     "warrantyId": "69e332c10675bed8e4700990",
     "serialNumber": "W08-XIA-14P-008",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay mặt kính đồng hồ bị trầy xước nặng",
-    "isWarrantyCovered": false,
-    "status": "done",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "completed",
+    "isWarrantyCovered": true,
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:01.973Z",
-    "createdAt": "2026-04-18T07:41:01.974Z",
-    "updatedAt": "2026-04-18T07:41:01.974Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Máy nóng bất thường khi chơi game, nhiệt độ lên 48°C",
+        "timestamp": "2026-04-25T13:15:06.034Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Thay keo tản nhiệt CPU Snapdragon 8 Gen 3, vệ sinh buồng hơi",
+        "timestamp": "2026-04-25T13:15:06.690Z"
+      },
+      {
+        "status": "completed",
+        "note": "Nhiệt độ giảm xuống 38°C khi chơi game, ổn định",
+        "timestamp": "2026-04-25T13:15:07.337Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:15:06.035Z",
+    "createdAt": "2026-04-25T13:15:06.035Z",
+    "updatedAt": "2026-04-25T13:15:07.338Z"
   },
   {
-    "_id": "69e3358e386c5c8027ba8cb4",
+    "_id": "69ecbe5c424aebfe591be06d",
     "warrantyId": "69e332cd0675bed8e4700998",
     "serialNumber": "W09-APL-MBP16-009",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay dây đeo đồng hồ bị đứt",
-    "isWarrantyCovered": false,
-    "status": "done",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:02.490Z",
-    "createdAt": "2026-04-18T07:41:02.491Z",
-    "updatedAt": "2026-04-18T07:41:02.491Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Phím T, Y, U không phản hồi, nghi lỗi bàn phím butterfly",
+        "timestamp": "2026-04-25T13:15:07.999Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt top-case bàn phím từ Apple, ETA 7-10 ngày",
+        "timestamp": "2026-04-25T13:15:08.647Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Thay toàn bộ top-case bàn phím",
+        "timestamp": "2026-04-25T13:15:09.293Z"
+      },
+      {
+        "status": "completed",
+        "note": "Bàn phím mới hoạt động hoàn hảo, test toàn bộ phím OK",
+        "timestamp": "2026-04-25T13:15:09.937Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:15:11.807Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:15:08.000Z",
+    "createdAt": "2026-04-25T13:15:08.002Z",
+    "updatedAt": "2026-04-25T13:15:11.808Z"
   },
   {
-    "_id": "69e3358f386c5c8027ba8cb8",
+    "_id": "69ecbe60424aebfe591be078",
+    "warrantyId": "69e332a00675bed8e4700980",
+    "serialNumber": "W06-SAM-A54-006",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "cancelled",
+    "isWarrantyCovered": false,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Khách mang máy đến, màn hình bị sọc sau khi rơi xuống nước",
+        "timestamp": "2026-04-25T13:15:12.458Z"
+      },
+      {
+        "status": "cancelled",
+        "note": "Khách từ chối sửa do chi phí cao, yêu cầu hủy phiếu",
+        "timestamp": "2026-04-25T13:15:13.109Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:15:12.459Z",
+    "createdAt": "2026-04-25T13:15:12.460Z",
+    "updatedAt": "2026-04-25T13:15:13.109Z"
+  },
+  {
+    "_id": "69ecbe64424aebfe591be07d",
     "warrantyId": "69e332e60675bed8e47009a8",
     "serialNumber": "W11-APL-IPDPM2-011",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Vệ sinh, thay mới đệm tai bị bong tróc",
-    "isWarrantyCovered": false,
-    "status": "done",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:03.093Z",
-    "createdAt": "2026-04-18T07:41:03.094Z",
-    "updatedAt": "2026-04-18T07:41:03.094Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Apple Pencil hover không nhận, vẽ bị ngắt quãng",
+        "timestamp": "2026-04-25T13:15:16.189Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Cập nhật firmware iPad, reset kết nối Bluetooth Pencil",
+        "timestamp": "2026-04-25T13:15:16.839Z"
+      },
+      {
+        "status": "completed",
+        "note": "Pencil hover hoạt động trở lại sau update iPadOS",
+        "timestamp": "2026-04-25T13:15:17.484Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:15:18.129Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:15:16.190Z",
+    "createdAt": "2026-04-25T13:15:16.191Z",
+    "updatedAt": "2026-04-25T13:15:18.130Z"
   },
   {
-    "_id": "69e3358f386c5c8027ba8cbb",
+    "_id": "69ecbe66424aebfe591be086",
     "warrantyId": "69e3330c0675bed8e47009b0",
     "serialNumber": "W12-DEL-XPS15-012",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Sửa lỗi màn hình bị nhấp nháy",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "fixing",
     "isWarrantyCovered": true,
-    "status": "pending",
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:03.571Z",
-    "createdAt": "2026-04-18T07:41:03.572Z",
-    "updatedAt": "2026-04-18T07:41:03.572Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Màn hình OLED 3.5K nhấp nháy liên tục, đặc biệt ở độ sáng thấp",
+        "timestamp": "2026-04-25T13:15:18.779Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt tấm nền OLED 3.5K từ Dell, ETA 10-14 ngày",
+        "timestamp": "2026-04-25T13:15:19.422Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Đang thay tấm nền OLED và cáp flex màn hình",
+        "timestamp": "2026-04-25T13:15:20.066Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:15:18.780Z",
+    "createdAt": "2026-04-25T13:15:18.780Z",
+    "updatedAt": "2026-04-25T13:15:20.066Z"
   },
   {
-    "_id": "69e33590386c5c8027ba8cbe",
+    "_id": "69ecbe68424aebfe591be08d",
     "warrantyId": "69e333210675bed8e47009b8",
     "serialNumber": "W13-ASU-ROG-013",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Máy hút yếu, vệ sinh bộ lọc và kiểm tra động cơ",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "in_progress",
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:04.103Z",
-    "createdAt": "2026-04-18T07:41:04.104Z",
-    "updatedAt": "2026-04-18T07:41:04.104Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Quạt GPU RTX 4060 kêu to bất thường khi chơi game",
+        "timestamp": "2026-04-25T13:15:20.713Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Tháo quạt vệ sinh, tra dầu trục quạt, thay keo tản nhiệt GPU",
+        "timestamp": "2026-04-25T13:15:21.359Z"
+      },
+      {
+        "status": "completed",
+        "note": "Quạt chạy êm, nhiệt GPU giảm 8°C khi gaming",
+        "timestamp": "2026-04-25T13:15:22.007Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:15:22.650Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:15:20.714Z",
+    "createdAt": "2026-04-25T13:15:20.714Z",
+    "updatedAt": "2026-04-25T13:15:22.650Z"
   },
   {
-    "_id": "69e33590386c5c8027ba8cc1",
+    "_id": "69ecbe91424aebfe591be096",
     "warrantyId": "69e3332f0675bed8e47009c0",
     "serialNumber": "W14-LEN-LP5-014",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Bản lề gập bị kêu, tra keo và vệ sinh bản lề",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:04.654Z",
-    "createdAt": "2026-04-18T07:41:04.654Z",
-    "updatedAt": "2026-04-18T07:41:04.654Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Bản lề màn hình bị lỏng, màn hình tự đổ khi nghiêng",
+        "timestamp": "2026-04-25T13:16:01.803Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Siết lại ốc bản lề, thay miếng đệm cao su",
+        "timestamp": "2026-04-25T13:16:02.461Z"
+      },
+      {
+        "status": "completed",
+        "note": "Bản lề chắc chắn, giữ góc mở tốt",
+        "timestamp": "2026-04-25T13:16:03.113Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận máy",
+        "timestamp": "2026-04-25T13:16:03.763Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:01.803Z",
+    "createdAt": "2026-04-25T13:16:01.803Z",
+    "updatedAt": "2026-04-25T13:16:03.763Z"
   },
   {
-    "_id": "69e33591386c5c8027ba8cc4",
+    "_id": "69ecbe94424aebfe591be09f",
     "warrantyId": "69e333480675bed8e47009c8",
     "serialNumber": "W15-APL-AW9-015",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Camera bị mờ, vệ sinh lens và cập nhật firmware",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:41:05.140Z",
-    "createdAt": "2026-04-18T07:41:05.141Z",
-    "updatedAt": "2026-04-18T07:41:05.141Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Cảm biến nhịp tim đo sai lệch 20-30 BPM so với thực tế",
+        "timestamp": "2026-04-25T13:16:04.412Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Vệ sinh cảm biến quang học, cập nhật watchOS mới nhất",
+        "timestamp": "2026-04-25T13:16:05.061Z"
+      },
+      {
+        "status": "completed",
+        "note": "Cảm biến đo chính xác sau update, sai lệch < 3 BPM",
+        "timestamp": "2026-04-25T13:16:05.703Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận đồng hồ",
+        "timestamp": "2026-04-25T13:16:06.351Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:04.413Z",
+    "createdAt": "2026-04-25T13:16:04.414Z",
+    "updatedAt": "2026-04-25T13:16:06.352Z"
   },
   {
-    "_id": "69e338d84b07729e82f19874",
-    "warrantyId": "69e3324b0675bed8e4700958",
-    "serialNumber": "W01-APL-IP15PM-001",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay màn hình do vỡ",
+    "_id": "69ecbe97424aebfe591be0a8",
+    "warrantyId": "69e3335d0675bed8e47009d0",
+    "serialNumber": "W16-APL-AWU2-016",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Digital Crown bị kẹt, xoay khó khăn",
+        "timestamp": "2026-04-25T13:16:07.001Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Vệ sinh Digital Crown bằng nước ấm, loại bỏ cặn bẩn",
+        "timestamp": "2026-04-25T13:16:07.648Z"
+      },
+      {
+        "status": "completed",
+        "note": "Crown xoay mượt trở lại",
+        "timestamp": "2026-04-25T13:16:08.314Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận đồng hồ",
+        "timestamp": "2026-04-25T13:16:08.958Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:07.002Z",
+    "createdAt": "2026-04-25T13:16:07.002Z",
+    "updatedAt": "2026-04-25T13:16:08.958Z"
+  },
+  {
+    "_id": "69ecbe99424aebfe591be0b1",
+    "warrantyId": "69e333690675bed8e47009d8",
+    "serialNumber": "W17-GLX-W-ULTRA-017",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Bezel xoay bị cứng, không trơn tru như ban đầu",
+        "timestamp": "2026-04-25T13:16:09.603Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Tháo bezel vệ sinh, tra dầu silicon vào rãnh xoay",
+        "timestamp": "2026-04-25T13:16:10.247Z"
+      },
+      {
+        "status": "completed",
+        "note": "Bezel xoay mượt, click rõ ràng",
+        "timestamp": "2026-04-25T13:16:10.890Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận đồng hồ",
+        "timestamp": "2026-04-25T13:16:14.005Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:09.603Z",
+    "createdAt": "2026-04-25T13:16:09.603Z",
+    "updatedAt": "2026-04-25T13:16:14.005Z"
+  },
+  {
+    "_id": "69ecbe9e424aebfe591be0ba",
+    "warrantyId": "69e333750675bed8e47009e0",
+    "serialNumber": "W18-GAR-F7X-018",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "GPS định vị sai lệch 50-100m khi chạy bộ outdoor",
+        "timestamp": "2026-04-25T13:16:14.651Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Reset GPS, cập nhật firmware mới nhất, calibrate la bàn",
+        "timestamp": "2026-04-25T13:16:15.298Z"
+      },
+      {
+        "status": "completed",
+        "note": "GPS chính xác, test chạy 5km sai lệch < 10m",
+        "timestamp": "2026-04-25T13:16:15.941Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận đồng hồ",
+        "timestamp": "2026-04-25T13:16:19.050Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:14.652Z",
+    "createdAt": "2026-04-25T13:16:14.653Z",
+    "updatedAt": "2026-04-25T13:16:19.050Z"
+  },
+  {
+    "_id": "69ecbea3424aebfe591be0c3",
+    "warrantyId": "69e3338e0675bed8e47009e8",
+    "serialNumber": "W19-APL-APP2-019",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
+    "isWarrantyCovered": true,
+    "cost": 0,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Tai nghe bên trái không sạc khi đặt vào case",
+        "timestamp": "2026-04-25T13:16:19.700Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Vệ sinh chân sạc tai nghe và case, test kết nối",
+        "timestamp": "2026-04-25T13:16:20.350Z"
+      },
+      {
+        "status": "completed",
+        "note": "Tai trái sạc bình thường, ANC hoạt động tốt",
+        "timestamp": "2026-04-25T13:16:23.446Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận tai nghe",
+        "timestamp": "2026-04-25T13:16:24.707Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:19.701Z",
+    "createdAt": "2026-04-25T13:16:19.702Z",
+    "updatedAt": "2026-04-25T13:16:24.708Z"
+  },
+  {
+    "_id": "69ecbea9424aebfe591be0cc",
+    "warrantyId": "69e333a50675bed8e47009f0",
+    "serialNumber": "W20-SON-WH5-020",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "delivered",
     "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:04.606Z",
-    "createdAt": "2026-04-18T07:55:04.609Z",
-    "updatedAt": "2026-04-18T07:55:04.609Z"
+    "cost": 850000,
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Đệm tai (ear cushion) bị bong tróc da, lộ foam bên trong",
+        "timestamp": "2026-04-25T13:16:25.365Z"
+      },
+      {
+        "status": "waiting_parts",
+        "note": "Đặt đệm tai chính hãng Sony",
+        "timestamp": "2026-04-25T13:16:26.026Z"
+      },
+      {
+        "status": "fixing",
+        "note": "Thay cặp đệm tai mới",
+        "timestamp": "2026-04-25T13:16:26.683Z"
+      },
+      {
+        "status": "completed",
+        "note": "Đệm tai mới êm ái, cách âm tốt",
+        "timestamp": "2026-04-25T13:16:29.769Z"
+      },
+      {
+        "status": "delivered",
+        "note": "Khách nhận tai nghe",
+        "timestamp": "2026-04-25T13:16:30.424Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:25.366Z",
+    "createdAt": "2026-04-25T13:16:25.366Z",
+    "updatedAt": "2026-04-25T13:16:30.424Z"
   },
   {
-    "_id": "69e338d94b07729e82f19877",
-    "warrantyId": "69e332610675bed8e4700960",
-    "serialNumber": "W02-APL-IP15-002",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay pin, hao mòn tự nhiên sau 18 tháng sử dụng",
+    "_id": "69ecbeaf424aebfe591be0d7",
+    "warrantyId": "69e9d798652314eaef080238",
+    "serialNumber": "W21-MAR-EMB-021",
+    "technicianWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "currentStatus": "pending",
     "isWarrantyCovered": true,
-    "status": "done",
     "cost": 0,
-    "repairDate": "2026-04-18T07:55:05.139Z",
-    "createdAt": "2026-04-18T07:55:05.141Z",
-    "updatedAt": "2026-04-18T07:55:05.141Z"
-  },
-  {
-    "_id": "69e338d94b07729e82f1987a",
-    "warrantyId": "69e3326d0675bed8e4700968",
-    "serialNumber": "W03-APL-IP14P-003",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Vệ sinh quạt tản nhiệt, thay keo tản nhiệt CPU",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:05.719Z",
-    "createdAt": "2026-04-18T07:55:05.720Z",
-    "updatedAt": "2026-04-18T07:55:05.720Z"
-  },
-  {
-    "_id": "69e338da4b07729e82f1987d",
-    "warrantyId": "69e332860675bed8e4700970",
-    "serialNumber": "W04-SAM-S24U-004",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay màn hình cảm ứng bị lỗi cảm ứng",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:06.278Z",
-    "createdAt": "2026-04-18T07:55:06.278Z",
-    "updatedAt": "2026-04-18T07:55:06.278Z"
-  },
-  {
-    "_id": "69e338da4b07729e82f19880",
-    "warrantyId": "69e332930675bed8e4700978",
-    "serialNumber": "W05-SAM-ZF5-005",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Lỗi không nhận SIM, vệ sinh khay SIM và chân tiếp xúc",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:06.812Z",
-    "createdAt": "2026-04-18T07:55:06.813Z",
-    "updatedAt": "2026-04-18T07:55:06.813Z"
-  },
-  {
-    "_id": "69e338db4b07729e82f19883",
-    "warrantyId": "69e332a00675bed8e4700980",
-    "serialNumber": "W06-SAM-A54-006",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Bảo dưỡng định kỳ, vệ sinh máy",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:07.375Z",
-    "createdAt": "2026-04-18T07:55:07.376Z",
-    "updatedAt": "2026-04-18T07:55:07.376Z"
-  },
-  {
-    "_id": "69e338db4b07729e82f19886",
-    "warrantyId": "69e332b40675bed8e4700988",
-    "serialNumber": "W07-OPP-R10P-007",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay ổ cứng HDD sang SSD (nâng cấp có tính phí)",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:07.892Z",
-    "createdAt": "2026-04-18T07:55:07.893Z",
-    "updatedAt": "2026-04-18T07:55:07.893Z"
-  },
-  {
-    "_id": "69e338dc4b07729e82f19889",
-    "warrantyId": "69e332c10675bed8e4700990",
-    "serialNumber": "W08-XIA-14P-008",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay mặt kính đồng hồ bị trầy xước nặng",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:08.444Z",
-    "createdAt": "2026-04-18T07:55:08.447Z",
-    "updatedAt": "2026-04-18T07:55:08.447Z"
-  },
-  {
-    "_id": "69e338dd4b07729e82f1988c",
-    "warrantyId": "69e332cd0675bed8e4700998",
-    "serialNumber": "W09-APL-MBP16-009",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Thay dây đeo đồng hồ bị đứt",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:09.163Z",
-    "createdAt": "2026-04-18T07:55:09.164Z",
-    "updatedAt": "2026-04-18T07:55:09.164Z"
-  },
-  {
-    "_id": "69e338dd4b07729e82f19890",
-    "warrantyId": "69e332e60675bed8e47009a8",
-    "serialNumber": "W11-APL-IPDPM2-011",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Vệ sinh, thay mới đệm tai bị bong tróc",
-    "isWarrantyCovered": false,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:09.771Z",
-    "createdAt": "2026-04-18T07:55:09.772Z",
-    "updatedAt": "2026-04-18T07:55:09.772Z"
-  },
-  {
-    "_id": "69e338de4b07729e82f19893",
-    "warrantyId": "69e3330c0675bed8e47009b0",
-    "serialNumber": "W12-DEL-XPS15-012",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Sửa lỗi màn hình bị nhấp nháy",
-    "isWarrantyCovered": true,
-    "status": "pending",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:10.333Z",
-    "createdAt": "2026-04-18T07:55:10.334Z",
-    "updatedAt": "2026-04-18T07:55:10.334Z"
-  },
-  {
-    "_id": "69e338de4b07729e82f19896",
-    "warrantyId": "69e333210675bed8e47009b8",
-    "serialNumber": "W13-ASU-ROG-013",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Máy hút yếu, vệ sinh bộ lọc và kiểm tra động cơ",
-    "isWarrantyCovered": true,
-    "status": "in_progress",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:10.884Z",
-    "createdAt": "2026-04-18T07:55:10.885Z",
-    "updatedAt": "2026-04-18T07:55:10.885Z"
-  },
-  {
-    "_id": "69e338df4b07729e82f19899",
-    "warrantyId": "69e3332f0675bed8e47009c0",
-    "serialNumber": "W14-LEN-LP5-014",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Bản lề gập bị kêu, tra keo và vệ sinh bản lề",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:11.395Z",
-    "createdAt": "2026-04-18T07:55:11.396Z",
-    "updatedAt": "2026-04-18T07:55:11.396Z"
-  },
-  {
-    "_id": "69e338df4b07729e82f1989c",
-    "warrantyId": "69e333480675bed8e47009c8",
-    "serialNumber": "W15-APL-AW9-015",
-    "technicianWallet": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "repairContent": "Camera bị mờ, vệ sinh lens và cập nhật firmware",
-    "isWarrantyCovered": true,
-    "status": "done",
-    "cost": 0,
-    "repairDate": "2026-04-18T07:55:11.976Z",
-    "createdAt": "2026-04-18T07:55:11.977Z",
-    "updatedAt": "2026-04-18T07:55:11.977Z"
+    "timeline": [
+      {
+        "status": "pending",
+        "note": "Bluetooth ngắt kết nối liên tục sau 5-10 phút phát nhạc",
+        "timestamp": "2026-04-25T13:16:31.076Z"
+      }
+    ],
+    "repairDate": "2026-04-25T13:16:31.076Z",
+    "createdAt": "2026-04-25T13:16:31.077Z",
+    "updatedAt": "2026-04-25T13:16:31.077Z"
   }
 ]

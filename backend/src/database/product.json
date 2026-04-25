@@ -12,7 +12,7 @@
     "description": "iPhone 15 Pro Max cao cấp với chip A17 Pro, màn hình Super Retina XDR, camera tele 5x.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:33.802Z",
-    "updatedAt": "2026-04-18T05:26:33.802Z"
+    "updatedAt": "2026-04-21T13:24:38.106Z"
   },
   {
     "_id": "69e3160b75e76acb421a6c05",
@@ -27,7 +27,7 @@
     "description": "iPhone 15 với Dynamic Island, camera 48MP, sạc USB-C.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:35.992Z",
-    "updatedAt": "2026-04-18T05:26:35.992Z"
+    "updatedAt": "2026-04-18T08:03:50.954Z"
   },
   {
     "_id": "69e3160e75e76acb421a6c08",
@@ -42,7 +42,7 @@
     "description": "iPhone 14 Pro với màn hình Always-On, Dynamic Island, camera chính 48MP.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:38.359Z",
-    "updatedAt": "2026-04-18T05:26:38.359Z"
+    "updatedAt": "2026-04-18T08:03:51.146Z"
   },
   {
     "_id": "69e3161075e76acb421a6c0b",
@@ -57,7 +57,7 @@
     "description": "Galaxy S24 Ultra với AI thông minh, bút S Pen, camera 200MP, khung Titan.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:40.511Z",
-    "updatedAt": "2026-04-18T05:26:40.511Z"
+    "updatedAt": "2026-04-18T08:03:51.246Z"
   },
   {
     "_id": "69e3161375e76acb421a6c0e",
@@ -72,7 +72,7 @@
     "description": "Điện thoại gập cao cấp, màn hình chính 7.6 inch Dynamic AMOLED 2X.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:43.131Z",
-    "updatedAt": "2026-04-18T05:26:43.131Z"
+    "updatedAt": "2026-04-18T08:03:51.330Z"
   },
   {
     "_id": "69e3161575e76acb421a6c11",
@@ -87,7 +87,7 @@
     "description": "Galaxy A54 tầm trung với màn hình Super AMOLED 120Hz, camera 50MP OIS.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:45.257Z",
-    "updatedAt": "2026-04-18T05:26:45.257Z"
+    "updatedAt": "2026-04-18T08:03:51.459Z"
   },
   {
     "_id": "69e3161775e76acb421a6c14",
@@ -102,7 +102,7 @@
     "description": "Oppo Reno 10 Pro với camera tele 32MP, sạc nhanh SUPERVOOC 67W.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:47.391Z",
-    "updatedAt": "2026-04-18T05:26:47.391Z"
+    "updatedAt": "2026-04-18T08:03:51.526Z"
   },
   {
     "_id": "69e3161975e76acb421a6c17",
@@ -117,7 +117,7 @@
     "description": "Xiaomi 14 Pro với camera Leica, màn hình AMOLED 120Hz, HyperOS.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:49.574Z",
-    "updatedAt": "2026-04-18T05:26:49.574Z"
+    "updatedAt": "2026-04-18T08:03:51.639Z"
   },
   {
     "_id": "69e3161b75e76acb421a6c1a",
@@ -132,7 +132,7 @@
     "description": "MacBook Pro 16 inch mạnh mẽ nhất với chip M3 Max, pin siêu trâu, màn hình Liquid Retina XDR.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:51.818Z",
-    "updatedAt": "2026-04-18T05:26:51.818Z"
+    "updatedAt": "2026-04-18T08:03:51.750Z"
   },
   {
     "_id": "69e3161d75e76acb421a6c1d",
@@ -147,7 +147,7 @@
     "description": "MacBook Air 15 inch siêu mỏng nhẹ, chip M2, pin cả ngày.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:53.957Z",
-    "updatedAt": "2026-04-18T05:26:53.957Z"
+    "updatedAt": "2026-04-18T08:03:51.826Z"
   },
   {
     "_id": "69e3162075e76acb421a6c20",
@@ -162,7 +162,7 @@
     "description": "iPad Pro 12.9 inch với màn hình Liquid Retina XDR, chip M2, hỗ trợ Apple Pencil hover.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:56.091Z",
-    "updatedAt": "2026-04-18T05:26:56.091Z"
+    "updatedAt": "2026-04-18T08:03:51.932Z"
   },
   {
     "_id": "69e3162275e76acb421a6c23",
@@ -177,7 +177,7 @@
     "description": "Dell XPS 15 cao cấp với màn hình OLED 3.5K, viền siêu mỏng, hiệu năng mạnh mẽ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:26:58.508Z",
-    "updatedAt": "2026-04-18T05:26:58.508Z"
+    "updatedAt": "2026-04-18T08:03:52.007Z"
   },
   {
     "_id": "69e3162475e76acb421a6c26",
@@ -192,7 +192,7 @@
     "description": "Laptop gaming Asus ROG Strix G16 với màn hình 165Hz, tản nhiệt quạt hơi.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:00.977Z",
-    "updatedAt": "2026-04-18T05:27:00.977Z"
+    "updatedAt": "2026-04-18T08:03:52.117Z"
   },
   {
     "_id": "69e3162775e76acb421a6c29",
@@ -207,7 +207,7 @@
     "description": "Lenovo Legion Pro 5 với chip AMD Ryzen 7, màn hình 165Hz, phím RGB.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:03.134Z",
-    "updatedAt": "2026-04-18T05:27:03.134Z"
+    "updatedAt": "2026-04-18T08:03:52.213Z"
   },
   {
     "_id": "69e3162975e76acb421a6c2c",
@@ -222,7 +222,7 @@
     "description": "Apple Watch Series 9 với chip S9 mới, màn hình luôn bật, tính năng Double Tap.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:05.365Z",
-    "updatedAt": "2026-04-18T05:27:05.365Z"
+    "updatedAt": "2026-04-18T08:03:52.304Z"
   },
   {
     "_id": "69e3162b75e76acb421a6c2f",
@@ -237,7 +237,7 @@
     "description": "Apple Watch Ultra 2 bền bỉ, lặn sâu 40m, định vị chính xác, pin siêu trâu.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:07.464Z",
-    "updatedAt": "2026-04-18T05:27:07.464Z"
+    "updatedAt": "2026-04-18T08:03:52.416Z"
   },
   {
     "_id": "69e3162d75e76acb421a6c32",
@@ -252,7 +252,7 @@
     "description": "Đồng hồ thông minh cao cấp với khung Titan, khả năng lặn sâu, pin trâu, nhiều tính năng sức khỏe.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:09.581Z",
-    "updatedAt": "2026-04-18T05:27:09.581Z"
+    "updatedAt": "2026-04-18T08:03:52.498Z"
   },
   {
     "_id": "69e3162f75e76acb421a6c35",
@@ -267,7 +267,7 @@
     "description": "Garmin Fenix 7X với kính Sapphire, sạc năng lượng mặt trời, GPS đa tần số.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:11.814Z",
-    "updatedAt": "2026-04-18T05:27:11.814Z"
+    "updatedAt": "2026-04-18T08:03:52.579Z"
   },
   {
     "_id": "69e3163175e76acb421a6c38",
@@ -282,7 +282,7 @@
     "description": "AirPods Pro 2 với chip H2, chống ồn chủ động gấp đôi, âm thanh không gian.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:13.913Z",
-    "updatedAt": "2026-04-18T05:27:13.913Z"
+    "updatedAt": "2026-04-18T08:03:52.738Z"
   },
   {
     "_id": "69e3163475e76acb421a6c3b",
@@ -297,7 +297,7 @@
     "description": "Tai nghe chống ồn tốt nhất thị trường, âm thanh Hi-Res, đeo êm ái.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:16.079Z",
-    "updatedAt": "2026-04-18T05:27:16.079Z"
+    "updatedAt": "2026-04-18T08:03:52.819Z"
   },
   {
     "_id": "69e3163675e76acb421a6c3e",
@@ -312,7 +312,7 @@
     "description": "Loa Bluetooth Marshall Emberton với thiết kế cổ điển, âm thanh mạnh mẽ, pin 20 giờ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:18.199Z",
-    "updatedAt": "2026-04-18T05:27:18.199Z"
+    "updatedAt": "2026-04-18T08:03:52.918Z"
   },
   {
     "_id": "69e3163875e76acb421a6c41",
@@ -327,7 +327,7 @@
     "description": "Tivi Samsung QLED 65 inch với màu sắc rực rỡ, viền mỏng, hệ điều hành Tizen.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:20.432Z",
-    "updatedAt": "2026-04-18T05:27:20.432Z"
+    "updatedAt": "2026-04-18T08:03:53.061Z"
   },
   {
     "_id": "69e3163a75e76acb421a6c44",
@@ -342,7 +342,7 @@
     "description": "Tủ lạnh LG Inverter 500 lít, tiết kiệm điện, công nghệ Smart Diagnosis.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:22.682Z",
-    "updatedAt": "2026-04-18T05:27:22.682Z"
+    "updatedAt": "2026-04-18T08:03:53.217Z"
   },
   {
     "_id": "69e3163c75e76acb421a6c47",
@@ -357,7 +357,7 @@
     "description": "Máy hút bụi Dyson V15 Absolute với tia laser phát hiện bụi, công suất mạnh mẽ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:24.926Z",
-    "updatedAt": "2026-04-18T05:27:24.926Z"
+    "updatedAt": "2026-04-18T08:03:53.318Z"
   },
   {
     "_id": "69e3163f75e76acb421a6c4a",
@@ -372,7 +372,7 @@
     "description": "Galaxy S24 Plus màn hình 6.7 inch, pin 4900mAh, AI thông minh.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:27.275Z",
-    "updatedAt": "2026-04-18T05:27:27.275Z"
+    "updatedAt": "2026-04-18T08:03:53.423Z"
   },
   {
     "_id": "69e3164175e76acb421a6c4d",
@@ -387,7 +387,7 @@
     "description": "Điện thoại gập thế hệ mới, mỏng nhẹ hơn, màn hình 7.6 inch.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:29.368Z",
-    "updatedAt": "2026-04-18T05:27:29.368Z"
+    "updatedAt": "2026-04-18T08:03:53.506Z"
   },
   {
     "_id": "69e3164375e76acb421a6c50",
@@ -402,7 +402,7 @@
     "description": "Galaxy A35 tầm trung với màn hình Super AMOLED 120Hz, camera chính 50MP.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:31.655Z",
-    "updatedAt": "2026-04-18T05:27:31.655Z"
+    "updatedAt": "2026-04-18T08:03:53.620Z"
   },
   {
     "_id": "69e3164675e76acb421a6c53",
@@ -417,7 +417,7 @@
     "description": "Galaxy A55 khung nhôm, màn hình 6.6 inch, camera 50MP OIS.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:34.388Z",
-    "updatedAt": "2026-04-18T05:27:34.388Z"
+    "updatedAt": "2026-04-18T08:03:53.779Z"
   },
   {
     "_id": "69e3164875e76acb421a6c56",
@@ -432,7 +432,7 @@
     "description": "Galaxy F55 thiết kế da thuần chay, pin 5000mAh, sạc nhanh 45W.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:36.632Z",
-    "updatedAt": "2026-04-18T05:27:36.632Z"
+    "updatedAt": "2026-04-18T08:03:53.944Z"
   },
   {
     "_id": "69e3164a75e76acb421a6c59",
@@ -447,7 +447,7 @@
     "description": "Oppo Find X7 với camera Hasselblad, chip Dimensity 9300, sạc nhanh 100W.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:38.835Z",
-    "updatedAt": "2026-04-18T05:27:38.835Z"
+    "updatedAt": "2026-04-18T08:03:54.033Z"
   },
   {
     "_id": "69e3164c75e76acb421a6c5c",
@@ -462,7 +462,7 @@
     "description": "Oppo Find X7 Ultra camera tele kép, màn hình 2K 120Hz, sạc 100W.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:40.951Z",
-    "updatedAt": "2026-04-18T05:27:40.951Z"
+    "updatedAt": "2026-04-18T08:03:54.108Z"
   },
   {
     "_id": "69e3164f75e76acb421a6c5f",
@@ -477,7 +477,7 @@
     "description": "Điện thoại gập Oppo Find N3, bản lề siêu bền, camera Hasselblad.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:43.092Z",
-    "updatedAt": "2026-04-18T05:27:43.092Z"
+    "updatedAt": "2026-04-18T08:03:54.178Z"
   },
   {
     "_id": "69e3165175e76acb421a6c62",
@@ -492,7 +492,7 @@
     "description": "Xiaomi 13T Pro với camera Leica, sạc nhanh 120W, màn hình 144Hz.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:45.564Z",
-    "updatedAt": "2026-04-18T05:27:45.564Z"
+    "updatedAt": "2026-04-18T08:03:54.286Z"
   },
   {
     "_id": "69e3165375e76acb421a6c65",
@@ -507,7 +507,7 @@
     "description": "Điện thoại gập Xiaomi Mix Fold 3, mỏng nhẹ, camera Leica zoom quang 5x.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:47.691Z",
-    "updatedAt": "2026-04-18T05:27:47.691Z"
+    "updatedAt": "2026-04-18T08:03:54.416Z"
   },
   {
     "_id": "69e3165875e76acb421a6c68",
@@ -522,7 +522,7 @@
     "description": "AirPods 3 với thiết kế mới, kháng nước, âm thanh không gian, pin 6 giờ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:52.103Z",
-    "updatedAt": "2026-04-18T05:27:52.103Z"
+    "updatedAt": "2026-04-18T08:03:54.541Z"
   },
   {
     "_id": "69e3165a75e76acb421a6c6b",
@@ -537,7 +537,7 @@
     "description": "AirPods Pro 2 với cổng sạc USB-C, chip H2, chống ồn chủ động gấp đôi.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:54.450Z",
-    "updatedAt": "2026-04-18T05:27:54.450Z"
+    "updatedAt": "2026-04-18T08:03:54.622Z"
   },
   {
     "_id": "69e3165c75e76acb421a6c6e",
@@ -552,7 +552,7 @@
     "description": "AirPods 2 với chip H1, kết nối nhanh, thời lượng pin 5 giờ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:56.579Z",
-    "updatedAt": "2026-04-18T05:27:56.579Z"
+    "updatedAt": "2026-04-18T08:03:54.741Z"
   },
   {
     "_id": "69e3165e75e76acb421a6c71",
@@ -567,7 +567,7 @@
     "description": "AirPods Pro 2 với cổng sạc Lightning, chip H2, chống ồn chủ động.",
     "isActive": true,
     "createdAt": "2026-04-18T05:27:58.729Z",
-    "updatedAt": "2026-04-18T05:27:58.729Z"
+    "updatedAt": "2026-04-18T08:03:54.898Z"
   },
   {
     "_id": "69e3166175e76acb421a6c74",
@@ -582,7 +582,7 @@
     "description": "AirPods Max USB-C với âm thanh Lossless, đệm tai êm ái, pin 20 giờ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:01.025Z",
-    "updatedAt": "2026-04-18T05:28:01.025Z"
+    "updatedAt": "2026-04-18T08:03:54.975Z"
   },
   {
     "_id": "69e3166375e76acb421a6c77",
@@ -597,7 +597,7 @@
     "description": "AirPods 4 phiên bản cơ bản, hộp sạc USB-C, thiết kế mới, pin 5 giờ.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:03.131Z",
-    "updatedAt": "2026-04-18T05:28:03.131Z"
+    "updatedAt": "2026-04-18T08:03:55.047Z"
   },
   {
     "_id": "69e3166575e76acb421a6c7a",
@@ -612,7 +612,7 @@
     "description": "iPad Pro 11 inch với chip M4, màn hình OLED, hỗ trợ Apple Pencil Pro.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:05.698Z",
-    "updatedAt": "2026-04-18T05:28:05.698Z"
+    "updatedAt": "2026-04-18T08:03:55.143Z"
   },
   {
     "_id": "69e3166775e76acb421a6c7d",
@@ -627,7 +627,7 @@
     "description": "iPad Pro 13 inch với màn hình Ultra Retina XDR, chip M4, pin siêu trâu.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:07.969Z",
-    "updatedAt": "2026-04-18T05:28:07.969Z"
+    "updatedAt": "2026-04-18T08:03:55.239Z"
   },
   {
     "_id": "69e3166a75e76acb421a6c80",
@@ -642,7 +642,7 @@
     "description": "iPad Air 13 inch với chip M2, màn hình Liquid Retina, hỗ trợ Apple Pencil.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:10.111Z",
-    "updatedAt": "2026-04-18T05:28:10.111Z"
+    "updatedAt": "2026-04-18T08:03:55.308Z"
   },
   {
     "_id": "69e3166c75e76acb421a6c83",
@@ -657,7 +657,7 @@
     "description": "iPad Air 11 inch nhẹ, chip M2, màn hình Liquid Retina, 6 loa stereo.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:12.337Z",
-    "updatedAt": "2026-04-18T05:28:12.337Z"
+    "updatedAt": "2026-04-18T08:03:55.442Z"
   },
   {
     "_id": "69e3166e75e76acb421a6c86",
@@ -672,7 +672,7 @@
     "description": "iPad Gen 10 với màn hình 10.9 inch, cổng USB-C, thiết kế mới.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:14.740Z",
-    "updatedAt": "2026-04-18T05:28:14.740Z"
+    "updatedAt": "2026-04-18T08:03:55.533Z"
   },
   {
     "_id": "69e3167075e76acb421a6c89",
@@ -687,7 +687,7 @@
     "description": "iPad mini 7 với chip A17 Pro, màn hình 8.3 inch, hỗ trợ Apple Pencil Pro.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:16.884Z",
-    "updatedAt": "2026-04-18T05:28:16.884Z"
+    "updatedAt": "2026-04-18T08:03:55.594Z"
   },
   {
     "_id": "69e3167375e76acb421a6c8c",
@@ -702,7 +702,7 @@
     "description": "iPad Pro 12.9 inch với màn hình mini-LED XDR, chip M2, camera LiDAR.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:19.029Z",
-    "updatedAt": "2026-04-18T05:28:19.029Z"
+    "updatedAt": "2026-04-18T08:03:55.652Z"
   },
   {
     "_id": "69e3167575e76acb421a6c8f",
@@ -717,7 +717,7 @@
     "description": "iPad Pro 11 inch với chip M2, màn hình Liquid Retina, hỗ trợ hover.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:21.174Z",
-    "updatedAt": "2026-04-18T05:28:21.174Z"
+    "updatedAt": "2026-04-18T08:03:55.723Z"
   },
   {
     "_id": "69e3167775e76acb421a6c92",
@@ -732,7 +732,7 @@
     "description": "iPad Gen 9 với chip A13, màn hình Retina, hỗ trợ Apple Pencil thế hệ 1.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:23.646Z",
-    "updatedAt": "2026-04-18T05:28:23.646Z"
+    "updatedAt": "2026-04-18T08:03:55.854Z"
   },
   {
     "_id": "69e3167975e76acb421a6c95",
@@ -747,6 +747,34 @@
     "description": "iPad Air với chip M1, màn hình 10.9 inch, Touch ID, 5G optional.",
     "isActive": true,
     "createdAt": "2026-04-18T05:28:25.739Z",
-    "updatedAt": "2026-04-18T05:28:25.739Z"
+    "updatedAt": "2026-04-18T08:03:55.934Z"
+  },
+  {
+    "_id": "69e9e3dd652314eaef0802a8",
+    "productCode": "SONY-TV-OLED-65",
+    "productName": "Sony Bravia OLED 65 inch 4K",
+    "brand": "Sony",
+    "color": "Đen",
+    "config": "65 inch, 4K OLED, 120Hz, Google TV",
+    "warrantyMonths": 24,
+    "price": 45990000,
+    "description": "Smart TV Sony OLED 65 inch cao cấp, màn hình sắc nét đen sâu thẳm, tần số quét 120Hz mượt mà tích hợp Google TV.",
+    "isActive": true,
+    "createdAt": "2026-04-23T09:18:21.866Z",
+    "updatedAt": "2026-04-23T09:18:21.866Z"
+  },
+  {
+    "_id": "69ea425d32c3ea77b974a214",
+    "productCode": "HUA-M60P-512-GRN",
+    "productName": "Huawei Mate 60 Pro",
+    "brand": "Huawei",
+    "color": "Xanh ngọc",
+    "config": "12GB RAM, 512GB Storage, Kirin 9000S",
+    "warrantyMonths": 12,
+    "price": 26990000,
+    "description": "Flagship Huawei Mate 60 Pro với thiết kế mặt lưng độc đáo, kết nối vệ tinh và chạy hệ điều hành HarmonyOS mượt mà.",
+    "isActive": true,
+    "createdAt": "2026-04-23T16:01:33.901Z",
+    "updatedAt": "2026-04-23T16:01:33.901Z"
   }
 ]

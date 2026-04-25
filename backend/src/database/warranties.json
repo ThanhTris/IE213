@@ -13,7 +13,7 @@
     "mintedAt": "2026-04-18T07:27:24.460Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:27:07.981Z",
-    "updatedAt": "2026-04-18T07:27:24.461Z"
+    "updatedAt": "2026-04-18T08:03:56.026Z"
   },
   {
     "_id": "69e332610675bed8e4700960",
@@ -29,7 +29,7 @@
     "mintedAt": "2026-04-18T07:27:36.927Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:27:29.329Z",
-    "updatedAt": "2026-04-18T07:27:36.928Z"
+    "updatedAt": "2026-04-18T08:03:56.094Z"
   },
   {
     "_id": "69e3326d0675bed8e4700968",
@@ -45,7 +45,7 @@
     "mintedAt": "2026-04-18T07:28:01.805Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:27:41.403Z",
-    "updatedAt": "2026-04-18T07:28:01.806Z"
+    "updatedAt": "2026-04-18T08:03:56.176Z"
   },
   {
     "_id": "69e332860675bed8e4700970",
@@ -61,7 +61,7 @@
     "mintedAt": "2026-04-18T07:28:13.965Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:28:06.681Z",
-    "updatedAt": "2026-04-18T07:28:13.965Z"
+    "updatedAt": "2026-04-18T08:03:56.262Z"
   },
   {
     "_id": "69e332930675bed8e4700978",
@@ -77,7 +77,7 @@
     "mintedAt": "2026-04-18T07:28:26.938Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:28:19.206Z",
-    "updatedAt": "2026-04-18T07:28:26.939Z"
+    "updatedAt": "2026-04-18T08:03:56.345Z"
   },
   {
     "_id": "69e332a00675bed8e4700980",
@@ -93,7 +93,7 @@
     "mintedAt": "2026-04-18T07:28:48.066Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:28:32.120Z",
-    "updatedAt": "2026-04-18T07:28:48.067Z"
+    "updatedAt": "2026-04-18T08:03:56.848Z"
   },
   {
     "_id": "69e332b40675bed8e4700988",
@@ -109,7 +109,7 @@
     "mintedAt": "2026-04-18T07:29:00.642Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:28:52.931Z",
-    "updatedAt": "2026-04-18T07:29:00.643Z"
+    "updatedAt": "2026-04-18T08:03:56.928Z"
   },
   {
     "_id": "69e332c10675bed8e4700990",
@@ -125,7 +125,7 @@
     "mintedAt": "2026-04-18T07:29:13.183Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:29:05.582Z",
-    "updatedAt": "2026-04-18T07:29:13.183Z"
+    "updatedAt": "2026-04-18T08:03:57.016Z"
   },
   {
     "_id": "69e332cd0675bed8e4700998",
@@ -141,7 +141,7 @@
     "mintedAt": "2026-04-18T07:29:25.264Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:29:17.982Z",
-    "updatedAt": "2026-04-18T07:29:25.264Z"
+    "updatedAt": "2026-04-18T08:03:57.272Z"
   },
   {
     "_id": "69e332d90675bed8e47009a0",
@@ -157,7 +157,7 @@
     "mintedAt": "2026-04-18T07:29:37.421Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:29:29.978Z",
-    "updatedAt": "2026-04-18T07:29:37.421Z"
+    "updatedAt": "2026-04-18T08:03:57.341Z"
   },
   {
     "_id": "69e332e60675bed8e47009a8",
@@ -173,7 +173,7 @@
     "mintedAt": "2026-04-18T07:30:16.108Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:29:42.459Z",
-    "updatedAt": "2026-04-18T07:30:16.108Z"
+    "updatedAt": "2026-04-18T08:03:57.455Z"
   },
   {
     "_id": "69e3330c0675bed8e47009b0",
@@ -189,7 +189,7 @@
     "mintedAt": "2026-04-18T07:30:36.691Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:30:20.714Z",
-    "updatedAt": "2026-04-18T07:30:36.692Z"
+    "updatedAt": "2026-04-18T08:03:57.545Z"
   },
   {
     "_id": "69e333210675bed8e47009b8",
@@ -205,7 +205,7 @@
     "mintedAt": "2026-04-18T07:30:48.507Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:30:41.207Z",
-    "updatedAt": "2026-04-18T07:30:48.507Z"
+    "updatedAt": "2026-04-18T08:03:57.614Z"
   },
   {
     "_id": "69e3332f0675bed8e47009c0",
@@ -221,7 +221,7 @@
     "mintedAt": "2026-04-18T07:31:16.084Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:30:55.581Z",
-    "updatedAt": "2026-04-18T07:31:16.084Z"
+    "updatedAt": "2026-04-18T08:03:57.688Z"
   },
   {
     "_id": "69e333480675bed8e47009c8",
@@ -237,7 +237,7 @@
     "mintedAt": "2026-04-18T07:31:36.888Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:31:20.704Z",
-    "updatedAt": "2026-04-18T07:31:36.889Z"
+    "updatedAt": "2026-04-18T08:03:57.758Z"
   },
   {
     "_id": "69e3335d0675bed8e47009d0",
@@ -253,7 +253,7 @@
     "mintedAt": "2026-04-18T07:31:48.836Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:31:41.508Z",
-    "updatedAt": "2026-04-18T07:31:48.837Z"
+    "updatedAt": "2026-04-18T08:03:57.855Z"
   },
   {
     "_id": "69e333690675bed8e47009d8",
@@ -269,7 +269,7 @@
     "mintedAt": "2026-04-18T07:32:00.561Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:31:53.265Z",
-    "updatedAt": "2026-04-18T07:32:00.561Z"
+    "updatedAt": "2026-04-18T08:03:57.947Z"
   },
   {
     "_id": "69e333750675bed8e47009e0",
@@ -285,7 +285,7 @@
     "mintedAt": "2026-04-18T07:32:25.858Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:32:05.446Z",
-    "updatedAt": "2026-04-18T07:32:25.859Z"
+    "updatedAt": "2026-04-18T08:03:58.027Z"
   },
   {
     "_id": "69e3338e0675bed8e47009e8",
@@ -301,7 +301,7 @@
     "mintedAt": "2026-04-18T07:32:48.954Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:32:30.846Z",
-    "updatedAt": "2026-04-18T07:32:48.955Z"
+    "updatedAt": "2026-04-18T08:03:58.116Z"
   },
   {
     "_id": "69e333a50675bed8e47009f0",
@@ -317,6 +317,22 @@
     "mintedAt": "2026-04-18T07:33:27.902Z",
     "isActive": true,
     "createdAt": "2026-04-18T07:32:53.848Z",
-    "updatedAt": "2026-04-18T07:33:37.028Z"
+    "updatedAt": "2026-04-18T08:03:58.214Z"
+  },
+  {
+    "_id": "69e9d798652314eaef080238",
+    "serialNumber": "W21-MAR-EMB-021",
+    "serialHash": "0x12284d576171210edf8842214d2351e053aeabd07ff19db1e729869989a2f7c3",
+    "productCode": "MAR-EMB-BLK",
+    "ownerWallet": "0x1c20a9c843c4a63d59c2970bf3b061616e8eae26",
+    "tokenId": "26",
+    "txHash": "0x16af7cdf0ad1eef3e1b2970760e0aef83dc69ddf4def127242431a52b8d9375c",
+    "tokenURI": "ipfs://QmW9hfMAQCGk5o5JbkpKJuiV7afu73EbrjW4zK9NzuNKhz",
+    "expiryDate": 1808036758,
+    "status": true,
+    "mintedAt": "2026-04-23T08:26:52.455Z",
+    "isActive": true,
+    "createdAt": "2026-04-23T08:26:00.288Z",
+    "updatedAt": "2026-04-23T08:26:52.459Z"
   }
 ]
