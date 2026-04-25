@@ -275,7 +275,7 @@ function AdminDashboard() {
         const repairs = repairsRes.data || [];
 
         const activeWarranties = warranties.filter(w => w.status === true).length;
-        const completedRepairs = repairs.filter(r => r.status === "completed" || r.status === "done").length;
+        const completedRepairs = repairs.filter(r => r.status === "completed" || r.status === "delivered" || r.status === "done").length;
 
         // 1. Logic for LineChart (Dynamic Last 6 Months)
         const monthNames = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
@@ -335,31 +335,24 @@ function AdminDashboard() {
         }
         setPieData(newPieData);
 
-        // 3. Logic for BarChart (Intelligent Repair Categorization)
-        // 3. Logic for BarChart (Intelligent Repair Categorization)
-        const CATEGORIES = {
-          "Màn hình": ["màn hình", "kính", "cảm ứng", "screen", "display"],
-          "Pin/Nguồn": ["pin", "nguồn", "sạc", "battery", "power"],
-          "Phần cứng": ["main", "board", "chip", "ram", "ssd", "ổ cứng", "loa", "mic"],
-          "Phần mềm": ["phần mềm", "ios", "windows", "cài lại", "software", "unlock"]
-        };
-
         const repairTypeCounts = repairs.reduce((acc, r) => {
-          const content = (r.repairContent || "").toLowerCase();
-          let matched = false;
-          for (const [cat, keywords] of Object.entries(CATEGORIES)) {
-            if (keywords.some(kw => content.includes(kw))) {
-              acc[cat] = (acc[cat] || 0) + 1;
-              matched = true;
-              break;
-            }
-          }
-          if (!matched) acc["Khác"] = (acc["Khác"] || 0) + 1;
+          const type = r.type || "Khác";
+          acc[type] = (acc[type] || 0) + 1;
           return acc;
         }, {});
 
+        const typeTranslations = {
+          "screen": "Màn hình",
+          "battery": "Pin/Nguồn",
+          "hardware": "Phần cứng",
+          "software": "Phần mềm",
+          "camera": "Camera",
+          "other": "Khác",
+          "Khác": "Khác"
+        };
+
         const newBarData = Object.entries(repairTypeCounts).map(([cat, count]) => ({
-          label: cat,
+          label: typeTranslations[cat] || cat,
           value: count
         }));
         setBarData(newBarData);
