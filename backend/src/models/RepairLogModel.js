@@ -15,6 +15,14 @@ const REPAIR_STATUSES = [
   "cancelled",      // Hủy
 ];
 
+const REPAIR_TYPES = [
+  "Màn hình",
+  "Pin/Nguồn",
+  "Phần cứng",
+  "Phần mềm",
+  "Khác",
+];
+
 // Luồng chuyển trạng thái hợp lệ
 // delivered & cancelled là trạng thái kết thúc, không chuyển tiếp
 const VALID_TRANSITIONS = {
@@ -98,6 +106,12 @@ const repairLogSchema = new mongoose.Schema(
       type: [timelineEntrySchema],
       default: [],
     },
+    type: {
+      type: String,
+      enum: REPAIR_TYPES,
+      default: "Khác",
+      index: true,
+    },
     repairDate: { type: Date, default: Date.now, index: true },
   },
   {
@@ -139,4 +153,5 @@ const RepairLog = mongoose.model("RepairLog", repairLogSchema);
 // Export cả hằng số để Controller & Script có thể sử dụng
 module.exports = RepairLog;
 module.exports.REPAIR_STATUSES = REPAIR_STATUSES;
+module.exports.REPAIR_TYPES = REPAIR_TYPES;
 module.exports.VALID_TRANSITIONS = VALID_TRANSITIONS;
