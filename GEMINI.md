@@ -33,14 +33,15 @@
 - Xác định phạm vi công việc (In/Out scope)
 
 **Bước 3 — Tạo Plan (artifact) + Câu hỏi làm rõ**
-- Viết plan theo cấu trúc chuẩn (xem template bên dưới)
-- Liệt kê rõ file nào sẽ thay đổi
-- Đặt tối đa 3–5 câu hỏi nếu còn mơ hồ
-- **DỪNG LẠI, chờ user duyệt**
+- Viết plan theo cấu trúc chuẩn (xem template bên dưới) bằng công cụ tạo **Artifact** (không tạo file vật lý trừ khi được yêu cầu).
+- Liệt kê rõ file nào sẽ thay đổi.
+- Đặt tối đa 3–5 câu hỏi nếu còn mơ hồ.
+- **DỪNG LẠI, chờ user duyệt TRỰC TIẾP TRÊN ARTIFACT**.
+- **Lưu ý quan trọng**: Việc xác nhận và trao đổi về kế hoạch phải được thực hiện thông qua tính năng comment/approve của **Artifact Implementation Plan**, không xác nhận bằng tin nhắn chat thông thường.
 
 **Bước 4 — Chờ xác nhận**
-- Không bắt đầu code khi chưa được user xác nhận
-- Nếu user sửa plan → cập nhật lại và xác nhận lần nữa
+- Không bắt đầu code khi chưa được user xác nhận trên Artifact.
+- Nếu user sửa plan → cập nhật lại nội dung Artifact và chờ xác nhận lần nữa.
 
 **Bước 5 — Tiến hành code**
 - Thực hiện từng bước trong plan
