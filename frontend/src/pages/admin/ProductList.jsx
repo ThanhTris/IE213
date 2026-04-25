@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { productService } from "../../services/productService";
 import { repairService } from "../../services/repairService";
+import { getStatusConfig } from "../../utils/statusStyles";
+
 
 const BASE_CATEGORIES = ["Samsung", "Apple"];
 
@@ -480,10 +482,12 @@ function ProductDetailModal({ product, onClose }) {
                             <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>{new Date(r.repairDate).toLocaleDateString("vi-VN")}</div>
                             <div style={{ 
                                fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 12,
-                               background: r.status === "done" ? "#d1fae5" : "#fee2e2",
-                               color: r.status === "done" ? "#065f46" : "#991b1b"
+                               background: getStatusConfig(r.status).background,
+                               color: getStatusConfig(r.status).color,
+                               border: `1px solid ${getStatusConfig(r.status).borderColor}`,
                             }}>
-                              {r.status === "done" ? "Hoàn tất" : r.status || "Chờ xử lý"}
+                               {getStatusConfig(r.status).label}
+
                             </div>
                           </div>
                           <div style={{ fontSize: 13, color: "#1e293b", fontWeight: 700, lineHeight: 1.4 }}>{r.repairContent}</div>

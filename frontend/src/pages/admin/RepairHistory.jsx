@@ -1,13 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
-import { toast } from "sonner";
-import { repairService } from "../../services/repairService";
+import { getStatusConfig } from "../../utils/statusStyles";
 
-
-const STATUS_STYLES = {
-  completed: { background: "#10b981", color: "white" },
-  fixing: { background: "#f59e0b", color: "white" },
-  pending: { background: "#3b82f6", color: "white" },
-};
 
 function RepairHistory() {
   const [repairs, setRepairs] = useState([]);
@@ -125,10 +117,13 @@ function RepairHistory() {
                     display: "inline-flex", alignItems: "center", gap: 4,
                     borderRadius: 20, padding: "4px 12px",
                     fontSize: 12, fontWeight: 700,
-                    ...STATUS_STYLES[record.status],
+                    background: getStatusConfig(record.status).background,
+                    color: getStatusConfig(record.status).color,
+                    border: `1px solid ${getStatusConfig(record.status).borderColor}`,
                   }}>
-                    {record.status === "completed" ? "Hoàn tất" : record.status === "fixing" ? "Đang sửa" : "Đang chờ"}
+                    {getStatusConfig(record.status).label}
                   </span>
+
                 </td>
               </tr>
             ))}
