@@ -4,6 +4,7 @@ const {
   getRepairLogsBySerialNumber,
   getAllRepairLogs,
   updateRepairLog,
+  getRepairLogsByModel,
 } = require("../controllers/repairLog.controller");
 const {
   authenticate,
@@ -37,11 +38,26 @@ router.patch(
   updateRepairLog,
 );
 
+// Tương thích với FE gọi patch /:id/status
+router.patch(
+  "/:id/status",
+  authenticate,
+  authorize(["admin", "technician"]),
+  updateRepairLog,
+);
+
 // GET    /api/repair-logs/device/:serialNumber — Lịch sử sửa chữa theo thiết bị
 router.get(
   "/device/:serialNumber",
   optionalAuthenticate,
   getRepairLogsBySerialNumber,
+);
+
+// GET    /api/repair-logs/history-by-model/:productCode — Lịch sử sửa chữa theo dòng máy
+router.get(
+  "/history-by-model/:productCode",
+  optionalAuthenticate,
+  getRepairLogsByModel,
 );
 
 module.exports = router;
