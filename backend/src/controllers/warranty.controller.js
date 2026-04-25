@@ -489,6 +489,12 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       });
     }
 
+    // Lấy thêm thông tin sản phẩm
+    const product = await Product.findOne({ productCode: warranty.productCode }).lean();
+    
+    // Lấy thêm thông tin chủ sở hữu
+    const ownerUser = await User.findOne({ walletAddress: warranty.ownerWallet }).lean();
+
     const owner = String(warranty.ownerWallet || "").trim();
     const maskedOwnerWallet =
       owner.length > 10
@@ -501,15 +507,27 @@ const verifyWarrantyBySerialNumber = async (req, res) => {
       data: {
         serialNumber: warranty.serialNumber,
         serialHash: warranty.serialHash,
-        ownerWallet: maskedOwnerWallet,
+        ownerWallet: maskedOwnerWallet, // Giữ mask cho ví
         productCode: warranty.productCode,
         expiryDate: warranty.expiryDate,
+        purchaseDate: warranty.createdAt, // Lấy ngày tạo bảo hành làm ngày mua
         status: warranty.status,
         tokenId: warranty.tokenId,
         tokenURI: warranty.tokenURI,
         txHash: warranty.txHash,
         mintedAt: warranty.mintedAt,
         isMinted: Boolean(warranty.tokenId && warranty.txHash),
+        productInfo: product || {
+          productName: "N/A",
+          brand: "N/A",
+          color: "N/A",
+          config: "N/A",
+          warrantyMonths: 12
+        },
+        ownerInfo: {
+          fullName: ownerUser?.fullName || "Chưa cập nhật",
+          walletAddress: owner // Ví đầy đủ để FE hiển thị nếu cần (hoặc dùng masked)
+        }
       },
     });
   } catch (error) {
