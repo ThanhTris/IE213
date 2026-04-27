@@ -81,6 +81,8 @@ function App() {
 
   const handleLogout = () => {
     clearAuthStorage();
+    // Đảm bảo xóa cả token giả lập trong môi trường Dev
+    sessionStorage.removeItem("bw_dev_role_active");
     setAuth(null);
     navigate("/");
   };
