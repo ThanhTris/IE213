@@ -1,25 +1,33 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 /**
- * ProtectedRoute component - redirects to login if not authenticated
- * or to a default page if the user doesn't have the required role.
+ * ProtectedRoute component - Guards routes based on authentication and roles.
+ * 
+ * @param {boolean} isAuthenticated - Whether the user is logged in
+ * @param {string} userRole - 'admin', 'user', or undefined
+ * @param {string} requiredRole - (Optional) 'admin' if only admins can access
+ * @param {React.ReactNode} children - Component to render if authorized
  */
-function ProtectedRoute({ children, isAuthenticated, userRole, requiredRole }) {
-  const location = useLocation();
-
+const ProtectedRoute = ({ 
+  isAuthenticated, 
+  userRole, 
+  requiredRole, 
+  children 
+}) => {
+  // 1. If not logged in, redirect to auth page
   if (!isAuthenticated) {
-    // Redirect to auth page but save the current location they were trying to go to
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/auth" replace />;
   }
 
-  if (requiredRole && String(userRole || "").toLowerCase() !== String(requiredRole || "").toLowerCase()) {
-    // If user is authenticated but doesn't have the right role
-    // Redirect to their own portal based on their role
-    return <Navigate to={String(userRole || "").toLowerCase() === "admin" ? "/admin" : "/user"} replace />;
+  // 2. If a specific role is required (e.g., 'admin') but user doesn't have it
+  if (requiredRole && userRole !== requiredRole) {
+    // Redirect to home if they don't have the required permission
+    return <Navigate to="/" replace />;
   }
 
+  // 3. Authorized - render the content
   return children;
-}
+};
 
 export default ProtectedRoute;

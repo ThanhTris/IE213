@@ -50,3 +50,6 @@ ehthumbs.db
 # Test artifacts
 junit.xml
 test-results/
+
+# Local workflows & AI context (không push lên repo)
+.gemini/

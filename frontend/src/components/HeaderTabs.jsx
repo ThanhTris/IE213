@@ -12,13 +12,13 @@ function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
   ];
 
   if (role === "admin") {
-    tabs.push({ key: "admin", label: "Admin Portal", path: "/admin" });
+    tabs.push({ key: "admin", label: "Workspace", path: "/admin/workspace" });
   } else if (isAuthenticated && role === "user") {
     tabs.push({ key: "user", label: "User Wallet", path: "/user" });
   }
 
   if (isAuthenticated) {
-    tabs.push({ key: "settings", label: "Settings", path: "/settings" });
+    tabs.push({ key: "account", label: "Tài khoản", path: "/account" });
   }
 
   return (

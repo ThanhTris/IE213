@@ -54,8 +54,14 @@ const toProductResponse = (product, options = {}) => {
     isActive: product.isActive,
   };
 
-  if (includeCreatedAt) safeProduct.createdAt = product.createdAt;
-  if (includeUpdatedAt) safeProduct.updatedAt = product.updatedAt;
+  // Đảm bảo lấy đúng trường thời gian dù là Mongoose Document hay POJO
+  if (includeCreatedAt) safeProduct.createdAt = product.createdAt || product.created_at;
+  if (includeUpdatedAt) safeProduct.updatedAt = product.updatedAt || product.updated_at;
+
+  // Bao gồm thông tin sửa chữa mới nhất nếu có (từ Aggregation)
+  if (product.latestRepair) {
+    safeProduct.latestRepair = product.latestRepair;
+  }
 
   return safeProduct;
 };
@@ -194,24 +200,116 @@ const createProduct = async (req, res, next) => {
 // GET /api/products
 const listProducts = async (req, res, next) => {
   try {
-    const includeInactive = req.query.includeInactive === "true";
+    // Mặc định: Trừ 'user' (khách hàng) ra thì tất cả các role khác (admin, staff, tech...) đều được xem hết để quản lý
+    const filter = (req.user && req.user.role && req.user.role !== "user") ? {} : { isActive: true };
 
-    // Chỉ admin mới được xem cả sản phẩm đã ẩn.
-    if (includeInactive && (!req.user || req.user.role !== "admin")) {
-      return sendError(res, {
-        statusCode: 403,
-        errorCode: "E403_FORBIDDEN",
-        message: "Bạn không có quyền xem sản phẩm đã ẩn",
-      });
+    // Debug context
+    // console.log(`[Database Debug] Current DB: ${mongoose.connection.name}`);
+    // const colls = await mongoose.connection.db.listCollections().toArray();
+    // console.log(`[Database Debug] Collections: ${colls.map(c => c.name).join(", ")}`);
+
+    // Sử dụng Aggregation nguyên bản: Tận dụng cơ chế Array Lookup của MongoDB
+    const products = await Product.aggregate([
+      { $match: filter },
+      // Bước 1: Lấy danh sách bảo hành gắn với productCode
+      {
+        $lookup: {
+          from: "warranties",
+          localField: "productCode",
+          foreignField: "productCode",
+          as: "warrantyDocs",
+        },
+      },
+      // Bước 2: Lấy tất cả lịch sử sửa chữa khớp với các serial trong warrantyDocs
+      {
+        $lookup: {
+          from: "repair_log",
+          localField: "warrantyDocs.serialNumber",
+          foreignField: "serialNumber",
+          as: "allRepairs",
+        },
+      },
+      // Bước 3: Lấy bản ghi mới nhất
+      {
+        $addFields: {
+          latestRepairRaw: {
+            $reduce: {
+              input: "$allRepairs",
+              initialValue: null,
+              in: {
+                $cond: [
+                  { 
+                    $or: [
+                      { $eq: ["$$value", null] },
+                      { $gt: ["$$this.repairDate", "$$value.repairDate"] }
+                    ]
+                  },
+                  "$$this",
+                  "$$value"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          latestRepair: {
+            $cond: [
+              { $eq: ["$latestRepairRaw", null] },
+              null,
+              {
+                $mergeObjects: [
+                  "$latestRepairRaw",
+                  {
+                    repairContent: {
+                      $let: {
+                        vars: {
+                          pendingEntry: {
+                            $filter: {
+                              input: { $ifNull: ["$latestRepairRaw.timeline", []] },
+                              as: "t",
+                              cond: { $eq: ["$$t.status", "pending"] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: [
+                            { $gt: [{ $size: "$$pendingEntry" }, 0] },
+                            { $arrayElemAt: ["$$pendingEntry.note", 0] },
+                            ""
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      { $project: { warrantyDocs: 0, allRepairs: 0, latestRepairRaw: 0 } }
+    ]);
+
+    // Debug log chi tiết để kiểm tra trường thời gian
+    /*
+    if (products.length > 0) {
+      const foundCount = products.filter(p => p.latestRepair).length;
+      const hasTimeCount = products.filter(p => p.createdAt || p.updatedAt).length;
+      console.log(`[Debug] Products: ${products.length}, latestRepair: ${foundCount}, hasTimestamps: ${hasTimeCount}`);
     }
-
-    const filter = includeInactive ? {} : { isActive: true };
-    const products = await Product.find(filter);
+    */
 
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy danh sách sản phẩm thành công",
-      data: products.map((product) => toProductResponse(product)),
+      data: products.map((product) =>
+        toProductResponse(product, {
+          includeCreatedAt: true,
+          includeUpdatedAt: true,
+        }),
+      ),
     });
   } catch (error) {
     return next(error);
@@ -245,7 +343,10 @@ const getProduct = async (req, res, next) => {
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy thông tin sản phẩm thành công",
-      data: toProductResponse(product),
+      data: toProductResponse(product, {
+        includeCreatedAt: true,
+        includeUpdatedAt: true,
+      }),
     });
   } catch (error) {
     return next(error);
@@ -338,6 +439,10 @@ const updateProduct = async (req, res, next) => {
         });
       }
       updates.warrantyMonths = parsedWarrantyMonths;
+    }
+
+    if (updates.isActive !== undefined) {
+      updates.isActive = String(updates.isActive) === "true";
     }
 
     const product = await Product.findOneAndUpdate(

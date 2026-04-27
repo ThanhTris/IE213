@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { apiGetMyProfile, apiUpdateMyProfile } from "../utils/api";
-import "../assets/views/MyProfilePage.css";
+import { userService } from "../services/userService";
+import "../assets/css/MyProfilePage.css";
 
 function MyProfilePage({ auth }) {
   const [profile, setProfile] = useState({
@@ -20,15 +20,15 @@ function MyProfilePage({ auth }) {
       setMessage("");
       setError("");
       try {
-        const { json } = await apiGetMyProfile(auth.token);
-        if (json && json.success) {
+        const res = await userService.getMe();
+        if (res && res.success) {
           setProfile({
-            fullName: json.data?.fullName || "",
-            email: json.data?.email || "",
-            phone: json.data?.phone || "",
+            fullName: res.data?.fullName || "",
+            email: res.data?.email || "",
+            phone: res.data?.phone || "",
           });
         } else {
-          setError(json?.message || "Lỗi tải thông tin cá nhân");
+          setError(res?.message || "Lỗi tải thông tin cá nhân");
         }
       } catch {
         setError("Lỗi kết nối khi tải thông tin");
@@ -51,11 +51,11 @@ function MyProfilePage({ auth }) {
     setError("");
 
     try {
-      const { json } = await apiUpdateMyProfile(auth.token, profile);
-      if (json && json.success) {
+      const res = await userService.updateProfile(profile);
+      if (res && res.success) {
         setMessage("Cập nhật thông tin thành công!");
       } else {
-        setError(json?.message || "Cập nhật thông tin thất bại");
+        setError(res?.message || "Cập nhật thông tin thất bại");
       }
     } catch {
       setError("Lỗi kết nối khi cập nhật thông tin");

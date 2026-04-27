@@ -2,6 +2,66 @@ const mongoose = require("mongoose");
 
 const EVM_ADDRESS_REGEX = /^0x[a-f0-9]{40}$/;
 
+// ──────────────────────────────────────────────────────────
+// Bộ enum trạng thái mới – mô phỏng quy trình sửa chữa
+// tương tự các ứng dụng theo dõi giao hàng
+// ──────────────────────────────────────────────────────────
+const REPAIR_STATUSES = [
+  "pending",        // Tiếp nhận
+  "waiting_parts",  // Chờ linh kiện
+  "fixing",         // Đang sửa
+  "completed",      // Sửa xong
+  "delivered",      // Đã giao
+  "cancelled",      // Hủy
+];
+
+const REPAIR_TYPES = [
+  "Màn hình",
+  "Pin/Nguồn",
+  "Phần cứng",
+  "Phần mềm",
+  "Khác",
+];
+
+// Luồng chuyển trạng thái hợp lệ
+// delivered & cancelled là trạng thái kết thúc, không chuyển tiếp
+const VALID_TRANSITIONS = {
+  pending:       ["waiting_parts", "fixing", "cancelled"],
+  waiting_parts: ["fixing", "cancelled"],
+  fixing:        ["waiting_parts", "completed", "cancelled"],
+  completed:     ["delivered", "cancelled"],
+  delivered:     [],  // Trạng thái kết thúc – nếu sửa thêm, tạo phiếu mới
+  cancelled:     [],  // Trạng thái kết thúc
+};
+
+// ──────────────────────────────────────────────────────────
+// Sub-schema cho mỗi bước trong timeline
+// ──────────────────────────────────────────────────────────
+const timelineEntrySchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: REPAIR_STATUSES,
+      required: true,
+    },
+    // Ghi chú chi tiết cho bước này (giống note trong app giao hàng)
+    note: {
+      type: String,
+      trim: true,
+      maxlength: 2000,
+      default: "",
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false },
+);
+
+// ──────────────────────────────────────────────────────────
+// Schema chính – Phiếu sửa chữa (RepairLog)
+// ──────────────────────────────────────────────────────────
 const repairLogSchema = new mongoose.Schema(
   {
     // Tham chiếu đến Warranty để truy xuất lịch sử sửa chữa của thiết bị
@@ -26,11 +86,12 @@ const repairLogSchema = new mongoose.Schema(
       match: EVM_ADDRESS_REGEX,
       index: true,
     },
-    repairContent: {
+    // Trạng thái hiện tại – luôn đồng bộ với entry cuối cùng trong timeline
+    currentStatus: {
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 2000,
+      enum: REPAIR_STATUSES,
+      default: "pending",
+      index: true,
     },
     // true = được bảo hành miễn phí, false = phải trả phí sửa chữa
     isWarrantyCovered: {
@@ -38,15 +99,19 @@ const repairLogSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    // Trạng thái đơn sửa chữa
-    status: {
-      type: String,
-      enum: ["pending", "in_progress", "done", "rejected"],
-      default: "pending",
-      index: true,
-    },
     // Chi phí sửa chữa (0 nếu được bảo hành)
     cost: { type: Number, default: 0, min: 0 },
+    // Timeline – lưu vết chi tiết từng giai đoạn sửa chữa (giống tracking giao hàng)
+    timeline: {
+      type: [timelineEntrySchema],
+      default: [],
+    },
+    type: {
+      type: String,
+      enum: REPAIR_TYPES,
+      default: "Khác",
+      index: true,
+    },
     repairDate: { type: Date, default: Date.now, index: true },
   },
   {
@@ -63,6 +128,9 @@ const repairLogSchema = new mongoose.Schema(
   },
 );
 
+// ──────────────────────────────────────────────────────────
+// Indexes
+// ──────────────────────────────────────────────────────────
 repairLogSchema.index(
   { serialNumber: 1, repairDate: -1 },
   { name: "idx_repair_serial_date" },
@@ -75,5 +143,15 @@ repairLogSchema.index(
   { technicianWallet: 1, repairDate: -1 },
   { name: "idx_repair_technician_wallet_date" },
 );
+repairLogSchema.index(
+  { currentStatus: 1, updatedAt: -1 },
+  { name: "idx_repair_current_status_updated" },
+);
 
-module.exports = mongoose.model("RepairLog", repairLogSchema);
+const RepairLog = mongoose.model("RepairLog", repairLogSchema);
+
+// Export cả hằng số để Controller & Script có thể sử dụng
+module.exports = RepairLog;
+module.exports.REPAIR_STATUSES = REPAIR_STATUSES;
+module.exports.REPAIR_TYPES = REPAIR_TYPES;
+module.exports.VALID_TRANSITIONS = VALID_TRANSITIONS;

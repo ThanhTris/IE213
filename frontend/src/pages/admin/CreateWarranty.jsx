@@ -1,33 +1,96 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import { API_ROOT } from "../../utils/api";
 import { buildFakeHash } from "../../utils/hashPreview";
-
-const DEVICE_MODELS = [
-  "Apple Watch Ultra",
-  "Apple Watch Series 9",
-  "iPhone 15 Pro Max",
-  "iPhone 15 Pro",
-  "iPhone 15",
-  "iPad Pro 12.9\"",
-  "MacBook Pro 16\"",
-  "MacBook Air M2",
-  "Samsung Galaxy S24 Ultra",
-  "Samsung Galaxy S24",
-];
+import { toast } from "sonner";
+import { warrantyService } from "../../services/warrantyService";
 
 function CreateWarranty() {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const initialForm = {
-    deviceModel: "Apple Watch Ultra",
+    deviceModel: "",
     serialNumber: "",
     walletAddress: "",
-    expiryDate: "",
+    warrantyMonths: "12",
   };
 
   const [form, setForm] = useState(initialForm);
+  const [deviceModels, setDeviceModels] = useState([]);
+  const [isFetchingModels, setIsFetchingModels] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState("");
+  
+  // Custom Dropdown States
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [productSearch, setProductSearch] = useState("");
+
+  // Customer Wallet States
+  const [users, setUsers] = useState([]);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
+
+  // Image Preview State
+  const [imagePreview, setImagePreview] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem("bw_auth_token");
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const res = await fetch(`${API_ROOT}/products`, { headers });
+        const data = await res.json().catch(() => ({}));
+        
+        if (!res.ok || data.success === false) {
+           throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
+        }
+        
+        if (data.success && Array.isArray(data.data)) {
+          setDeviceModels(data.data);
+          if (data.data.length > 0) {
+            setForm((prev) => ({ ...prev, deviceModel: data.data[0].productCode }));
+          }
+        }
+      } catch (err) {
+        toast.error(err.message);
+        setErrors((prev) => ({ ...prev, fetchError: err.message }));
+      } finally {
+        setIsFetchingModels(false);
+      }
+    };
+
+    const fetchUsers = async () => {
+      setIsFetchingUsers(true);
+      try {
+        const token = localStorage.getItem("bw_auth_token");
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const res = await fetch(`${API_ROOT}/users`, { headers });
+        const data = await res.json().catch(() => ({}));
+        
+        if (data.success && Array.isArray(data.data)) {
+          setUsers(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      } finally {
+        setIsFetchingUsers(false);
+      }
+    };
+
+    fetchProducts();
+    fetchUsers();
+  }, []);
+
+  const selectedProduct = useMemo(() => {
+    return deviceModels.find((p) => p.productCode === form.deviceModel);
+  }, [deviceModels, form.deviceModel]);
 
   const previewHash = useMemo(() => buildFakeHash(form), [form]);
 
@@ -41,6 +104,13 @@ function CreateWarranty() {
     return form.serialNumber.slice(0, 3) + "•".repeat(Math.max(0, form.serialNumber.length - 3));
   }, [form.serialNumber]);
 
+  const calculatedExpiryDate = useMemo(() => {
+    if (!form.warrantyMonths) return "";
+    const date = new Date();
+    date.setMonth(date.getMonth() + parseInt(form.warrantyMonths, 10));
+    return date.toISOString().slice(0, 10);
+  }, [form.warrantyMonths]);
+
   const validateEthereumAddress = (address) =>
     /^0x[a-fA-F0-9]{40}$/.test(address);
 
@@ -53,7 +123,7 @@ function CreateWarranty() {
     } else if (!validateEthereumAddress(form.walletAddress)) {
       newErrors.walletAddress = "Invalid Ethereum address (0x + 40 hex characters)";
     }
-    if (!form.expiryDate) newErrors.expiryDate = "Warranty expiry date is required";
+    if (!form.warrantyMonths) newErrors.warrantyMonths = "Please select warranty months";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [form]);
@@ -63,24 +133,28 @@ function CreateWarranty() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleReset = () => {
-    setForm(initialForm);
-    setErrors({});
-    setSubmitted(false);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
     setIsLoading(true);
+    setErrors({});
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1800));
+      await warrantyService.processWarrantyMinting(form, imageFile, calculatedExpiryDate, (stepMsg) => {
+        setCurrentStep(stepMsg);
+      });
+
+      toast.success("Warranty NFT issued successfully on blockchain!");
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3500);
-    } catch {
-      setErrors({ submit: "Failed to issue warranty. Please try again." });
+
+    } catch (err) {
+      const msg = err.message || "Gặp lỗi khi tạo thẻ bảo hành NFT. Vui lòng thử lại.";
+      setErrors({ submit: msg });
+      toast.error(msg);
     } finally {
       setIsLoading(false);
+      setCurrentStep("");
     }
   };
 
@@ -107,31 +181,92 @@ function CreateWarranty() {
               ✓ Warranty NFT issued successfully on blockchain!
             </div>
           )}
+          {errors.fetchError && (
+            <div className="cw-banner cw-banner--error">Lỗi tải dữ liệu: {errors.fetchError}</div>
+          )}
           {errors.submit && (
             <div className="cw-banner cw-banner--error">{errors.submit}</div>
           )}
 
           <form onSubmit={handleSubmit} className={isLoading ? "cw-form-loading" : ""}>
-            {/* Device Model */}
+            {/* Device Model - Optimized Searchable Dropdown */}
             <div className="cw-field">
-              <label className="cw-label" htmlFor="deviceModel">Device Model</label>
-              <div className="cw-select-wrap">
-                <select
-                  id="deviceModel"
-                  className={`cw-select ${errors.deviceModel ? "cw-input--error" : ""}`}
-                  value={form.deviceModel}
-                  onChange={updateField("deviceModel")}
+              <label className="cw-label">Device Model</label>
+              <div className="cw-custom-select-container">
+                <button
+                  type="button"
+                  className={`cw-dropdown-trigger ${errors.deviceModel ? "cw-input--error" : ""}`}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  disabled={isLoading || isFetchingModels}
                 >
-                  {DEVICE_MODELS.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-                <span className="cw-select-arrow">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </span>
+                  <div className="cw-trigger-content">
+                    {isFetchingModels ? (
+                      <span className="cw-muted-text">Đang tải...</span>
+                    ) : selectedProduct ? (
+                      <div className="cw-selected-info">
+                        <span className="cw-selected-name">{selectedProduct.productName}</span>
+                        <span className="cw-selected-code">{selectedProduct.productCode}</span>
+                      </div>
+                    ) : (
+                      <span className="cw-muted-text">Select Device Model</span>
+                    )}
+                  </div>
+                  <span className={`cw-select-arrow ${isDropdownOpen ? "open" : ""}`}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </span>
+                </button>
+
+                {isDropdownOpen && (
+                  <div className="cw-dropdown-panel">
+                    <div className="cw-dropdown-search-wrap">
+                      <svg className="cw-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                      </svg>
+                      <input
+                        type="text"
+                        className="cw-dropdown-search-input"
+                        placeholder="Search products..."
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                    <div className="cw-dropdown-list">
+                      {deviceModels
+                        .filter(p => 
+                          p.productName.toLowerCase().includes(productSearch.toLowerCase()) ||
+                          p.productCode.toLowerCase().includes(productSearch.toLowerCase())
+                        )
+                        .map((p) => (
+                          <div
+                            key={p.productCode}
+                            className={`cw-dropdown-item ${form.deviceModel === p.productCode ? "active" : ""}`}
+                            onClick={() => {
+                              setForm(prev => ({ ...prev, deviceModel: p.productCode }));
+                              setIsDropdownOpen(false);
+                              setProductSearch("");
+                              if (errors.deviceModel) setErrors(prev => ({ ...prev, deviceModel: "" }));
+                            }}
+                          >
+                            <div className="cw-item-main">
+                              <span className="cw-item-name">{p.productName}</span>
+                              <span className="cw-item-code">{p.productCode}</span>
+                            </div>
+                            {form.deviceModel === p.productCode && (
+                              <svg className="cw-check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+                {isDropdownOpen && <div className="cw-dropdown-overlay" onClick={() => setIsDropdownOpen(false)} />}
               </div>
               {errors.deviceModel && <p className="cw-error-msg">{errors.deviceModel}</p>}
             </div>
@@ -157,56 +292,161 @@ function CreateWarranty() {
                   placeholder="Enter device serial number"
                   value={form.serialNumber}
                   onChange={updateField("serialNumber")}
+                  disabled={isLoading}
                 />
               </div>
               {errors.serialNumber && <p className="cw-error-msg">{errors.serialNumber}</p>}
             </div>
 
-            {/* Customer Wallet Address */}
+            {/* Customer Wallet Address - Optimized Searchable Search */}
             <div className="cw-field">
               <label className="cw-label" htmlFor="walletAddress">Customer Wallet Address</label>
-              <div className="cw-input-wrap">
-                <span className="cw-input-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </span>
-                <input
-                  id="walletAddress"
-                  type="text"
-                  className={`cw-input ${errors.walletAddress ? "cw-input--error" : ""}`}
-                  placeholder="0x..."
-                  value={form.walletAddress}
-                  onChange={updateField("walletAddress")}
-                />
+              <div className="cw-custom-select-container">
+                <div className="cw-input-combined-wrap">
+                  <span className="cw-input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </span>
+                  <input
+                    id="walletAddress"
+                    type="text"
+                    className={`cw-input cw-input-searchable ${errors.walletAddress ? "cw-input--error" : ""}`}
+                    placeholder="Search by name/email or enter 0x..."
+                    value={form.walletAddress}
+                    onChange={(e) => {
+                      updateField("walletAddress")(e);
+                      setIsUserDropdownOpen(true);
+                      setUserSearch(e.target.value);
+                    }}
+                    onFocus={() => {
+                      setIsUserDropdownOpen(true);
+                      setUserSearch(form.walletAddress);
+                    }}
+                    disabled={isLoading}
+                    autoComplete="off"
+                  />
+                  {users.find(u => u.walletAddress.toLowerCase() === form.walletAddress.toLowerCase()) && (
+                    <div className="cw-user-mini-badge">
+                      <span className="cw-user-badge-name">{users.find(u => u.walletAddress.toLowerCase() === form.walletAddress.toLowerCase()).fullName || "User"}</span>
+                    </div>
+                  )}
+                </div>
+
+                {isUserDropdownOpen && (userSearch.trim().length > 0 || users.length > 0) && (
+                  <div className="cw-dropdown-panel">
+                    <div className="cw-dropdown-list">
+                      {users
+                        .filter(u => 
+                          u.fullName?.toLowerCase().includes(userSearch.toLowerCase()) ||
+                          u.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
+                          u.walletAddress?.toLowerCase().includes(userSearch.toLowerCase())
+                        )
+                        .slice(0, 10)
+                        .map((u) => (
+                          <div
+                            key={u.walletAddress}
+                            className={`cw-dropdown-item cw-user-item ${form.walletAddress === u.walletAddress ? "active" : ""}`}
+                            onClick={() => {
+                              setForm(prev => ({ ...prev, walletAddress: u.walletAddress }));
+                              setIsUserDropdownOpen(false);
+                              setUserSearch("");
+                            }}
+                          >
+                            <div className="cw-user-item-content">
+                              <div className="cw-user-primary">
+                                <span className="cw-user-name">{u.fullName || "Anonymous"}</span>
+                                <span className="cw-user-email">{u.email || "No email"}</span>
+                              </div>
+                              <code className="cw-user-wallet">{u.walletAddress.slice(0, 6)}...{u.walletAddress.slice(-4)}</code>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+                {isUserDropdownOpen && <div className="cw-dropdown-overlay" onClick={() => setIsUserDropdownOpen(false)} />}
               </div>
               {errors.walletAddress && <p className="cw-error-msg">{errors.walletAddress}</p>}
             </div>
 
-            {/* Warranty Expiry Date */}
+            {/* Warranty Months */}
             <div className="cw-field">
-              <label className="cw-label" htmlFor="expiryDate">Warranty Expiry Date</label>
-              <div className="cw-input-wrap">
-                <span className="cw-input-icon">
+              <label className="cw-label" htmlFor="warrantyMonths">Thời hạn bảo hành (Tháng)</label>
+              <div className="cw-select-wrap">
+                <select
+                  id="warrantyMonths"
+                  className={`cw-select ${errors.warrantyMonths ? "cw-input--error" : ""}`}
+                  value={form.warrantyMonths}
+                  onChange={updateField("warrantyMonths")}
+                  disabled={isLoading}
+                >
+                  <option value="6">6 Tháng</option>
+                  <option value="12">12 Tháng</option>
+                  <option value="24">24 Tháng</option>
+                  <option value="36">36 Tháng</option>
+                </select>
+                <span className="cw-select-arrow">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
+                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </span>
-                <input
-                  id="expiryDate"
-                  type="date"
-                  className={`cw-input ${errors.expiryDate ? "cw-input--error" : ""}`}
-                  value={form.expiryDate}
-                  onChange={updateField("expiryDate")}
-                />
               </div>
-              {errors.expiryDate && <p className="cw-error-msg">{errors.expiryDate}</p>}
+              {errors.warrantyMonths && <p className="cw-error-msg">{errors.warrantyMonths}</p>}
+            </div>
+
+            {/* Device Image - Enhanced Upload UI */}
+            <div className="cw-field">
+              <label className="cw-label">Product Image (Optional)</label>
+              <div className="cw-image-upload-area">
+                {imagePreview ? (
+                  <div className="cw-image-preview-wrapper">
+                    <img src={imagePreview} alt="Preview" className="cw-image-thumb" />
+                    <button
+                      type="button"
+                      className="cw-remove-img-overlay"
+                      onClick={() => {
+                        setImageFile(null);
+                        setImagePreview(null);
+                      }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                      <span>Change Image</span>
+                    </button>
+                  </div>
+                ) : (
+                  <label className="cw-upload-trigger">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="cw-file-input-hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setImageFile(file);
+                          const reader = new FileReader();
+                          reader.onloadend = () => setImagePreview(reader.result);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      disabled={isLoading}
+                    />
+                    <div className="cw-upload-empty">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                      <span>Click to upload image</span>
+                    </div>
+                  </label>
+                )}
+              </div>
             </div>
 
             {/* Smart contract notice */}
@@ -224,7 +464,7 @@ function CreateWarranty() {
               {isLoading ? (
                 <>
                   <span className="cw-spinner" />
-                  Issuing on Blockchain...
+                  {currentStep || "Đang xử lý..."}
                 </>
               ) : submitted ? (
                 <>✓ Issued Successfully!</>
@@ -256,13 +496,28 @@ function CreateWarranty() {
               <span>Warranty NFT Preview</span>
             </div>
 
-            {/* Device name row */}
-            <div className="cw-nft-name-row">
-              <div>
-                <h3 className="cw-nft-device-name">{form.deviceModel || "Select Device Model"}</h3>
-                <p className="cw-nft-serial">Serial: {maskedSerial}</p>
+            {/* NFT Horizontal Header */}
+            <div className="cw-nft-horizontal-header">
+              <div className="cw-nft-thumb-box">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="NFT" className="cw-nft-thumb-img" />
+                ) : (
+                  <div className="cw-nft-thumb-placeholder">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
+                )}
               </div>
-              <span className="cw-nft-badge">NFT</span>
+              <div className="cw-nft-header-info">
+                <div className="cw-nft-name-row">
+                  <div>
+                    <h3 className="cw-nft-title">{selectedProduct?.productName || "Product Name"}</h3>
+                    <p className="cw-nft-serial">Serial: {maskedSerial}</p>
+                  </div>
+                  <span className="cw-nft-badge">NFT</span>
+                </div>
+              </div>
             </div>
 
             {/* Details grid */}
@@ -285,8 +540,8 @@ function CreateWarranty() {
               </div>
               <div className="cw-nft-row">
                 <span className="cw-nft-row-label">Expires</span>
-                <span className={`cw-nft-row-value ${form.expiryDate ? "" : "cw-nft-row-value--orange"}`}>
-                  {form.expiryDate || "Not set"}
+                <span className={`cw-nft-row-value ${calculatedExpiryDate ? "" : "cw-nft-row-value--orange"}`}>
+                  {calculatedExpiryDate || "Not set"}
                 </span>
               </div>
             </div>
@@ -404,29 +659,32 @@ function CreateWarranty() {
           margin-bottom: 8px;
         }
 
-        .cw-input-wrap,
-        .cw-select-wrap {
+        .cw-input-wrap {
           position: relative;
           display: flex;
           align-items: center;
+          width: 100%;
         }
 
         .cw-input-icon {
           position: absolute;
-          left: 13px;
+          left: 1.4rem;
+          top: 50%;
+          transform: translateY(-50%);
           color: #94a3b8;
           display: flex;
           align-items: center;
           pointer-events: none;
+          z-index: 2;
         }
 
         .cw-input {
           width: 100%;
-          padding: 11px 14px 11px 40px;
-          font-size: 14px;
+          padding: 1.1rem 1.4rem 1.1rem 4rem; /* Left padding for icon */
+          font-size: 1.4rem;
           font-family: inherit;
-          border: 1px solid #d1d5db;
-          border-radius: 10px;
+          border: 0.1rem solid #d1d5db;
+          border-radius: 1rem;
           background: #fff;
           color: #0f172a;
           outline: none;
@@ -441,6 +699,11 @@ function CreateWarranty() {
 
         .cw-input--error {
           border-color: #ef4444;
+        }
+
+        .cw-input-searchable {
+          padding-left: 4rem;
+          padding-right: 12rem; /* Extra space for user badge on the right */
         }
 
         .cw-input--error:focus {
@@ -719,6 +982,313 @@ function CreateWarranty() {
           display: flex;
           flex-direction: column;
           gap: 8px;
+        }
+
+        .cw-select-arrow.open {
+          transform: rotate(180deg);
+        }
+
+        /* Searchable Dropdowns */
+        .cw-custom-select-container {
+          position: relative;
+          width: 100%;
+        }
+
+        .cw-dropdown-trigger {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1.1rem 1.4rem;
+          background: #fff;
+          border: 0.1rem solid #d1d5db;
+          border-radius: 1rem;
+          cursor: pointer;
+          text-align: left;
+        }
+
+        .cw-selected-info {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .cw-selected-name {
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .cw-selected-code {
+          font-size: 1.1rem;
+          color: #2563eb;
+          background: #eff6ff;
+          padding: 0.2rem 1rem;
+          border-radius: 99rem;
+          font-weight: 700;
+          border: 0.1rem solid #bfdbfe;
+        }
+
+        .cw-dropdown-panel {
+          position: absolute;
+          top: calc(100% + 0.5rem);
+          left: 0;
+          right: 0;
+          background: #fff;
+          border: 0.1rem solid #e2e8f0;
+          border-radius: 1.2rem;
+          box-shadow: 0 1rem 2.5rem rgba(0,0,0,0.1);
+          z-index: 100;
+          overflow: hidden;
+        }
+
+        .cw-dropdown-search-wrap {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          padding: 1rem 1.4rem;
+          border-bottom: 0.1rem solid #f1f5f9;
+          background: #f8fafc;
+        }
+
+        .cw-dropdown-search-input {
+          flex: 1;
+          border: none;
+          background: transparent;
+          font-size: 1.3rem;
+          outline: none;
+        }
+
+        .cw-dropdown-list {
+          max-height: 25rem;
+          overflow-y: auto;
+          padding: 0.5rem;
+        }
+
+        .cw-dropdown-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 1.2rem;
+          border-radius: 0.8rem;
+          cursor: pointer;
+        }
+
+        .cw-dropdown-item:hover {
+          background: #f8fafc;
+        }
+
+        .cw-item-main {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .cw-item-name {
+          font-size: 1.4rem;
+          font-weight: 600;
+        }
+
+        .cw-item-code {
+          font-size: 1.1rem;
+          background: #f1f5f9;
+          padding: 0.1rem 0.8rem;
+          border-radius: 99rem;
+          color: #64748b;
+        }
+
+        .cw-input-combined-wrap {
+          position: relative;
+          width: 100%;
+        }
+
+        .cw-user-mini-badge {
+          position: absolute;
+          right: 1.2rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: #eff6ff;
+          border: 0.1rem solid #bfdbfe;
+          border-radius: 99rem;
+          padding: 0.2rem 1rem;
+          pointer-events: none;
+        }
+
+        .cw-user-badge-name {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #1e40af;
+        }
+
+        .cw-user-item-content {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          align-items: center;
+        }
+
+        .cw-user-primary {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .cw-user-name {
+          font-size: 1.4rem;
+          font-weight: 700;
+        }
+
+        .cw-user-email {
+          font-size: 1.1rem;
+          color: #64748b;
+        }
+
+        .cw-user-wallet {
+          font-size: 1.1rem;
+          background: #f1f5f9;
+          padding: 0.1rem 0.8rem;
+          border-radius: 99rem;
+        }
+
+        /* Custom Image Upload */
+        .cw-image-upload-area {
+          width: 100%;
+        }
+
+        .cw-upload-trigger {
+          display: block;
+          border: 0.2rem dashed #d1d5db;
+          border-radius: 1.2rem;
+          width: 32rem; /* Fixed width */
+          height: 20rem; /* Fixed height */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          background: #f8fafc;
+          transition: all 0.2s;
+        }
+
+        .cw-upload-trigger:hover {
+          border-color: #3b82f6;
+          background: #eff6ff;
+        }
+
+        .cw-file-input-hidden {
+          display: none;
+        }
+
+        .cw-upload-empty {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
+          color: #64748b;
+        }
+
+        .cw-image-preview-wrapper {
+          position: relative;
+          width: 32rem; /* Fixed width */
+          height: 20rem; /* Fixed height */
+          background: #f1f5f9;
+          border-radius: 1.2rem;
+          overflow: hidden;
+          border: 0.1rem solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .cw-image-thumb {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+
+        .cw-remove-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0,0,0,0.4);
+          opacity: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.8rem;
+          color: white;
+          border: none;
+          cursor: pointer;
+          transition: opacity 0.2s;
+          z-index: 2;
+        }
+
+        .cw-image-preview-wrapper:hover .cw-remove-img-overlay {
+          opacity: 1;
+        }
+
+        /* NFT Preview Redesign - Horizontal Header */
+        .cw-nft-horizontal-header {
+          display: flex;
+          align-items: center;
+          gap: 1.6rem;
+          margin-bottom: 0.8rem; /* Minimal margin */
+        }
+
+        .cw-nft-thumb-box {
+          flex: 0 0 10rem;
+          height: 10rem;
+          border-radius: 1.6rem;
+          overflow: hidden;
+          background: #f8fafc;
+          border: none; /* Removed border */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .cw-nft-thumb-img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          padding: 0.5rem;
+        }
+
+        .cw-nft-thumb-placeholder {
+          color: #cbd5e1;
+        }
+
+        .cw-nft-header-info {
+          flex: 1;
+        }
+
+        .cw-nft-name-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center; /* Centered with image */
+        }
+
+        .cw-nft-title {
+          font-size: 2.4rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .cw-nft-serial {
+          font-size: 1.5rem;
+          color: #64748b;
+          font-weight: 500;
+          margin-top: 0.2rem;
+        }
+
+        .cw-nft-badge {
+          background: #10b981;
+          color: #fff;
+          padding: 0.4rem 1.2rem;
+          border-radius: 99rem;
+          font-size: 1.2rem;
+          font-weight: 800;
+          letter-spacing: 0.05em;
         }
 
         .cw-details-list li {

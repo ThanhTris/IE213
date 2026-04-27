@@ -1,3 +1,5 @@
+@import "./main.css";
+
 .bw-hero {
   background: linear-gradient(165deg, var(--navy-primary) 0%, #1e40af 45%, var(--navy-primary-dark) 100%);
   padding: 3.5rem 1.5rem 4.5rem;
@@ -16,7 +18,7 @@
 }
 
 .bw-hero-inner {
-  max-width: 800px;
+  max-width: 80rem;
   margin: 0 auto;
 }
 
@@ -25,15 +27,15 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.4rem 0.95rem;
-  border-radius: 999px;
+  border-radius: 99.9rem;
   background: rgba(16, 185, 129, 0.2);
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  font-size: 0.75rem;
+  border: 0.1rem solid rgba(16, 185, 129, 0.45);
+  font-size: 1.2rem;
   font-weight: 700;
 }
 
 .bw-hero-title {
-  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
 }
 
 .accent {
@@ -49,26 +51,26 @@
 
 .bw-feature-card h4 {
   margin: 0 0 0.5rem;
-  font-size: 1.05rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--navy-primary);
 }
 
 .bw-feature-card p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: var(--grey-600);
   line-height: 1.55;
 }
 
 .bw-icon-em svg {
-  width: 24px;
-  height: 24px;
+  width: 2.4rem;
+  height: 2.4rem;
 }
 
 .bw-check-ic svg {
-  width: 12px;
-  height: 12px;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .bw-search-input-wrap svg {
@@ -78,14 +80,14 @@
 
 .bw-mini-card h4 {
   margin: 0 0 0.4rem;
-  font-size: 0.95rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--navy-primary);
 }
 
 .bw-mini-card p {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 1.4rem;
   color: var(--grey-600);
   line-height: 1.5;
 }
@@ -94,13 +96,17 @@
   padding: 0.85rem 1.5rem;
   background: linear-gradient(180deg, var(--emerald-500), var(--emerald-600));
   color: var(--white);
+  font-size: 1.4rem;
+  border-radius: 0.8rem;
 }
 
 .btn-hero-outline {
   padding: 0.85rem 1.5rem;
-  border: 2px solid rgba(255, 255, 255, 0.85);
+  border: 0.2rem solid rgba(255, 255, 255, 0.85);
   background: rgba(255, 255, 255, 0.1);
   color: var(--white);
+  font-size: 1.4rem;
+  border-radius: 0.8rem;
 }
 
 .bw-section {
@@ -112,13 +118,15 @@
 }
 
 .bw-inner {
-  max-width: 1120px;
+  max-width: 112rem;
   margin: 0 auto;
 }
 
 .bw-h2 {
   text-align: center;
   color: var(--navy-primary);
+  font-size: 3.2rem;
+  margin-bottom: 1.5rem;
 }
 
 .bw-sub {
@@ -126,6 +134,7 @@
   color: var(--grey-600);
   max-width: 40rem;
   margin: 0 auto 2rem;
+  font-size: 1.6rem;
 }
 
 .bw-steps {
@@ -136,11 +145,11 @@
 
 .bw-track-card {
   background: var(--white);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--grey-200);
+  border-radius: 2.4rem;
+  border: 0.1rem solid var(--grey-200);
   box-shadow: var(--shadow-md);
   padding: 1.35rem 1.35rem 1.5rem;
-  max-width: 720px;
+  max-width: 72rem;
   margin: 0 auto 1rem;
 }
 
@@ -153,13 +162,13 @@
 
 .bw-search-input-wrap {
   flex: 1;
-  min-width: 200px;
+  min-width: 20rem;
   display: flex;
   align-items: center;
   gap: 0.65rem;
   padding: 0.65rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--grey-200);
+  border-radius: 1.4rem;
+  border: 0.1rem solid var(--grey-200);
   background: var(--grey-50);
 }
 
@@ -169,7 +178,7 @@
   width: 100%;
   outline: none;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 1.6rem;
   color: var(--navy-900);
 }
 
@@ -180,9 +189,9 @@
 .bw-search-btn {
   font-family: inherit;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   padding: 0.75rem 1.35rem;
-  border-radius: var(--radius-md);
+  border-radius: 1.4rem;
   border: none;
   background: var(--navy-primary);
   color: var(--white);
@@ -194,14 +203,14 @@
   margin: 0.75rem 0 0;
   color: var(--grey-400);
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 1.2rem;
 }
 
 .bw-start-card {
-  max-width: 560px;
+  max-width: 56rem;
   margin: 2.5rem auto 0;
-  border-radius: var(--radius-xl);
-  border: 2px dashed var(--grey-200);
+  border-radius: 2.4rem;
+  border: 0.2rem dashed var(--grey-200);
   padding: 2.25rem 1.75rem;
   text-align: center;
   background: var(--white);
@@ -210,7 +219,7 @@
 
 .bw-start-card h3 {
   margin: 0 0 0.5rem;
-  font-size: 1.35rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--navy-primary);
 }
@@ -218,12 +227,12 @@
 .bw-start-card p {
   margin: 0;
   color: var(--grey-600);
-  font-size: 0.95rem;
+  font-size: 1.4rem;
 }
 
 .bw-start-icon {
-  width: 72px;
-  height: 72px;
+  width: 7.2rem;
+  height: 7.2rem;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -240,15 +249,15 @@
 
 .bw-feature-card {
   background: var(--white);
-  border: 1px solid var(--grey-200);
-  border-radius: var(--radius-xl);
+  border: 0.1rem solid var(--grey-200);
+  border-radius: 2.4rem;
   padding: 1.75rem 1.5rem;
   box-shadow: var(--shadow-sm);
 }
 
 .bw-icon-em {
-  width: 52px;
-  height: 52px;
+  width: 5.2rem;
+  height: 5.2rem;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -264,16 +273,16 @@
   align-items: center;
   background: var(--navy-primary);
   color: var(--white);
-  border-radius: var(--radius-xl);
+  border-radius: 2.4rem;
   padding: 2.5rem 2.5rem;
   box-shadow: var(--shadow-lg);
 }
 
 .bw-trust-visual {
-  border-radius: var(--radius-lg);
-  min-height: 220px;
+  border-radius: 1.6rem;
+  min-height: 22rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 0.1rem solid rgba(255, 255, 255, 0.2);
   display: grid;
   place-items: center;
   padding: 1.5rem;
@@ -281,9 +290,9 @@
 
 .bw-trust-mock {
   width: 100%;
-  max-width: 280px;
+  max-width: 28rem;
   aspect-ratio: 4/3;
-  border-radius: var(--radius-md);
+  border-radius: 1.4rem;
   background: linear-gradient(145deg, #1e293b, var(--navy-primary-dark));
   box-shadow: var(--shadow-lg);
   display: flex;
@@ -294,13 +303,13 @@
 }
 
 .bw-trust-mock .shield-lg {
-  width: 56px;
-  height: 56px;
+  width: 5.6rem;
+  height: 5.6rem;
   color: var(--emerald-500);
 }
 
 .bw-trust-mock span {
-  font-size: 0.7rem;
+  font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.7);
@@ -309,7 +318,7 @@
 .bw-trust-copy h3 {
   margin-top: 0;
   margin-bottom: 0.8rem;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: 2.4rem;
   color: var(--white);
 }
 
@@ -317,6 +326,7 @@
   margin: 0 0 1.15rem;
   color: rgba(255, 255, 255, 0.9);
   opacity: 0.9;
+  font-size: 1.4rem;
 }
 
 .bw-check-list {
@@ -331,6 +341,7 @@
   gap: 0.75rem;
   align-items: flex-start;
   margin-bottom: 0.85rem;
+  font-size: 1.4rem;
 }
 
 .bw-check-list li:last-child {
@@ -341,18 +352,19 @@
   display: block;
   color: var(--white);
   margin-bottom: 0.15rem;
+  font-size: 1.6rem;
 }
 
 .bw-check-ic {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 2.2rem;
+  height: 2.2rem;
   border-radius: 50%;
   background: var(--emerald-500);
   color: var(--white);
   display: grid;
   place-items: center;
-  margin-top: 2px;
+  margin-top: 0.2rem;
 }
 
 .bw-grid-6 {
@@ -363,8 +375,8 @@
 
 .bw-mini-card {
   background: var(--white);
-  border: 1px solid var(--grey-200);
-  border-radius: var(--radius-xl);
+  border: 0.1rem solid var(--grey-200);
+  border-radius: 2.4rem;
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
 }
@@ -377,8 +389,8 @@
 
 .bw-quote {
   background: var(--white);
-  border: 1px solid var(--grey-200);
-  border-radius: var(--radius-xl);
+  border: 0.1rem solid var(--grey-200);
+  border-radius: 2.4rem;
   padding: 1.75rem;
   box-shadow: var(--shadow-sm);
   margin: 0;
@@ -386,7 +398,7 @@
 
 .bw-quote.featured {
   border-color: rgba(16, 185, 129, 0.35);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.12);
+  box-shadow: 0 1rem 3rem rgba(16, 185, 129, 0.12);
 }
 
 .bw-stars {
@@ -394,6 +406,7 @@
   font-weight: 900;
   letter-spacing: 0.08em;
   margin-bottom: 0.35rem;
+  font-size: 1.4rem;
 }
 
 .bw-author {
@@ -403,22 +416,14 @@
   margin-top: 0.9rem;
 }
 
-.bw-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(41, 85, 206, 0.2), rgba(16, 185, 129, 0.18));
-  border: 1px solid var(--grey-100);
-}
-
 .bw-author strong {
   display: block;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: var(--navy-primary);
 }
 
 .bw-author span {
-  font-size: 0.8rem;
+  font-size: 1.2rem;
   color: var(--grey-600);
 }
 
@@ -432,12 +437,13 @@
 
 .bw-logo-pill {
   padding: 0.55rem 0.9rem;
-  border-radius: 999px;
+  border-radius: 99.9rem;
   background: var(--white);
-  border: 1px solid var(--grey-100);
+  border: 0.1rem solid var(--grey-100);
   box-shadow: var(--shadow-sm);
   font-weight: 700;
   color: var(--navy-800);
+  font-size: 1.4rem;
 }
 
 .bw-h2-spaced {
@@ -453,14 +459,14 @@
 
 .bw-signup-left h3 {
   margin-top: 0;
-  font-size: 1.75rem;
+  font-size: 2.4rem;
   color: var(--navy-primary);
 }
 
 .bw-signup-form {
   background: var(--white);
-  border: 1px solid var(--grey-100);
-  border-radius: var(--radius-xl);
+  border: 0.1rem solid var(--grey-100);
+  border-radius: 2.4rem;
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
 }
@@ -469,16 +475,18 @@
   width: 100%;
   padding: 0.9rem 1rem;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 1.6rem;
   background: linear-gradient(180deg, var(--emerald-500), var(--emerald-600));
   color: var(--white);
   font-weight: 800;
   cursor: pointer;
+  font-size: 1.6rem;
 }
 
 .bw-form-foot {
   color: var(--grey-600);
   margin-top: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .bw-pricing {
@@ -489,8 +497,8 @@
 
 .bw-price-card {
   background: var(--white);
-  border: 1px solid var(--grey-100);
-  border-radius: var(--radius-xl);
+  border: 0.1rem solid var(--grey-100);
+  border-radius: 2.4rem;
   padding: 1.6rem 1.35rem;
   box-shadow: var(--shadow-sm);
   position: relative;
@@ -498,7 +506,7 @@
 
 .bw-price-card.popular {
   border-color: rgba(16, 185, 129, 0.35);
-  box-shadow: 0 16px 36px rgba(16, 185, 129, 0.14);
+  box-shadow: 0 1.6rem 3.6rem rgba(16, 185, 129, 0.14);
 }
 
 .bw-pop-badge {
@@ -507,22 +515,22 @@
   right: 1rem;
   background: rgba(16, 185, 129, 0.14);
   color: var(--emerald-600);
-  border: 1px solid rgba(16, 185, 129, 0.28);
+  border: 0.1rem solid rgba(16, 185, 129, 0.28);
   padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
+  border-radius: 99.9rem;
+  font-size: 1.2rem;
   font-weight: 900;
 }
 
 .bw-price {
-  font-size: 2rem;
+  font-size: 2.4rem;
   font-weight: 900;
   color: var(--navy-primary);
   margin: 0.75rem 0 0.8rem;
 }
 
 .bw-price-unit {
-  font-size: 1rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--grey-600);
 }
@@ -531,15 +539,17 @@
   margin: 0 0 1.2rem;
   padding-left: 1.1rem;
   color: var(--grey-600);
+  font-size: 1.4rem;
 }
 
 .bw-price-btn {
   width: 100%;
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-lg);
+  border-radius: 1.6rem;
   border: none;
   cursor: pointer;
   font-weight: 800;
+  font-size: 1.4rem;
 }
 
 .bw-price-btn.navy {
@@ -554,17 +564,17 @@
 
 .bw-price-btn.ghost {
   background: transparent;
-  border: 2px solid var(--grey-200);
+  border: 0.2rem solid var(--grey-200);
   color: var(--grey-600);
 }
 
 .bw-cta-gradient {
-  max-width: 1120px;
+  max-width: 112rem;
   margin: 0 auto;
-  border-radius: var(--radius-xl);
+  border-radius: 2.4rem;
   padding: 2.25rem 1.75rem;
   background: linear-gradient(165deg, rgba(41, 85, 206, 0.18), rgba(16, 185, 129, 0.12));
-  border: 1px solid var(--grey-100);
+  border: 0.1rem solid var(--grey-100);
   text-align: center;
 }
 
@@ -577,11 +587,12 @@
 }
 
 .bw-cta-pill {
-  border-radius: 999px;
+  border-radius: 99.9rem;
   padding: 0.75rem 1.25rem;
   font-weight: 800;
-  border: 2px solid transparent;
+  border: 0.2rem solid transparent;
   cursor: pointer;
+  font-size: 1.4rem;
 }
 
 .bw-cta-pill.solid {
@@ -595,63 +606,18 @@
   color: var(--navy-primary);
 }
 
-.bw-footer {
-  background: var(--navy-primary-dark);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 3rem 1.5rem 2rem;
-}
-
-.bw-footer-grid {
-  max-width: 1120px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.3fr repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.bw-footer-brand strong {
-  font-size: 1.15rem;
-}
-
-.bw-footer-col h5 {
-  margin: 0 0 0.6rem;
-}
-
-.bw-footer-col ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0.4rem;
-}
-
-.bw-footer a {
-  color: rgba(255, 255, 255, 0.82);
-  text-decoration: none;
-}
-
-.bw-footer a:hover {
-  text-decoration: underline;
-}
-
-.bw-footer-copy {
-  text-align: center;
-  margin: 2rem 0 0;
-  color: rgba(255, 255, 255, 0.7);
-}
-
 .bw-step-card {
   background: var(--white);
-  border-radius: var(--radius-lg);
+  border-radius: 1.6rem;
   padding: 2rem 1.35rem 1.75rem;
   text-align: center;
-  border: 1px solid var(--grey-200);
+  border: 0.1rem solid var(--grey-200);
   box-shadow: var(--shadow-md);
 }
 
 .bw-step-num {
-  width: 36px;
-  height: 36px;
+  width: 3.6rem;
+  height: 3.6rem;
   border-radius: 50%;
   background: var(--navy-primary);
   color: var(--white);
@@ -659,9 +625,10 @@
   display: grid;
   place-items: center;
   margin: 0 auto 1rem;
+  font-size: 1.6rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 90rem) {
   .bw-steps {
     grid-template-columns: 1fr;
   }
