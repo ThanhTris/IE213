@@ -13,8 +13,6 @@ function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
 
   if (role === "admin") {
     tabs.push({ key: "admin", label: "Workspace", path: "/admin/workspace" });
-  } else if (isAuthenticated && role === "user") {
-    tabs.push({ key: "user", label: "User Wallet", path: "/user" });
   }
 
   if (isAuthenticated) {

@@ -10,7 +10,6 @@ import { Toaster } from "sonner";
 // Pages
 import HomePage from "./pages/HomePage";
 import GuestPage from "./pages/GuestPage";
-import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import SignInUpPage from "./pages/SignInUpPage";
 import AccountPage from "./pages/AccountPage";
@@ -126,7 +125,7 @@ function App() {
               isAuthenticated={isAuthenticated}
               userRole={auth?.role}
             >
-              <UserPage />
+              <AccountPage auth={auth} onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
