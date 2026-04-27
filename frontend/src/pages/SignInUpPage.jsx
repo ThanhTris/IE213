@@ -22,7 +22,7 @@ function SignInUpPage({ onAuthSuccess, onCancel }) {
 
       // Sử dụng userService để đăng nhập
       const res = await userService.login({ walletAddress: addr });
-      
+
       const token = res.data?.accessToken;
 
       if (!token) {
