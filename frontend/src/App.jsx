@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 import HomePage from "./pages/HomePage";
 import GuestPage from "./pages/GuestPage";
 import AdminPage from "./pages/AdminPage";
-import SignInUpPage from "./pages/SignInUpPage";
+import AuthPage from "./pages/AuthPage";
 import AccountPage from "./pages/AccountPage";
 import CreateNewProduct from "./pages/admin/CreateNewProduct";
 
@@ -184,7 +184,7 @@ function App() {
               replace
             />
           ) : (
-            <SignInUpPage
+            <AuthPage
               onAuthSuccess={handleAuthSuccess}
               onCancel={() => navigate("/")}
             />
