@@ -5,6 +5,7 @@ import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import HeaderTabs from "./components/HeaderTabs";
 import WalletModal from "./components/WalletModal";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Footer from "./components/Footer";
 import { Toaster } from "sonner";
 
 // Pages
@@ -31,16 +32,17 @@ function MainLayout({ auth, onLogout, adminActiveTab, onAdminAction }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="App">
+    <div className="App" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <HeaderTabs
         auth={auth}
         onLogout={onLogout}
         adminActiveTab={adminActiveTab}
         onAdminAction={onAdminAction}
       />
-      <main>
+      <main style={{ flex: 1 }}>
         <Outlet context={{ setModalOpen }} />
       </main>
+      <Footer />
       <WalletModal open={modalOpen} onClose={() => setModalOpen(false)} />
       <Toaster position="top-right" richColors />
     </div>

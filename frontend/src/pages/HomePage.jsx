@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
 import "../assets/css/home.css";
 
 function HomePage({ auth }) {
@@ -9,11 +8,7 @@ function HomePage({ auth }) {
   const isAuthenticated = Boolean(auth?.token);
 
   const goSearch = () => {
-    if (quickSerial) {
-      navigate(`/search?serial=${quickSerial}`);
-    } else {
-      navigate("/search");
-    }
+    navigate("/search");
   };
 
   const goPortal = () => {
@@ -379,8 +374,6 @@ function HomePage({ auth }) {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
