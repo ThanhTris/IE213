@@ -13,7 +13,7 @@ import GuestPage from "./pages/GuestPage";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import SignInUpPage from "./pages/SignInUpPage";
-import SettingsPage from "./pages/SettingsPage";
+import AccountPage from "./pages/AccountPage";
 import CreateNewProduct from "./pages/admin/CreateNewProduct";
 
 // Utils & Styles
@@ -164,10 +164,10 @@ function App() {
         />
 
         <Route
-          path="/settings"
+          path="/account"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <SettingsPage auth={auth} onLogout={handleLogout} />
+              <AccountPage auth={auth} onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />

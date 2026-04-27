@@ -18,7 +18,7 @@ function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
   }
 
   if (isAuthenticated) {
-    tabs.push({ key: "settings", label: "Settings", path: "/settings" });
+    tabs.push({ key: "account", label: "Tài khoản", path: "/account" });
   }
 
   return (

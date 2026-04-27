@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { userService } from "../services/userService";
 import { warrantyService } from "../services/warrantyService";
-import "../assets/css/SettingsPage.css";
+import { ethers } from "ethers";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import WarrantyNFT from "../contracts/WarrantyNFT.json";
+import apiClient from "../services/apiClient";
+import "../assets/css/AccountPage.css";
 
-function SettingsPage({ auth, onLogout }) {
+function AccountPage({ auth, onLogout }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("info");
   const [isEditing, setIsEditing] = useState(false);
 
@@ -21,6 +28,17 @@ function SettingsPage({ auth, onLogout }) {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [stats, setStats] = useState({ total: 0, active: 0 });
+
+  // Warranties state
+  const [myWarranties, setMyWarranties] = useState([]);
+  const [loadingWarranties, setLoadingWarranties] = useState(false);
+
+  // Transfer state
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [selectedWarranty, setSelectedWarranty] = useState(null);
+  const [recipientAddress, setRecipientAddress] = useState("");
+  const [isTransferring, setIsTransferring] = useState(false);
 
   const walletAddress = auth?.walletAddress || "";
   const initials = profile.fullName
@@ -73,6 +91,27 @@ function SettingsPage({ auth, onLogout }) {
     loadProfile();
   }, [auth]);
 
+  useEffect(() => {
+    if (activeTab === "devices" && auth?.token) {
+      loadWarranties();
+    }
+  }, [activeTab, auth]);
+
+  const loadWarranties = async () => {
+    setLoadingWarranties(true);
+    try {
+      const res = await warrantyService.getMyWarranties();
+      if (res && res.success) {
+        setMyWarranties(res.data || []);
+      }
+    } catch (err) {
+      console.error("Error loading warranties:", err);
+      toast.error("Không thể tải danh sách thiết bị");
+    } finally {
+      setLoadingWarranties(false);
+    }
+  };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditProfile((prev) => ({ ...prev, [name]: value }));
@@ -123,6 +162,62 @@ function SettingsPage({ auth, onLogout }) {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Lỗi khi kết nối");
+    }
+  };
+
+  const handleDownloadPDF = async (warranty) => {
+    toast.info("Đang chuẩn bị bản in PDF...");
+    // Chuyển hướng đến trang chi tiết nhưng truyền flag để tự động tải
+    navigate(`/search/${warranty.serialNumber}?download=true`);
+  };
+
+  const openTransferWarning = (warranty) => {
+    setSelectedWarranty(warranty);
+    setShowWarningModal(true);
+  };
+
+  const proceedToTransfer = () => {
+    setShowWarningModal(false);
+    setShowTransferModal(true);
+  };
+
+  const handleTransfer = async () => {
+    if (!recipientAddress || !ethers.isAddress(recipientAddress)) {
+      toast.error("Vui lòng nhập địa chỉ ví hợp lệ!");
+      return;
+    }
+
+    setIsTransferring(true);
+    try {
+      if (!window.ethereum) throw new Error("Vui lòng cài đặt MetaMask!");
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      
+      const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
+      const contract = new ethers.Contract(contractAddress, WarrantyNFT, signer);
+
+      toast.info("Đang yêu cầu xác nhận từ ví...");
+      
+      // NFT Transfer on blockchain
+      const tx = await contract.transferFrom(walletAddress, recipientAddress, selectedWarranty.tokenId);
+      const receipt = await tx.wait();
+      
+      // Update backend
+      await apiClient.post("/transfers", {
+        tokenId: selectedWarranty.tokenId,
+        toAddress: recipientAddress,
+        txHash: receipt.hash
+      });
+
+      toast.success("Chuyển nhượng thành công!");
+      setShowTransferModal(false);
+      loadWarranties(); // Refresh list
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Lỗi trong quá trình chuyển nhượng");
+    } finally {
+      setIsTransferring(false);
     }
   };
 
@@ -196,6 +291,17 @@ function SettingsPage({ auth, onLogout }) {
                 <circle cx="12" cy="7" r="4" />
               </svg>
               Thông tin cá nhân
+            </button>
+            <button
+              className={`tab-btn ${activeTab === "devices" ? "active" : ""}`}
+              onClick={() => setActiveTab("devices")}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+              Thiết bị của tôi
             </button>
             <button
               className={`tab-btn ${activeTab === "account" ? "active" : ""}`}
@@ -338,6 +444,84 @@ function SettingsPage({ auth, onLogout }) {
                   </div>
                 )}
 
+                {activeTab === "devices" && (
+                  <div className="tab-pane">
+                    {loadingWarranties ? (
+                      <div className="loading-state">Đang tải danh sách thiết bị...</div>
+                    ) : myWarranties.length > 0 ? (
+                      <div className="devices-grid">
+                        {myWarranties.map((w) => (
+                          <div 
+                            key={w._id} 
+                            className="device-card"
+                            onClick={() => navigate(`/search/${w.serialNumber}`)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <div className="device-card-header">
+                              <div className="device-type-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                  <line x1="12" y1="18" x2="12.01" y2="18" />
+                                </svg>
+                              </div>
+                              <span className={`device-status ${w.status ? "active" : "expired"}`}>
+                                {w.status ? "Đang hoạt động" : "Hết hạn"}
+                              </span>
+                            </div>
+                            <div className="device-info">
+                              <h4 className="device-name">{w.productCode}</h4>
+                              <p className="device-serial">S/N: {w.serialNumber}</p>
+                              <div className="device-meta">
+                                <div>
+                                  <label>Ngày mua</label>
+                                  <span>{new Date(w.createdAt).toLocaleDateString()}</span>
+                                </div>
+                                <div>
+                                  <label>Hết hạn</label>
+                                  <span>{new Date(w.expiryDate * 1000).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="device-actions">
+                              <div className="btn-group">
+                                <button className="btn-download" onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDownloadPDF(w);
+                                }}>
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                  </svg>
+                                  Tải xuống
+                                </button>
+                                <button className="btn-transfer" onClick={(e) => {
+                                  e.stopPropagation();
+                                  openTransferWarning(w);
+                                }}>
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polyline points="16 3 21 3 21 8" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                    <polyline points="8 21 3 21 3 16" />
+                                    <line x1="3" y1="21" x2="14" y2="10" />
+                                  </svg>
+                                  Chuyển nhượng
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="empty-devices">
+                        <div className="empty-icon">📱</div>
+                        <h3>Bạn chưa có thiết bị nào</h3>
+                        <p>Các thiết bị được đăng ký bảo hành bằng ví của bạn sẽ xuất hiện tại đây.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {activeTab === "account" && (
                   <div className="tab-pane">
                     <div className="danger-zone" style={{ marginTop: 0, border: "none", paddingTop: 0 }}>
@@ -360,8 +544,72 @@ function SettingsPage({ auth, onLogout }) {
           </div>
         </div>
       </div>
+
+      {/* Warning Modal */}
+      {showWarningModal && (
+        <div className="modal-overlay">
+          <div className="modal-content warning">
+            <div className="modal-header">
+              <div className="warning-icon">⚠️</div>
+              <h3>Cảnh báo quan trọng</h3>
+            </div>
+            <div className="modal-body">
+              <p>Bạn đang thực hiện chuyển nhượng quyền sở hữu thiết bị <strong>{selectedWarranty?.productCode}</strong>.</p>
+              <p><strong>Lưu ý:</strong> Sau khi hoàn tất, bạn sẽ <strong>mất toàn bộ quyền sở hữu</strong> đối với NFT bảo hành này trên Blockchain. Hành động này không thể hoàn tác.</p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowWarningModal(false)}>Hủy bỏ</button>
+              <button className="btn-danger" onClick={proceedToTransfer}>Tôi đã hiểu, tiếp tục</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Transfer Modal */}
+      {showTransferModal && (
+        <div className="modal-overlay">
+          <div className="modal-content transfer">
+            <div className="modal-header">
+              <h3>Chuyển nhượng bảo hành</h3>
+              <button className="close-btn" onClick={() => setShowTransferModal(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <div className="transfer-device-preview">
+                <div className="preview-icon">📱</div>
+                <div className="preview-info">
+                  <strong>{selectedWarranty?.productCode}</strong>
+                  <span>S/N: {selectedWarranty?.serialNumber}</span>
+                  <span className="token-id">Token ID: {selectedWarranty?.tokenId}</span>
+                </div>
+              </div>
+              <div className="form-field">
+                <label>Địa chỉ ví người nhận (EVM Wallet)</label>
+                <div className="input-wrapper">
+                  <input 
+                    type="text" 
+                    placeholder="0x..." 
+                    value={recipientAddress}
+                    onChange={(e) => setRecipientAddress(e.target.value)}
+                  />
+                </div>
+                <p className="field-hint">Đảm bảo địa chỉ ví người nhận là chính xác.</p>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowTransferModal(false)}>Hủy</button>
+              <button 
+                className="btn-primary" 
+                onClick={handleTransfer}
+                disabled={isTransferring}
+              >
+                {isTransferring ? "Đang xử lý..." : "Xác nhận chuyển nhượng"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default SettingsPage;
+export default AccountPage;
