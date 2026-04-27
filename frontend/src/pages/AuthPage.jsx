@@ -53,11 +53,6 @@ function AuthPage({ onAuthSuccess, onCancel }) {
 
   return (
     <div className="auth-wrap">
-      {/* Background Decorative Orbs */}
-      <div className="bg-orb orb-1"></div>
-      <div className="bg-orb orb-2"></div>
-      <div className="bg-orb orb-3"></div>
-
       <button type="button" className="btn-back-absolute" onClick={onCancel} disabled={busy}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -128,22 +123,22 @@ function AuthPage({ onAuthSuccess, onCancel }) {
           <h4>Tại sao nên dùng MetaMask?</h4>
           <div className="benefit-item">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <circle cx="10" cy="10" r="9" fill="var(--emerald-100)" />
-              <path d="M7 10L9 12L13 8" stroke="var(--emerald-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="10" cy="10" r="9" fill="var(--color-success-light)" />
+              <path d="M7 10L9 12L13 8" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span>Ví của bạn, khóa của bạn – Quyền sở hữu tuyệt đối</span>
           </div>
           <div className="benefit-item">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <circle cx="10" cy="10" r="9" fill="var(--emerald-100)" />
-              <path d="M7 10L9 12L13 8" stroke="var(--emerald-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="10" cy="10" r="9" fill="var(--color-success-light)" />
+              <path d="M7 10L9 12L13 8" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span>Không cần tạo tài khoản hay nhớ mật khẩu</span>
           </div>
           <div className="benefit-item">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <circle cx="10" cy="10" r="9" fill="var(--emerald-100)" />
-              <path d="M7 10L9 12L13 8" stroke="var(--emerald-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="10" cy="10" r="9" fill="var(--color-success-light)" />
+              <path d="M7 10L9 12L13 8" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span>Xác thực an toàn được xác minh qua Blockchain</span>
           </div>
@@ -151,7 +146,7 @@ function AuthPage({ onAuthSuccess, onCancel }) {
 
         <div className="no-wallet-prompt">
           <p>Bạn chưa cài đặt tiện ích MetaMask?</p>
-          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="link">
+          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="link" style={{ color: 'var(--color-success)', fontWeight: 'bold' }}>
             Tải MetaMask →
           </a>
         </div>

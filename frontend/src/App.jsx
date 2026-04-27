@@ -89,7 +89,7 @@ function App() {
 
   const handleAuthSuccess = (nextAuth) => {
     setAuth(nextAuth);
-    navigate(nextAuth?.role === "admin" ? "/admin/workspace" : "/user");
+    navigate(nextAuth?.role === "admin" ? "/admin/workspace" : "/account");
   };
 
   return (

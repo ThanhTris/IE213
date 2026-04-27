@@ -53,7 +53,7 @@ function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
                   isActive || (tab.path === "/" && location.pathname === "/") ? "active" : ""
                 }
                 role="tab"
-                end={tab.path === "/"} // Để đảm bảo active đúng đường dẫn trang chủ
+                end={tab.path === "/"}
               >
                 {tab.label}
               </NavLink>
