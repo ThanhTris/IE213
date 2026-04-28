@@ -436,8 +436,6 @@ function RepairHistory() {
           { id: "all", label: "Tất cả" },
           { id: "Màn hình", label: "Màn hình" },
           { id: "Pin/Nguồn", label: "Pin/Nguồn" },
-          { id: "Phần cứng", label: "Phần cứng" },
-          { id: "Phần mềm", label: "Phần mềm" },
           { id: "Khác", label: "Khác" }
         ].map((cat) => (
           <button
