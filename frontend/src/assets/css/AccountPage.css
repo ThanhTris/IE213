@@ -442,21 +442,36 @@
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  background: white;
-  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   font-size: var(--text-base); /* was 13px */
   font-weight: 700;
-  color: #475569;
   cursor: pointer;
   transition: all 0.2s;
+  border: 1.5px solid transparent;
 }
 
-.btn-download:hover,
-.btn-transfer:hover {
-  background: #f8fafc;
+.btn-download {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
+.btn-download:hover {
+  background: #dbeafe;
   border-color: #3b82f6;
-  color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.btn-transfer {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.btn-transfer:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #b91c1c;
 }
 
 .btn-download svg,
