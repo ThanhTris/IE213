@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 // Pages
 import HomePage from "./pages/HomePage";
 import GuestPage from "./pages/GuestPage";
-import AdminPage from "./pages/AdminPage";
+import AdminPage from "./pages/AdminWorkspacePage";
 import AuthPage from "./pages/AuthPage";
 import AccountPage from "./pages/AccountPage";
 import CreateNewProduct from "./pages/admin/CreateNewProduct";
