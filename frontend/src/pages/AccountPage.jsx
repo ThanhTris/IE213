@@ -129,7 +129,9 @@ function AccountPage({ auth, onLogout }) {
         toast.error(res?.message || "Cập nhật hồ sơ thất bại");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Lỗi kết nối khi cập nhật hồ sơ");
+      toast.error(
+        err.response?.data?.message || "Lỗi kết nối khi cập nhật hồ sơ",
+      );
     } finally {
       setProfileSaving(false);
     }
@@ -146,12 +148,12 @@ function AccountPage({ auth, onLogout }) {
 
   const handleLockAccount = async () => {
     const confirm = window.confirm(
-      "BẠN CÓ CHẮC CHẮN MUỐN KHÓA TÀI KHOẢN? \n\nSau khi khóa, bạn sẽ bị đăng xuất và không thể đăng nhập lại cho đến khi được Admin mở khóa."
+      "BẠN CÓ CHẮC CHẮN MUỐN KHÓA TÀI KHOẢN? \n\nSau khi khóa, bạn sẽ bị đăng xuất và không thể đăng nhập lại cho đến khi được Admin mở khóa.",
     );
     if (!confirm) return;
 
     try {
-      const res = await userService.updateProfile({ isActive: false });
+      const res = await userService.updateUserStatus(walletAddress, false);
       if (res && res.success) {
         toast.success("Tài khoản đã được khóa. Đang đăng xuất...");
         setTimeout(() => {
@@ -193,21 +195,29 @@ function AccountPage({ auth, onLogout }) {
 
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-      
+
       const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
-      const contract = new ethers.Contract(contractAddress, WarrantyNFT, signer);
+      const contract = new ethers.Contract(
+        contractAddress,
+        WarrantyNFT,
+        signer,
+      );
 
       toast.info("Đang yêu cầu xác nhận từ ví...");
-      
+
       // NFT Transfer on blockchain
-      const tx = await contract.transferFrom(walletAddress, recipientAddress, selectedWarranty.tokenId);
+      const tx = await contract.transferFrom(
+        walletAddress,
+        recipientAddress,
+        selectedWarranty.tokenId,
+      );
       const receipt = await tx.wait();
-      
+
       // Update backend
       await apiClient.post("/transfers", {
         tokenId: selectedWarranty.tokenId,
         toAddress: recipientAddress,
-        txHash: receipt.hash
+        txHash: receipt.hash,
       });
 
       toast.success("Chuyển nhượng thành công!");
@@ -236,7 +246,12 @@ function AccountPage({ auth, onLogout }) {
           <p className="profile-email">{profile.email || "user@example.com"}</p>
 
           <div className="role-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <span>{profile.role === "admin" ? "Administrator" : "User"}</span>
@@ -245,13 +260,19 @@ function AccountPage({ auth, onLogout }) {
           <div className="info-box wallet-box">
             <div className="info-header">
               <label>Wallet Address</label>
-              <svg className="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                className="info-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
             <p className="info-value wallet-value">
-              {walletAddress 
-                ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` 
+              {walletAddress
+                ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`
                 : "Not connected"}
             </p>
           </div>
@@ -259,7 +280,13 @@ function AccountPage({ auth, onLogout }) {
           <div className="info-box member-box">
             <div className="info-header">
               <label>Member Since</label>
-              <svg className="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                className="info-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                 <line x1="16" y1="2" x2="16" y2="6" />
                 <line x1="8" y1="2" x2="8" y2="6" />
@@ -267,7 +294,9 @@ function AccountPage({ auth, onLogout }) {
               </svg>
             </div>
             <p className="info-value">
-              {profile.createdAt ? new Date(profile.createdAt).toISOString().split('T')[0] : "2024-01-01"}
+              {profile.createdAt
+                ? new Date(profile.createdAt).toISOString().split("T")[0]
+                : "2024-01-01"}
             </p>
           </div>
 
@@ -290,7 +319,12 @@ function AccountPage({ auth, onLogout }) {
               className={`tab-btn ${activeTab === "info" ? "active" : ""}`}
               onClick={() => setActiveTab("info")}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
@@ -300,7 +334,12 @@ function AccountPage({ auth, onLogout }) {
               className={`tab-btn ${activeTab === "devices" ? "active" : ""}`}
               onClick={() => setActiveTab("devices")}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                 <line x1="8" y1="21" x2="16" y2="21" />
                 <line x1="12" y1="17" x2="12" y2="21" />
@@ -311,10 +350,15 @@ function AccountPage({ auth, onLogout }) {
               className={`tab-btn ${activeTab === "account" ? "active" : ""}`}
               onClick={() => setActiveTab("account")}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              Quản lý tài khoản
+              Khóa tài khoản
             </button>
           </div>
 
@@ -329,14 +373,24 @@ function AccountPage({ auth, onLogout }) {
                       <div className="form-field">
                         <label>Họ và Tên</label>
                         <div className="input-wrapper">
-                          <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            className="input-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                             <circle cx="12" cy="7" r="4" />
                           </svg>
                           <input
                             type="text"
                             name="fullName"
-                            value={isEditing ? editProfile.fullName : profile.fullName}
+                            value={
+                              isEditing
+                                ? editProfile.fullName
+                                : profile.fullName
+                            }
                             onChange={handleEditChange}
                             placeholder="John Doe"
                             disabled={!isEditing}
@@ -347,14 +401,22 @@ function AccountPage({ auth, onLogout }) {
                       <div className="form-field">
                         <label>Địa chỉ Email</label>
                         <div className="input-wrapper">
-                          <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            className="input-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                           </svg>
                           <input
                             type="email"
                             name="email"
-                            value={isEditing ? editProfile.email : profile.email}
+                            value={
+                              isEditing ? editProfile.email : profile.email
+                            }
                             onChange={handleEditChange}
                             placeholder="john.doe@example.com"
                             disabled={!isEditing}
@@ -365,13 +427,21 @@ function AccountPage({ auth, onLogout }) {
                       <div className="form-field">
                         <label>Số điện thoại</label>
                         <div className="input-wrapper">
-                          <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            className="input-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
                           </svg>
                           <input
                             type="tel"
                             name="phone"
-                            value={isEditing ? editProfile.phone : profile.phone}
+                            value={
+                              isEditing ? editProfile.phone : profile.phone
+                            }
                             onChange={handleEditChange}
                             placeholder="+1 234 567 8900"
                             disabled={!isEditing}
@@ -382,15 +452,34 @@ function AccountPage({ auth, onLogout }) {
                       <div className="form-field">
                         <label>Ngày tham gia</label>
                         <div className="input-wrapper disabled">
-                          <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <svg
+                            className="input-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <rect
+                              x="3"
+                              y="4"
+                              width="18"
+                              height="18"
+                              rx="2"
+                              ry="2"
+                            />
                             <line x1="16" y1="2" x2="16" y2="6" />
                             <line x1="8" y1="2" x2="8" y2="6" />
                             <line x1="3" y1="10" x2="21" y2="10" />
                           </svg>
                           <input
                             type="text"
-                            value={profile.createdAt ? new Date(profile.createdAt).toLocaleDateString() : "N/A"}
+                            value={
+                              profile.createdAt
+                                ? new Date(
+                                    profile.createdAt,
+                                  ).toLocaleDateString()
+                                : "N/A"
+                            }
                             readOnly
                           />
                         </div>
@@ -399,7 +488,13 @@ function AccountPage({ auth, onLogout }) {
                       <div className="form-field">
                         <label>Địa chỉ ví</label>
                         <div className="input-wrapper disabled">
-                          <svg className="input-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            className="input-icon green"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <path d="M20 12V22H4V12" />
                             <path d="M22 7H2v5h20V7z" />
                             <path d="M12 22V7" />
@@ -413,12 +508,22 @@ function AccountPage({ auth, onLogout }) {
                       <div className="form-field">
                         <label>Vai trò</label>
                         <div className="input-wrapper disabled">
-                          <svg className="input-icon orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            className="input-icon orange"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                           </svg>
                           <input
                             type="text"
-                            value={profile.role === "admin" ? "Administrator" : (profile.role || "USER").toUpperCase()}
+                            value={
+                              profile.role === "admin"
+                                ? "Administrator"
+                                : (profile.role || "USER").toUpperCase()
+                            }
                             readOnly
                           />
                         </div>
@@ -427,12 +532,18 @@ function AccountPage({ auth, onLogout }) {
 
                     <div className="form-actions-bottom">
                       {!isEditing ? (
-                        <button className="btn-edit" onClick={() => setIsEditing(true)}>
+                        <button
+                          className="btn-edit"
+                          onClick={() => setIsEditing(true)}
+                        >
                           Chỉnh sửa hồ sơ
                         </button>
                       ) : (
                         <div className="edit-actions">
-                          <button className="btn-cancel" onClick={handleCancelEdit}>
+                          <button
+                            className="btn-cancel"
+                            onClick={handleCancelEdit}
+                          >
                             Hủy
                           </button>
                           <button
@@ -451,59 +562,102 @@ function AccountPage({ auth, onLogout }) {
                 {activeTab === "devices" && (
                   <div className="tab-pane">
                     {loadingWarranties ? (
-                      <div className="loading-state">Đang tải danh sách thiết bị...</div>
+                      <div className="loading-state">
+                        Đang tải danh sách thiết bị...
+                      </div>
                     ) : myWarranties.length > 0 ? (
                       <div className="devices-grid">
                         {myWarranties.map((w) => (
-                          <div 
-                            key={w._id} 
+                          <div
+                            key={w._id}
                             className="device-card"
-                            onClick={() => navigate(`/search/${w.serialNumber}`)}
-                            style={{ cursor: 'pointer' }}
+                            onClick={() =>
+                              navigate(`/search/${w.serialNumber}`)
+                            }
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="device-card-header">
                               <div className="device-type-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <rect
+                                    x="5"
+                                    y="2"
+                                    width="14"
+                                    height="20"
+                                    rx="2"
+                                    ry="2"
+                                  />
                                   <line x1="12" y1="18" x2="12.01" y2="18" />
                                 </svg>
                               </div>
-                              <span className={`device-status ${w.status ? "active" : "expired"}`}>
+                              <span
+                                className={`device-status ${w.status ? "active" : "expired"}`}
+                                style={{ fontSize: "12px" }}
+                              >
                                 {w.status ? "Đang hoạt động" : "Hết hạn"}
                               </span>
                             </div>
                             <div className="device-info">
                               <h4 className="device-name">{w.productCode}</h4>
-                              <p className="device-serial">S/N: {w.serialNumber}</p>
+                              <p className="device-serial">
+                                S/N: {w.serialNumber}
+                              </p>
                               <div className="device-meta">
                                 <div>
                                   <label>Ngày mua</label>
-                                  <span>{new Date(w.createdAt).toLocaleDateString()}</span>
+                                  <span>
+                                    {new Date(w.createdAt).toLocaleDateString()}
+                                  </span>
                                 </div>
                                 <div>
                                   <label>Hết hạn</label>
-                                  <span>{new Date(w.expiryDate * 1000).toLocaleDateString()}</span>
+                                  <span>
+                                    {new Date(
+                                      w.expiryDate * 1000,
+                                    ).toLocaleDateString()}
+                                  </span>
                                 </div>
                               </div>
                             </div>
                             <div className="device-actions">
                               <div className="btn-group">
-                                <button className="btn-download" onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDownloadPDF(w);
-                                }}>
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <button
+                                  className="btn-download"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDownloadPDF(w);
+                                  }}
+                                >
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                  >
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                     <polyline points="7 10 12 15 17 10" />
                                     <line x1="12" y1="15" x2="12" y2="3" />
                                   </svg>
                                   Tải xuống
                                 </button>
-                                <button className="btn-transfer" onClick={(e) => {
-                                  e.stopPropagation();
-                                  openTransferWarning(w);
-                                }}>
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <button
+                                  className="btn-transfer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openTransferWarning(w);
+                                  }}
+                                >
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                  >
                                     <polyline points="16 3 21 3 21 8" />
                                     <line x1="10" y1="14" x2="21" y2="3" />
                                     <polyline points="8 21 3 21 3 16" />
@@ -520,7 +674,10 @@ function AccountPage({ auth, onLogout }) {
                       <div className="empty-devices">
                         <div className="empty-icon">📱</div>
                         <h3>Bạn chưa có thiết bị nào</h3>
-                        <p>Các thiết bị được đăng ký bảo hành bằng ví của bạn sẽ xuất hiện tại đây.</p>
+                        <p>
+                          Các thiết bị được đăng ký bảo hành bằng ví của bạn sẽ
+                          xuất hiện tại đây.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -533,10 +690,15 @@ function AccountPage({ auth, onLogout }) {
                         <div className="danger-info">
                           <span className="danger-title">Khóa tài khoản</span>
                           <span className="danger-desc">
-                            Hành động này sẽ vô hiệu hóa tài khoản của bạn. Bạn sẽ không thể đăng nhập cho đến khi liên hệ Admin để mở khóa.
+                            Hành động này sẽ vô hiệu hóa tài khoản của bạn. Bạn
+                            sẽ không thể đăng nhập cho đến khi liên hệ Admin để
+                            mở khóa.
                           </span>
                         </div>
-                        <button className="btn-lock-account" onClick={handleLockAccount}>
+                        <button
+                          className="btn-lock-account"
+                          onClick={handleLockAccount}
+                        >
                           Khóa ngay
                         </button>
                       </div>
@@ -558,12 +720,26 @@ function AccountPage({ auth, onLogout }) {
               <h3>Cảnh báo quan trọng</h3>
             </div>
             <div className="modal-body">
-              <p>Bạn đang thực hiện chuyển nhượng quyền sở hữu thiết bị <strong>{selectedWarranty?.productCode}</strong>.</p>
-              <p><strong>Lưu ý:</strong> Sau khi hoàn tất, bạn sẽ <strong>mất toàn bộ quyền sở hữu</strong> đối với NFT bảo hành này trên Blockchain. Hành động này không thể hoàn tác.</p>
+              <p>
+                Bạn đang thực hiện chuyển nhượng quyền sở hữu thiết bị{" "}
+                <strong>{selectedWarranty?.productCode}</strong>.
+              </p>
+              <p>
+                <strong>Lưu ý:</strong> Sau khi hoàn tất, bạn sẽ{" "}
+                <strong>mất toàn bộ quyền sở hữu</strong> đối với NFT bảo hành
+                này trên Blockchain. Hành động này không thể hoàn tác.
+              </p>
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setShowWarningModal(false)}>Hủy bỏ</button>
-              <button className="btn-danger" onClick={proceedToTransfer}>Tôi đã hiểu, tiếp tục</button>
+              <button
+                className="btn-secondary"
+                onClick={() => setShowWarningModal(false)}
+              >
+                Hủy bỏ
+              </button>
+              <button className="btn-danger" onClick={proceedToTransfer}>
+                Tôi đã hiểu, tiếp tục
+              </button>
             </div>
           </div>
         </div>
@@ -575,7 +751,12 @@ function AccountPage({ auth, onLogout }) {
           <div className="modal-content transfer">
             <div className="modal-header">
               <h3>Chuyển nhượng bảo hành</h3>
-              <button className="close-btn" onClick={() => setShowTransferModal(false)}>&times;</button>
+              <button
+                className="close-btn"
+                onClick={() => setShowTransferModal(false)}
+              >
+                &times;
+              </button>
             </div>
             <div className="modal-body">
               <div className="transfer-device-preview">
@@ -583,26 +764,35 @@ function AccountPage({ auth, onLogout }) {
                 <div className="preview-info">
                   <strong>{selectedWarranty?.productCode}</strong>
                   <span>S/N: {selectedWarranty?.serialNumber}</span>
-                  <span className="token-id">Token ID: {selectedWarranty?.tokenId}</span>
+                  <span className="token-id">
+                    Token ID: {selectedWarranty?.tokenId}
+                  </span>
                 </div>
               </div>
               <div className="form-field">
                 <label>Địa chỉ ví người nhận (EVM Wallet)</label>
                 <div className="input-wrapper">
-                  <input 
-                    type="text" 
-                    placeholder="0x..." 
+                  <input
+                    type="text"
+                    placeholder="0x..."
                     value={recipientAddress}
                     onChange={(e) => setRecipientAddress(e.target.value)}
                   />
                 </div>
-                <p className="field-hint">Đảm bảo địa chỉ ví người nhận là chính xác.</p>
+                <p className="field-hint">
+                  Đảm bảo địa chỉ ví người nhận là chính xác.
+                </p>
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setShowTransferModal(false)}>Hủy</button>
-              <button 
-                className="btn-primary" 
+              <button
+                className="btn-secondary"
+                onClick={() => setShowTransferModal(false)}
+              >
+                Hủy
+              </button>
+              <button
+                className="btn-primary"
                 onClick={handleTransfer}
                 disabled={isTransferring}
               >
