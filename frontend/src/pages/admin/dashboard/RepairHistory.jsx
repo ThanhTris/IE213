@@ -1,7 +1,128 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { repairService } from "../../../services/repairService";
-import { getStatusConfig } from "../../../utils/statusStyles";
+import { getStatusConfig, REPAIR_STATUS_CONFIG } from "../../../utils/statusStyles";
+
+
+function FilterModal({ isOpen, onClose, filterStatus, setFilterStatus, filterType, setFilterType, technicianWallet, setTechnicianWallet, priceRange, setPriceRange, uniqueTechnicians }) {
+  if (!isOpen) return null;
+
+  const costPresets = [
+    { label: "Tất cả mức giá", min: 0, max: Infinity },
+    { label: "Dưới 500k", min: 0, max: 500000 },
+    { label: "500k - 2tr", min: 500000, max: 2000000 },
+    { label: "Trên 2 triệu", min: 2000000, max: Infinity },
+  ];
+
+  const allStatuses = [
+    { id: "all", label: "Tất cả trạng thái" },
+    { id: "pending", label: "Tiếp nhận" },
+    { id: "waiting_parts", label: "Chờ linh kiện" },
+    { id: "fixing", label: "Đang sửa" },
+    { id: "completed", label: "Sửa xong" },
+    { id: "delivered", label: "Đã giao" },
+    { id: "cancelled", label: "Đã hủy" }
+  ];
+
+  const allTypes = ["Tất cả", "Màn hình", "Pin/Nguồn", "Phần cứng", "Phần mềm", "Khác"];
+
+  return (
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-content" style={{ maxWidth: "55rem" }} onClick={(e) => e.stopPropagation()}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">Bộ lọc nâng cao</h3>
+          <button onClick={onClose} className="admin-modal-close-btn">×</button>
+        </div>
+
+        <div className="admin-modal-body hide-scrollbar" style={{ maxHeight: "75vh", padding: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            {/* Status Filter */}
+            <div>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 8, display: "block", textTransform: "uppercase" }}>Trạng thái</label>
+              <select 
+                value={filterStatus} 
+                onChange={(e) => setFilterStatus(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14 }}
+              >
+                {allStatuses.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
+            </div>
+
+            {/* Type Filter */}
+            <div>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 8, display: "block", textTransform: "uppercase" }}>Loại hình</label>
+              <select 
+                value={filterType} 
+                onChange={(e) => setFilterType(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14 }}
+              >
+                {allTypes.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+
+            {/* Technician Filter */}
+            <div style={{ gridColumn: "span 2" }}>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 8, display: "block", textTransform: "uppercase" }}>Kỹ thuật viên thực hiện</label>
+              <select 
+                value={technicianWallet} 
+                onChange={(e) => setTechnicianWallet(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14, fontFamily: "monospace" }}
+              >
+                <option value="all">Tất cả kỹ thuật viên</option>
+                {uniqueTechnicians.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Cost Range */}
+            <div style={{ gridColumn: "span 2" }}>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 12, display: "block", textTransform: "uppercase" }}>Khoảng chi phí (VND)</label>
+              <div className="filter-button-group" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: "1.2rem" }}>
+                {costPresets.map((p) => (
+                  <button
+                    key={p.label}
+                    className={`filter-btn ${priceRange.label === p.label ? "active" : ""}`}
+                    onClick={() => setPriceRange(p)}
+                    style={{
+                      borderColor: priceRange.label === p.label ? "var(--navy-primary)" : "var(--grey-200)",
+                      background: priceRange.label === p.label ? "var(--navy-primary)" : "transparent",
+                      color: priceRange.label === p.label ? "var(--white)" : "var(--grey-600)"
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-modal-footer light-bg" style={{ padding: "20px 24px", display: "flex", gap: 12, borderTop: "1px solid #f1f5f9", justifyContent: "center" }}>
+          <button
+            onClick={() => {
+              setFilterStatus("all");
+              setFilterType("Tất cả");
+              setTechnicianWallet("all");
+              setPriceRange({ min: 0, max: Infinity, label: "Tất cả mức giá" });
+            }}
+            className="admin-secondary-btn"
+            style={{ padding: "12px 24px", minWidth: "140px", textAlign: "center" }}
+          >
+            Làm mới bộ lọc
+          </button>
+          <button
+            onClick={onClose}
+            className="admin-primary-btn"
+            style={{ padding: "12px 32px", minWidth: "140px", textAlign: "center" }}
+          >
+            Áp dụng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 function RepairHistory() {
@@ -21,6 +142,18 @@ function RepairHistory() {
     isWarrantyCovered: false
   });
   const [isUpdating, setIsUpdating] = useState(false);
+  
+  // Filter states
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterType, setFilterType] = useState("Tất cả");
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [technicianWallet, setTechnicianWallet] = useState("all");
+  const [priceRange, setPriceRange] = useState({ label: "Tất cả mức giá", min: 0, max: Infinity });
+
+  const uniqueTechnicians = useMemo(() => {
+    const wallets = repairs.map(r => r.technicianWallet).filter(Boolean);
+    return Array.from(new Set(wallets));
+  }, [repairs]);
 
   const fetchRepairs = async () => {
     try {
@@ -39,14 +172,30 @@ function RepairHistory() {
   }, []);
 
   const filteredRecords = useMemo(() => {
-    if (!searchTerm) return repairs;
-    return repairs.filter(
-      (r) =>
-        r.serialNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.repairContent?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.technicianWallet?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [repairs, searchTerm]);
+    return repairs.filter((r) => {
+      // 1. Tìm kiếm theo text
+      const q = searchTerm.toLowerCase();
+      const matchSearch =
+        !q ||
+        (r.serialNumber || "").toLowerCase().includes(q) ||
+        (r.repairContent || "").toLowerCase().includes(q) ||
+        (r.technicianWallet || "").toLowerCase().includes(q);
+
+      // 2. Lọc theo trạng thái
+      const matchStatus = filterStatus === "all" || r.status === filterStatus;
+
+      // 3. Lọc theo thể loại
+      const matchType = filterType === "Tất cả" || r.type === filterType;
+
+      // 4. Lọc theo kỹ thuật viên
+      const matchTechnician = technicianWallet === "all" || r.technicianWallet === technicianWallet;
+
+      // 5. Lọc theo giá
+      const matchPrice = r.cost >= priceRange.min && r.cost <= priceRange.max;
+
+      return matchSearch && matchStatus && matchType && matchTechnician && matchPrice;
+    });
+  }, [repairs, searchTerm, filterStatus, filterType, technicianWallet, priceRange]);
 
   const openDetail = (repair, mode = "view") => {
     setSelectedRepair(repair);
@@ -155,12 +304,12 @@ function RepairHistory() {
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search + Filter row */}
       <div className="admin-list-toolbar" style={{ marginBottom: 24 }}>
         <div className="admin-list-search">
           <input
             type="text"
-            placeholder="Tìm kiếm theo sản phẩm, serial, khách hàng hoặc nội dung..."
+            placeholder="Tìm kiếm theo serial, nội dung, kỹ thuật viên..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -170,6 +319,52 @@ function RepairHistory() {
             </svg>
           </span>
         </div>
+        <button
+          className={`admin-secondary-btn ${ (filterStatus !== "all" || filterType !== "Tất cả" || technicianWallet !== "all" || priceRange.label !== "Tất cả mức giá") ? "active-filter" : "" }`}
+          onClick={() => setIsFilterModalOpen(true)}
+          style={ (filterStatus !== "all" || filterType !== "Tất cả" || technicianWallet !== "all" || priceRange.label !== "Tất cả mức giá") ? { background: "var(--navy-primary)", color: "white", borderColor: "var(--navy-primary)" } : {} }
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+          Bộ lọc
+        </button>
+      </div>
+
+      {/* Status + Type filter pills */}
+      <div className="admin-list-filters-row" style={{ marginBottom: 24 }}>
+        {[
+          { id: "all", label: "Tất cả", colorVar: "var(--navy-primary)" },
+          { id: "pending", label: "Tiếp nhận", colorVar: "var(--status-pending)" },
+          { id: "fixing", label: "Đang sửa", colorVar: "var(--status-fixing)" },
+          { id: "completed", label: "Sửa xong", colorVar: "var(--status-completed)" },
+          { id: "cancelled", label: "Đã hủy", colorVar: "var(--status-cancelled)" }
+        ].map((s) => (
+          <button
+            key={s.id}
+            className={`filter-btn ${filterStatus === s.id ? "active" : ""}`}
+            onClick={() => setFilterStatus(s.id)}
+            style={{ 
+              borderColor: s.colorVar,
+              color: filterStatus === s.id ? "var(--white)" : s.colorVar,
+              background: filterStatus === s.id ? s.colorVar : "transparent"
+            }}
+          >
+            {s.label}
+          </button>
+        ))}
+
+        <div className="admin-list-filters-divider" />
+
+        {["Tất cả", "Màn hình", "Pin/Nguồn", "Phần cứng", "Khác"].map((cat) => (
+          <button
+            key={cat}
+            className={`filter-btn${filterType === cat ? " active" : ""}`}
+            onClick={() => setFilterType(cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {/* Table */}
@@ -238,6 +433,20 @@ function RepairHistory() {
       {/* Table */}
 
       {/* Detail & Update Modal */}
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        technicianWallet={technicianWallet}
+        setTechnicianWallet={setTechnicianWallet}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        uniqueTechnicians={uniqueTechnicians}
+      />
+
       {isModalOpen && selectedRepair && (
         <div className="modal-overlay" onClick={closeDetail}>
           <div className="modal-content modal-large" onClick={e => e.stopPropagation()} style={{ padding: 0, overflow: "hidden" }}>
