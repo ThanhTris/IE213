@@ -232,45 +232,42 @@ function UserManagement() {
   const shortWallet = (addr) => addr ? `${addr.slice(0, 8)}...${addr.slice(-4)}` : "N/A";
 
   return (
-    <div className="product-list-container">
+    <div className="admin-list-container">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <div className="admin-list-header">
+        <div className="admin-list-title-group">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
           </svg>
-          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Tất Cả Người Dùng</span>
-          <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "3px 12px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
+          <h2 className="admin-list-title">Tất Cả Người Dùng</h2>
+          <span className="admin-list-count-badge">
             {filteredUsers.length} người dùng
           </span>
         </div>
-        <button
-          onClick={() => setIsAddOpen(true)}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            background: "#10b981", color: "white", border: "none",
-            borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 14,
-            cursor: "pointer", transition: "background 0.2s",
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.background = "#059669")}
-          onMouseOut={(e) => (e.currentTarget.style.background = "#10b981")}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" />
-          </svg>
-          Thêm Người Dùng
-        </button>
+        <div className="admin-list-actions">
+          <button
+            onClick={() => setIsAddOpen(true)}
+            className="admin-primary-btn"
+            style={{ background: "#10b981", boxShadow: "0 4px 10px rgba(16, 185, 129, 0.2)" }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#059669")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#10b981")}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" />
+            </svg>
+            Thêm Người Dùng
+          </button>
+        </div>
       </div>
 
       {/* Search + Filters */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-        <div className="search-input-wrapper" style={{ flex: 1 }}>
+      <div className="admin-list-toolbar">
+        <div className="admin-list-search">
           <input
             type="text"
             placeholder="Tìm kiếm theo tên, email hoặc địa chỉ ví..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
           />
           <span className="search-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -278,8 +275,8 @@ function UserManagement() {
             </svg>
           </span>
         </div>
-        <button className="action-btn" style={{ width: "auto", padding: "0 16px", gap: 6, display: "flex", alignItems: "center", fontSize: 14, fontWeight: 600 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button className="admin-secondary-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
           Bộ lọc
@@ -287,38 +284,22 @@ function UserManagement() {
       </div>
 
       {/* Role + Status filters */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
+      <div className="admin-list-filters-row">
         {["all", "admin", "staff", "technician", "user"].map((r) => (
           <button
             key={r}
-            className={`filter-btn${filterRole === r ? " active" : ""}`}
+            className={`filter-btn ${filterRole === r ? "active" : ""} ${r === "admin" ? "warning" : ""}`}
             onClick={() => setFilterRole(r)}
-            style={
-              filterRole !== r && r === "admin"
-                ? { borderColor: "#f59e0b", color: "#f59e0b" }
-                : filterRole !== r && r === "staff"
-                  ? { borderColor: "#3b82f6", color: "#3b82f6" }
-                  : filterRole !== r && r === "technician"
-                    ? { borderColor: "#8b5cf6", color: "#8b5cf6" }
-                    : {}
-            }
           >
             {r === "all" ? "Tất Cả" : r === "admin" ? "Quản trị viên" : r === "staff" ? "Nhân viên" : r === "technician" ? "Kỹ thuật viên" : "Người dùng"}
           </button>
         ))}
-        <div style={{ width: 1, background: "#e2e8f0", margin: "0 4px" }} />
+        <div className="admin-list-filters-divider" />
         {["all", "active", "inactive"].map((s) => (
           <button
             key={s}
-            className={`filter-btn${filterStatus === s ? " active" : ""}`}
+            className={`filter-btn ${filterStatus === s ? "active" : ""} ${s === "active" ? "success" : s === "inactive" ? "danger" : ""}`}
             onClick={() => setFilterStatus(s)}
-            style={
-              filterStatus !== s && s === "active"
-                ? { borderColor: "#10b981", color: "#10b981" }
-                : filterStatus !== s && s === "inactive"
-                  ? { borderColor: "#ef4444", color: "#ef4444" }
-                  : {}
-            }
           >
             {s === "all" ? "Mọi Trạng Thái" : s === "active" ? "Hoạt động" : "Tạm dừng"}
           </button>
@@ -330,13 +311,13 @@ function UserManagement() {
         <table className="product-table">
           <thead>
             <tr>
-              <th style={{ fontSize: "0.85rem", textTransform: "none" }}>Người dùng</th>
-              <th style={{ fontSize: "0.85rem", textTransform: "none" }}>Địa chỉ ví</th>
-              <th style={{ fontSize: "0.85rem", textTransform: "none" }}>Vai trò</th>
-              <th style={{ fontSize: "0.85rem", textTransform: "none" }}>Trạng thái</th>
-              <th style={{ fontSize: "0.85rem", textTransform: "none" }}>Số điện thoại</th>
-              <th style={{ fontSize: "0.85rem", textTransform: "none" }}>Bảo hành</th>
-              <th style={{ fontSize: "0.85rem", textTransform: "none", textAlign: "center" }}>Thao tác</th>
+              <th style={{ width: "22%" }}>Người dùng</th>
+              <th style={{ width: "18%" }}>Địa chỉ ví</th>
+              <th style={{ width: "15%" }}>Vai trò</th>
+              <th style={{ width: "12%" }}>Trạng thái</th>
+              <th style={{ width: "13%" }}>Số điện thoại</th>
+              <th style={{ width: "10%" }}>Bảo hành</th>
+              <th style={{ width: "10%", textAlign: "center" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -348,46 +329,30 @@ function UserManagement() {
                 onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
                 style={{ transition: "background 0.2s ease" }}
               >
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{
-                      width: 40, height: 40, borderRadius: "50%",
-                      background: AVATAR_COLORS[idx % AVATAR_COLORS.length],
-                      color: "white", fontWeight: 700, fontSize: 14,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0,
-                    }}>
+                <td onClick={() => handleOpenDetail(user)} style={{ cursor: "pointer" }}>
+                  <div className="product-cell-box">
+                    <div className="product-cell-img-wrapper" style={{ background: AVATAR_COLORS[idx % AVATAR_COLORS.length], color: "white", fontSize: "1.6rem", fontWeight: 700 }}>
                       {user.initials}
                     </div>
-                    <div>
-                      <div style={{ fontWeight: 700, color: "#1e40af", fontSize: 14 }}>{user.fullName || "Unnamed"}</div>
-                      <div style={{ fontSize: 12, color: "#94a3b8" }}>{user.email || "No email"}</div>
+                    <div className="product-cell-info">
+                      <div className="product-cell-title">{user.fullName || "Unnamed"}</div>
+                      <div className="product-cell-meta">{user.email || "No email"}</div>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <span style={{ fontFamily: "monospace", fontSize: 12, color: "#64748b", background: "#f8fafc", padding: "2px 8px", borderRadius: 6, border: "1px solid #e2e8f0" }}>
+                  <span style={{ fontFamily: "monospace", fontSize: "1.2rem", color: "var(--grey-600)", background: "var(--grey-50)", padding: "0.2rem 0.8rem", borderRadius: "0.6rem", border: "1px solid var(--grey-200)" }}>
                     {shortWallet(user.walletAddress)}
                   </span>
                 </td>
                 <td>
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 4,
-                    borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700,
-                    ...ROLE_STYLES[user.role],
-                  }}>
+                  <span className={`filter-btn active ${user.role === "admin" ? "warning" : ""}`} style={{ padding: "0.4rem 1.2rem", height: "auto", minHeight: "unset" }}>
                     {ROLE_ICON[user.role]}
                     {user.role === "admin" ? "Admin" : user.role === "staff" ? "Staff" : user.role === "technician" ? "Technician" : "User"}
                   </span>
                 </td>
                 <td>
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700,
-                    background: user.status === "active" ? "#ecfdf5" : "#fef2f2",
-                    color: user.status === "active" ? "#10b981" : "#ef4444",
-                    border: `1.5px solid ${user.status === "active" ? "#10b981" : "#ef4444"}`,
-                  }}>
+                  <span className={`filter-btn active ${user.status === "active" ? "success" : "danger"}`} style={{ padding: "0.4rem 1.2rem", height: "auto", minHeight: "unset" }}>
                     {user.status === "active" ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12" />
@@ -400,45 +365,18 @@ function UserManagement() {
                     {user.status === "active" ? "Hoạt động" : "Tạm dừng"}
                   </span>
                 </td>
-                <td style={{ color: "#475569", fontSize: 13, fontWeight: 500 }}>{user.phone}</td>
-                <td style={{ fontWeight: 800, color: "#0f172a", fontSize: 14 }}>{user.warrantyCount}</td>
-                <td style={{ textAlign: "center" }}>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <button
-                      className="action-btn"
-                      title="Chỉnh sửa"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditUser({ ...user });
-                      }}
-                      style={{
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #3b82f6",
-                        display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6",
-                        background: "white", cursor: "pointer", transition: "0.2s"
-                      }}
-                      onMouseOver={(e) => { e.currentTarget.style.background = "#eff6ff"; }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                      </svg>
-                    </button>
-
+                <td className="product-cell-text">{user.phone}</td>
+                <td className="product-cell-price">{user.warrantyCount}</td>
+                <td>
+                  <div className="action-buttons">
                     {user.isActive ? (
                       <button
-                        className="action-btn"
+                        className="table-action-btn danger"
                         title="Khóa người dùng"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(user);
                         }}
-                        style={{
-                          width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444",
-                          display: "flex", alignItems: "center", justifyContent: "center", color: "#ef4444",
-                          background: "white", cursor: "pointer", transition: "0.2s"
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.background = "#fef2f2"; }}
-                        onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -447,19 +385,12 @@ function UserManagement() {
                       </button>
                     ) : (
                       <button
-                        className="action-btn"
+                        className="table-action-btn success"
                         title="Mở khóa người dùng"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleUnlock(user);
                         }}
-                        style={{
-                          width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #10b981",
-                          display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981",
-                          background: "white", cursor: "pointer", transition: "0.2s"
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.background = "#f0fdf4"; }}
-                        onMouseOut={(e) => { e.currentTarget.style.background = "white"; }}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -467,6 +398,19 @@ function UserManagement() {
                         </svg>
                       </button>
                     )}
+
+                    <button
+                      className="table-action-btn primary"
+                      title="Chỉnh sửa"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditUser({ ...user });
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                    </button>
                   </div>
                 </td>
               </tr>

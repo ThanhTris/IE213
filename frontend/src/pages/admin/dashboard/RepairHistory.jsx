@@ -124,18 +124,19 @@ function RepairHistory() {
   };
 
   return (
-    <div className="repair-history-container">
+    <div className="admin-list-container">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <div className="admin-list-header">
+        <div className="admin-list-title-group">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>
-          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Lịch Sử Sửa Chữa Hệ Thống</span>
+          <h2 className="admin-list-title">Lịch Sử Sửa Chữa Hệ Thống</h2>
+          <span className="admin-list-count-badge">
+            {repairs.length} lượt sửa chữa
+          </span>
         </div>
-        <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
-          {repairs.length} lượt sửa chữa
-        </span>
+        <div className="admin-list-actions"></div>
       </div>
 
       {/* Stats Cards */}
@@ -155,19 +156,20 @@ function RepairHistory() {
       </div>
 
       {/* Search */}
-      <div className="search-input-wrapper" style={{ marginBottom: 24 }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo sản phẩm, serial, khách hàng hoặc nội dung..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <span className="search-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </span>
+      <div className="admin-list-toolbar" style={{ marginBottom: 24 }}>
+        <div className="admin-list-search">
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo sản phẩm, serial, khách hàng hoặc nội dung..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <span className="search-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+        </div>
       </div>
 
       {/* Table */}
@@ -175,14 +177,14 @@ function RepairHistory() {
         <table className="repair-table">
           <thead>
             <tr>
-              <th>Số Serial</th>
-              <th>Loại hình</th>
-              <th>Nội dung chính</th>
-              <th>Chi phí</th>
-              <th>Kỹ thuật viên</th>
-              <th>Ngày thực hiện</th>
-              <th>Bảo hành</th>
-              <th>Trạng thái</th>
+              <th style={{ width: "14%" }}>Số Serial</th>
+              <th style={{ width: "10%" }}>Loại hình</th>
+              <th style={{ width: "22%" }}>Nội dung chính</th>
+              <th style={{ width: "10%" }}>Chi phí</th>
+              <th style={{ width: "14%" }}>Kỹ thuật viên</th>
+              <th style={{ width: "12%" }}>Ngày thực hiện</th>
+              <th style={{ width: "10%" }}>Bảo hành</th>
+              <th style={{ width: "8%" }}>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
@@ -193,45 +195,33 @@ function RepairHistory() {
                 style={{ cursor: "pointer" }}
                 className="hoverable-row"
               >
-                <td>
-                  <div style={{ fontWeight: 600, color: "#1e40af", fontSize: 13 }}>{record.serialNumber}</div>
-                </td>
-                <td>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{record.type || "Khác"}</div>
-                </td>
-                <td>
-                  <div style={{ color: "#475569", fontSize: 13, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{record.repairContent}</div>
-                </td>
-                <td style={{ fontWeight: 700, color: "#0f172a", fontSize: 13 }}>
+                <td className="product-cell-text product-cell-title">{record.serialNumber}</td>
+                <td className="product-cell-text" style={{ fontWeight: 700, color: "var(--grey-600)" }}>{record.type || "Khác"}</td>
+                <td className="product-cell-text product-cell-truncate" title={record.repairContent}>{record.repairContent}</td>
+                <td className="product-cell-price">
                   {record.cost > 0 ? Number(record.cost).toLocaleString("vi-VN") + " ₫" : "Miễn phí"}
                 </td>
                 <td>
-                  <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace", maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis" }} title={record.technicianWallet}>
-                    {record.technicianWallet ? `${record.technicianWallet.slice(0, 6)}...` : "N/A"}
+                  <div className="product-cell-meta" style={{ fontFamily: "monospace" }} title={record.technicianWallet}>
+                    {record.technicianWallet ? `${record.technicianWallet.slice(0, 8)}...` : "N/A"}
                   </div>
                 </td>
-                <td style={{ fontSize: 12, color: "#475569" }}>
+                <td className="product-cell-text">
                   {record.repairDate ? new Date(record.repairDate).toLocaleDateString("vi-VN") : "-"}
                 </td>
                 <td>
-                  <span style={{
-                    display: "inline-block",
-                    background: record.isWarrantyCovered ? "#10b981" : "#ef4444",
-                    color: "white",
-                    borderRadius: 20, padding: "2px 10px",
-                    fontSize: 11, fontWeight: 700,
-                  }}>
+                  <span className={`filter-btn active ${record.isWarrantyCovered ? "success" : "danger"}`} style={{ padding: "0.2rem 1rem", fontSize: "1.1rem", height: "auto", minHeight: "unset" }}>
                     {record.isWarrantyCovered ? "Có" : "Không"}
                   </span>
                 </td>
                 <td>
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 4,
-                    borderRadius: 20, padding: "4px 12px",
-                    fontSize: 12, fontWeight: 700,
+                  <span className="filter-btn active" style={{ 
+                    padding: "0.4rem 1.2rem", 
+                    height: "auto", 
+                    minHeight: "unset",
                     background: getStatusConfig(record.status).background,
                     color: getStatusConfig(record.status).color,
-                    border: `1px solid ${getStatusConfig(record.status).borderColor}`,
+                    borderColor: getStatusConfig(record.status).borderColor
                   }}>
                     {getStatusConfig(record.status).label}
                   </span>

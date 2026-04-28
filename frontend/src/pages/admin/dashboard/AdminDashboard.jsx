@@ -35,7 +35,7 @@ function LineChart({ data }) {
         {yTicks.map((t) => (
           <g key={t}>
             <line x1={PAD.l} y1={yScale(t)} x2={W - PAD.r} y2={yScale(t)} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 3" />
-            <text x={PAD.l - 8} y={yScale(t) + 4} textAnchor="end" fontSize="0.8rem" fontWeight="600" fill="#94a3b8">{t}</text>
+            <text x={PAD.l - 8} y={yScale(t) + 4} textAnchor="end" fontSize="1.5rem" fontWeight="600" fill="#94a3b8">{t}</text>
           </g>
         ))}
         <polyline points={pts} fill="none" stroke="#1e40af" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
@@ -56,7 +56,7 @@ function LineChart({ data }) {
           );
         })}
         {data.map((d, i) => (
-          <text key={i} x={xScale(i)} y={H - PAD.b + 24} textAnchor="middle" fontSize="0.8rem" fontWeight="600" fill="#64748b">{d.month}</text>
+          <text key={i} x={xScale(i)} y={H - PAD.b + 24} textAnchor="middle" fontSize="1.5rem" fontWeight="600" fill="#64748b">{d.month}</text>
         ))}
 
         {/* Tooltip */}
@@ -64,7 +64,7 @@ function LineChart({ data }) {
           <g transform={`translate(${hovered.x}, ${hovered.y - 12})`}>
             <rect x="-20" y="-30" width="40" height="24" rx="6" fill="#1e293b" />
             <path d="M-6 -6 L0 0 L6 -6" fill="#1e293b" />
-            <text textAnchor="middle" y="-14" fontSize="1rem" fontWeight="700" fill="white">
+            <text textAnchor="middle" y="-14" fontSize="1.6rem" fontWeight="700" fill="white">
               {hovered.value}
             </text>
           </g>
@@ -72,7 +72,7 @@ function LineChart({ data }) {
 
         <g transform={`translate(${W / 2 - 32}, ${H - 12})`}>
           <circle cx="5" cy="0" r="5" fill="white" stroke="#1e40af" strokeWidth="2.5" />
-          <text x="16" y="5" fontSize="0.85rem" fontWeight="700" fill="#475569">Repairs</text>
+          <text x="16" y="5" fontSize="1.5rem" fontWeight="700" fill="#475569">Repairs</text>
         </g>
       </svg>
     </div>
@@ -124,7 +124,7 @@ function PieChart({ data }) {
             {/* Soft shadow effect circle */}
             <circle r="40" fill="white" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))" />
             <circle r="38" fill="white" stroke={hovered.color} strokeWidth="2" />
-            <text textAnchor="middle" y="-5" fontSize="1rem" fontWeight="700" fill="#1e293b">{hovered.label}</text>
+            <text textAnchor="middle" y="-5" fontSize="1.6rem" fontWeight="700" fill="#1e293b">{hovered.label}</text>
             <text textAnchor="middle" y="18" fontSize="1.1rem" fontWeight="800" fill={hovered.color}>{hovered.pct}%</text>
           </g>
         )}
@@ -133,8 +133,8 @@ function PieChart({ data }) {
         {slices.map((s, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", opacity: hovered && hovered.index !== i ? 0.5 : 1, transition: "opacity 0.2s" }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: s.color, flexShrink: 0, marginRight: 10 }} />
-            <span style={{ fontSize: "0.9rem", color: "#374151", fontWeight: 600, width: 100, flexShrink: 0 }}>{s.label}</span>
-            <span style={{ fontSize: "1rem", color: s.color, fontWeight: 800, width: 50, textAlign: "right" }}>{s.pct}%</span>
+            <span style={{ fontSize: "1.5rem", color: "#374151", fontWeight: 600, width: 120, flexShrink: 0 }}>{s.label}</span>
+            <span style={{ fontSize: "1.6rem", color: s.color, fontWeight: 800, width: 60, textAlign: "right" }}>{s.pct}%</span>
           </div>
         ))}
       </div>
@@ -172,7 +172,7 @@ function BarChart({ data }) {
           return (
             <g key={t}>
               <line x1={PAD.l} y1={y} x2={W - PAD.r} y2={y} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 3" />
-              <text x={PAD.l - 8} y={y + 4} textAnchor="end" fontSize="0.8rem" fontWeight="600" fill="#94a3b8">{t}</text>
+              <text x={PAD.l - 8} y={y + 4} textAnchor="end" fontSize="1.5rem" fontWeight="600" fill="#94a3b8">{t}</text>
             </g>
           );
         })}
@@ -193,7 +193,7 @@ function BarChart({ data }) {
                 onMouseEnter={() => setHovered({ index: i, ...d, x: x + barW / 2, y: y })}
                 onMouseLeave={() => setHovered(null)}
               />
-              <text x={x + barW / 2} y={H - PAD.b + 22} textAnchor="middle" fontSize="0.8rem" fontWeight="600" fill="#64748b">{d.label}</text>
+              <text x={x + barW / 2} y={H - PAD.b + 22} textAnchor="middle" fontSize="1.5rem" fontWeight="600" fill="#64748b">{d.label}</text>
             </g>
           );
         })}
@@ -204,7 +204,7 @@ function BarChart({ data }) {
             {/* Shadow/Backdrop */}
             <rect x="-24" y="-30" width="48" height="24" rx="6" fill="#1e293b" />
             <path d="M-6 -6 L0 0 L6 -6" fill="#1e293b" />
-            <text textAnchor="middle" y="-14" fontSize="12" fontWeight="700" fill="white">
+            <text textAnchor="middle" y="-14" fontSize="1.6rem" fontWeight="700" fill="white">
               {hovered.value}
             </text>
           </g>
@@ -368,32 +368,32 @@ function AdminDashboard() {
             value: products.length,
             trend: "+0%",
             up: true,
-            icon: <Package size={20} color="#2563eb" />,
-            bgColor: "#eff6ff",
+            icon: <Package size={24} />,
+            variant: "blue",
           },
           {
             label: "Bảo Hành Hiệu Lực",
             value: activeWarranties,
             trend: "Thời gian thực",
             up: true,
-            icon: <ShieldCheck size={20} color="#059669" />,
-            bgColor: "#ecfdf5",
+            icon: <ShieldCheck size={24} />,
+            variant: "green",
           },
           {
             label: "Tổng Lượt Sửa Chữa",
             value: repairs.length,
             trend: "Tất cả",
             up: true,
-            icon: <Wrench size={20} color="#4f46e5" />,
-            bgColor: "#eef2ff",
+            icon: <Wrench size={24} />,
+            variant: "indigo",
           },
           {
             label: "Sửa Chữa Hoàn Tất",
             value: completedRepairs,
             trend: "Đã xong",
             up: true,
-            icon: <CheckCircle size={20} color="#0d9488" />,
-            bgColor: "#f0fdfa",
+            icon: <CheckCircle size={24} />,
+            variant: "teal",
           },
         ]);
       } catch (err) {
@@ -405,74 +405,27 @@ function AdminDashboard() {
     fetchDashboardData();
   }, []);
 
-  const card = {
-    background: "white",
-    borderRadius: "1rem",
-    padding: "2rem",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 4px 6px rgba(0,0,0,0.04)",
-  };
 
   return (
     <div className="admin-page-wrapper">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem", marginBottom: "2rem" }}>
+      <div className="dashboard-metrics">
         {metrics.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              background: "white",
-              borderRadius: "1rem",
-              padding: "1.5rem",
-              border: "1px solid #e2e8f0",
-              boxShadow: "0 4px 6px rgba(0,0,0,0.04)",
-              transition: "all 0.3s ease",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-0.25rem)";
-              e.currentTarget.style.boxShadow = "0 12px 20px rgba(0,0,0,0.08)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.04)";
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{
-                width: "3rem",
-                height: "3rem",
-                borderRadius: "0.75rem",
-                background: m.bgColor,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
+          <div key={i} className={`metric-card metric-card--${m.variant}`}>
+            <div className="metric-card-header">
+              <div className="metric-icon-box">
                 {m.icon}
               </div>
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.35rem",
-                padding: "0.5rem 1.125rem",
-                borderRadius: "999px",
-                fontSize: "0.875rem",
-                fontWeight: 800,
-                background: m.up ? "#ecfdf5" : "#fff7ed",
-                color: m.up ? "#059669" : "#ea580c",
-                border: `1px solid ${m.up ? "#d1fae5" : "#ffedd5"}`
-              }}>
+              <div className={`metric-trend-badge ${m.up ? "up" : "down"}`}>
                 {m.up ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                 {m.trend}
               </div>
             </div>
 
-            <div>
-              <p className="metric-label">
+            <div className="metric-card-body">
+              <p className="metric-card-label">
                 {m.label}
               </p>
-              <h3 className="metric-value">
+              <h3 className="metric-card-value">
                 {m.value}
               </h3>
             </div>
@@ -481,39 +434,39 @@ function AdminDashboard() {
       </div>
 
       {/* ── Charts Row 1 (2 Columns) ────────────────────────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))", gap: 16, marginBottom: 24, maxWidth: "100%" }}>
+      <div className="dashboard-charts">
         {/* Line Chart */}
-        <div style={card}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: 0, paddingLeft: "0.5rem" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="chart-card">
+          <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--navy-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
             </svg>
-            <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.01em" }}>Xu Hướng Sửa Chữa Hàng Tháng</span>
-          </div>
+            <span>Xu Hướng Sửa Chữa Hàng Tháng</span>
+          </h3>
           <LineChart data={lineData} />
         </div>
 
         {/* Pie Chart */}
-        <div style={card}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: 0, paddingLeft: "0.5rem" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="chart-card">
+          <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--navy-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
               <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
             </svg>
-            <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.01em" }}>Phân Bố Danh Mục Sản Phẩm</span>
-          </div>
+            <span>Phân Bố Danh Mục Sản Phẩm</span>
+          </h3>
           <PieChart data={pieData} />
         </div>
       </div>
 
       {/* ── Charts Row 2 (Full Width) ────────────────────────────────────── */}
-      <div style={{ ...card, marginBottom: "2rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: 0, paddingLeft: "0.5rem" }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <div className="chart-card chart-card--full">
+        <h3>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>
-          <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.01em" }}>Phân Bố Loại Hình Sửa Chữa</span>
-        </div>
+          <span>Phân Bố Loại Hình Sửa Chữa</span>
+        </h3>
         <BarChart data={barData} />
       </div>
 
