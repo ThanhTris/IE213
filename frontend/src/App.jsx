@@ -11,10 +11,16 @@ import { Toaster } from "sonner";
 // Pages
 import HomePage from "./pages/HomePage";
 import GuestPage from "./pages/GuestPage";
-import AdminPage from "./pages/AdminWorkspacePage";
+import AdminPage from "./pages/admin/workspace/AdminWorkspacePage";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import ProductList from "./pages/admin/dashboard/ProductList";
+import RepairHistory from "./pages/admin/dashboard/RepairHistory";
+import UserManagement from "./pages/admin/dashboard/UserManagement";
+import CreateWarranty from "./pages/admin/workspace/CreateWarranty";
+import LogRepairs from "./pages/admin/workspace/LogRepairs";
 import AuthPage from "./pages/AuthPage";
 import AccountPage from "./pages/AccountPage";
-import CreateNewProduct from "./pages/admin/CreateNewProduct";
+import CreateNewProduct from "./pages/admin/workspace/CreateNewProduct";
 
 // Utils & Styles
 import { clearAuthStorage, loadAuthFromStorage } from "./utils/auth";
@@ -134,37 +140,35 @@ function App() {
           }
         />
 
+        {/* Admin Routes */}
         <Route
-          path="/admin/workspace"
+          path="/admin"
           element={
             <ProtectedRoute
               isAuthenticated={isAuthenticated}
               userRole={auth?.role}
               requiredRole="admin"
             >
-              <AdminPage
-                adminActiveTab={adminTab}
-                onSetAdminTab={setAdminTab}
-              />
+              <Outlet />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          
+          <Route path="dashboard" element={<AdminDashboard />}>
+            <Route index element={<Navigate to="products" replace />} />
+            <Route path="products" element={<ProductList />} />
+            <Route path="repair-history" element={<RepairHistory />} />
+            <Route path="user-management" element={<UserManagement />} />
+          </Route>
 
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute
-              isAuthenticated={isAuthenticated}
-              userRole={auth?.role}
-              requiredRole="admin"
-            >
-              <AdminPage
-                adminActiveTab="dashboard"
-                onSetAdminTab={setAdminTab}
-              />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="workspace" element={<AdminPage />}>
+            <Route index element={<Navigate to="warranty" replace />} />
+            <Route path="warranty" element={<CreateWarranty />} />
+            <Route path="repair" element={<LogRepairs />} />
+            <Route path="product" element={<CreateNewProduct />} />
+          </Route>
+        </Route>
 
         <Route
           path="/account"
@@ -182,7 +186,7 @@ function App() {
         element={
           isAuthenticated ? (
             <Navigate
-              to={auth?.role === "admin" ? "/admin/workspace" : "/user"}
+              to={auth?.role === "admin" ? "/admin/dashboard" : "/user"}
               replace
             />
           ) : (
