@@ -6,16 +6,17 @@ const normalizeWallet = (walletAddress = "") =>
   walletAddress.trim().toLowerCase();
 
 const toUserResponse = (user, options = {}) => {
-  const { includeCreatedAt = false, includeUpdatedAt = false } = options;
+  const { includeCreatedAt = true, includeUpdatedAt = false } = options;
   const safeUser = {
     _id: user._id,
     walletAddress: user.walletAddress,
     fullName: user.fullName,
     email: user.email,
     phone: user.phone,
+    role: user.role,
+    isActive: user.isActive,
   };
 
-  // Contract sample includes timestamps only in selected endpoints.
   if (includeCreatedAt) safeUser.createdAt = user.createdAt;
   if (includeUpdatedAt) safeUser.updatedAt = user.updatedAt;
 
@@ -30,8 +31,15 @@ const toPrivilegedUserResponse = (user, options = {}) => {
   return safeUser;
 };
 
-const normalizeEmail = (email = "") => String(email).trim().toLowerCase();
-const normalizeText = (value = "") => String(value).trim();
+const normalizeEmail = (email = "") => {
+  const trimmed = String(email).trim().toLowerCase();
+  return trimmed === "" ? null : trimmed;
+};
+
+const normalizeText = (value = "") => {
+  const trimmed = String(value).trim();
+  return trimmed === "" ? null : trimmed;
+};
 
 // POST /api/users/auth
 const upsertUserByWallet = async (req, res, next) => {
@@ -67,6 +75,7 @@ const upsertUserByWallet = async (req, res, next) => {
     if (!user) {
       user = new User({
         walletAddress: wallet,
+        fullName: "Người dùng mới",
         role: "user",
       });
       await user.save();
@@ -130,7 +139,7 @@ const updateMyProfile = async (req, res, next) => {
     const payload = req.body || {};
     const walletAddress = normalizeWallet(req.user?.walletAddress || "");
 
-    const forbiddenProfileFields = ["role", "isactive", "isactiver"];
+    const forbiddenProfileFields = ["role"];
     const forbiddenField = Object.keys(payload).find((key) =>
       forbiddenProfileFields.includes(String(key).toLowerCase()),
     );
@@ -139,7 +148,7 @@ const updateMyProfile = async (req, res, next) => {
       return sendError(res, {
         statusCode: 400,
         errorCode: "E400_VALIDATION",
-        message: "Không được phép cập nhật role hoặc isActive ở endpoint này",
+        message: "Không được phép cập nhật role ở endpoint này",
         details: [forbiddenField],
       });
     }
@@ -157,16 +166,20 @@ const updateMyProfile = async (req, res, next) => {
 
     const fullNameValue =
       payload.fullName !== undefined ? payload.fullName : payload.fullname;
-    if (fullNameValue !== undefined && fullNameValue !== null) {
+    if (fullNameValue !== undefined) {
       updates.fullName = normalizeText(fullNameValue);
     }
 
-    if (payload.email !== undefined && payload.email !== null) {
+    if (payload.email !== undefined) {
       updates.email = normalizeEmail(payload.email);
     }
 
-    if (payload.phone !== undefined && payload.phone !== null) {
+    if (payload.phone !== undefined) {
       updates.phone = normalizeText(payload.phone);
+    }
+
+    if (payload.isActive !== undefined) {
+      updates.isActive = Boolean(payload.isActive);
     }
 
     if (Object.keys(updates).length === 0) {
@@ -237,15 +250,15 @@ const updateUserByWallet = async (req, res, next) => {
 
     const fullNameValue =
       payload.fullName !== undefined ? payload.fullName : payload.fullname;
-    if (fullNameValue !== undefined && fullNameValue !== null) {
+    if (fullNameValue !== undefined) {
       updates.fullName = normalizeText(fullNameValue);
     }
 
-    if (payload.email !== undefined && payload.email !== null) {
+    if (payload.email !== undefined) {
       updates.email = normalizeEmail(payload.email);
     }
 
-    if (payload.phone !== undefined && payload.phone !== null) {
+    if (payload.phone !== undefined) {
       updates.phone = normalizeText(payload.phone);
     }
 
@@ -290,11 +303,20 @@ const updateUserByWallet = async (req, res, next) => {
       data: toPrivilegedUserResponse(user, { includeUpdatedAt: true }),
     });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      const details = Object.values(error.errors).map(err => err.message);
+      return sendError(res, {
+        statusCode: 400,
+        errorCode: "E400_VALIDATION",
+        message: "Dữ liệu không hợp lệ: " + details.join(", "),
+        details
+      });
+    }
     if (error.code === 11000) {
       return sendError(res, {
         statusCode: 409,
         errorCode: "E409_DUPLICATE",
-        message: "Email đã tồn tại",
+        message: "Email hoặc địa chỉ ví đã tồn tại",
         details: ["email"],
       });
     }

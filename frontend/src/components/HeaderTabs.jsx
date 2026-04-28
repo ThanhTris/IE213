@@ -1,86 +1,125 @@
-
+import { useState } from "react";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { shortAddress } from "../utils/auth";
 
-function HeaderTabs({ activeView, onChangeView, auth, onLogout, adminActiveTab, onAdminAction }) {
+function HeaderTabs({ auth, onLogout, adminActiveTab, onAdminAction }) {
+  const location = useLocation();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const isAuthenticated = Boolean(auth?.token);
   const role = auth?.role || "";
 
-  // Keep Home + Public Search visible always.
-  // When authenticated, show the correct portal tab based on role.
+  // Define tabs with their paths
   const tabs = [
-    { key: "home", label: "Home" },
-    { key: "guest", label: "Public Search" },
+    { key: "home", label: "Trang chủ", path: "/" },
+    { key: "guest", label: "Tra cứu", path: "/search" },
   ];
 
-  if (isAuthenticated && role === "admin") {
-    tabs.push({ key: "admin", label: "Admin Portal" });
-  } else if (isAuthenticated) {
-    tabs.push({ key: "user", label: "User Wallet" });
+  if (role === "admin") {
+    tabs.push({ key: "admin_workspace", label: "Không gian làm việc", path: "/admin/workspace" });
+    tabs.push({ key: "admin_dashboard", label: "Bảng điều khiển", path: "/admin/dashboard" });
   }
 
   if (isAuthenticated) {
-    tabs.push({ key: "profile", label: "My Profile" });
+    tabs.push({ key: "account", label: "Tài khoản", path: "/account" });
   }
 
   return (
-    <header className="app-header">
-      <div className="header-inner">
-        <button type="button" className="brand" onClick={() => onChangeView("home")}>
-          <span className="brand-text">BlockWarranty</span>
-        </button>
+    <>
+      <header className="app-header">
+        <div className="header-inner">
+          <Link to="/" className="brand">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ color: "var(--navy-primary)" }}
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span className="brand-text">E-Warranty</span>
+          </Link>
 
-        <nav className="nav-tabs" role="tablist" aria-label="Application views">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={activeView === tab.key && adminActiveTab !== "dashboard"}
-              onClick={() => {
-                // When switching away from dashboard back to admin portal, reset adminTab
-                if (tab.key === "admin" && adminActiveTab === "dashboard") {
-                  onAdminAction?.("create");
+          <nav className="nav-tabs" role="tablist" aria-label="Application views">
+            {tabs.map((tab) => (
+              <NavLink
+                key={tab.key}
+                to={tab.path}
+                className={({ isActive }) => 
+                  isActive || (tab.path === "/" && location.pathname === "/") ? "active" : ""
                 }
-                onChangeView(tab.key);
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+                role="tab"
+                end={tab.path === "/"}
+              >
+                {tab.label}
+              </NavLink>
+            ))}
+          </nav>
 
-          {/* Dashboard tab — only shown when admin is logged in */}
-          {isAuthenticated && role === "admin" && (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeView === "admin" && adminActiveTab === "dashboard"}
-              className="nav-tab-dashboard"
-              onClick={() => {
-                onChangeView("admin");
-                onAdminAction?.("dashboard");
-              }}
-            >
-              Dashboard
-            </button>
+          {!isAuthenticated ? (
+            <div className="header-user">
+              <Link to="/auth" className="btn-login btn-login-primary">
+                Đăng nhập
+              </Link>
+            </div>
+          ) : (
+            <div className="header-user">
+              <span className="header-user-address" aria-label="Connected wallet">
+                {shortAddress(auth?.walletAddress)}
+              </span>
+              <button 
+                type="button" 
+                className="btn-login btn-login-ghost" 
+                onClick={() => setShowLogoutModal(true)}
+              >
+                Đăng xuất
+              </button>
+            </div>
           )}
-        </nav>
+        </div>
+      </header>
 
-        {!isAuthenticated ? (
-          <button type="button" className="btn-login" onClick={() => onChangeView("auth")}>
-            Sign in
-          </button>
-        ) : (
-          <div className="header-user">
-            <span className="header-user-address" aria-label="Connected wallet">
-              {shortAddress(auth?.walletAddress)}
-            </span>
-            <button type="button" className="btn-login" onClick={onLogout}>
-              Logout
-            </button>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="modal-backdrop open" onClick={() => setShowLogoutModal(false)} role="presentation">
+          <div
+            className="modal-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="logout-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 id="logout-modal-title" style={{ marginTop: 0, fontSize: '1.8rem', fontWeight: 800 }}>Xác nhận đăng xuất</h3>
+            <p className="muted" style={{ fontSize: '1.4rem', color: 'var(--grey-600)', marginBottom: '2.4rem' }}>
+              Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?
+            </p>
+            <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1.2rem', marginTop: '1rem' }}>
+              <button 
+                type="button" 
+                className="btn-login btn-danger" 
+                onClick={() => {
+                  setShowLogoutModal(false);
+                  onLogout();
+                }}
+              >
+                Đăng xuất
+              </button>
+              <button 
+                type="button" 
+                className="btn-login btn-login-ghost" 
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Hủy
+              </button>
+            </div>
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+      )}
+    </>
   );
 }
 

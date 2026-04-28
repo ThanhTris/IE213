@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
 const Product = require("../models/ProductModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
+const { uploadFileToPinata } = require("../utils/pinata");
 
+// Fields cho phép cập nhật qua PUT
 const UPDATABLE_FIELDS = [
   "productName",
   "brand",
-  "model",
   "color",
-  "configuration",
-  "specifications",
+  "config",
   "imageUrl",
   "price",
   "warrantyMonths",
+  "description",
   "isActive",
 ];
 
@@ -44,18 +45,23 @@ const toProductResponse = (product, options = {}) => {
     productCode: product.productCode,
     productName: product.productName,
     brand: product.brand,
-    model: product.model,
     color: product.color,
-    configuration: product.configuration,
-    specifications: product.specifications,
+    config: product.config,
     imageUrl: product.imageUrl,
     price: product.price,
     warrantyMonths: product.warrantyMonths,
+    description: product.description,
     isActive: product.isActive,
   };
 
-  if (includeCreatedAt) safeProduct.createdAt = product.createdAt;
-  if (includeUpdatedAt) safeProduct.updatedAt = product.updatedAt;
+  // Đảm bảo lấy đúng trường thời gian dù là Mongoose Document hay POJO
+  if (includeCreatedAt) safeProduct.createdAt = product.createdAt || product.created_at;
+  if (includeUpdatedAt) safeProduct.updatedAt = product.updatedAt || product.updated_at;
+
+  // Bao gồm thông tin sửa chữa mới nhất nếu có (từ Aggregation)
+  if (product.latestRepair) {
+    safeProduct.latestRepair = product.latestRepair;
+  }
 
   return safeProduct;
 };
@@ -63,14 +69,7 @@ const toProductResponse = (product, options = {}) => {
 const sanitizeProductPayload = (payload = {}) => {
   const nextPayload = { ...payload };
 
-  [
-    "productName",
-    "brand",
-    "model",
-    "color",
-    "configuration",
-    "imageUrl",
-  ].forEach((field) => {
+  ["productName", "brand", "color", "config", "imageUrl", "description"].forEach((field) => {
     if (typeof nextPayload[field] === "string") {
       nextPayload[field] = nextPayload[field].trim();
     }
@@ -79,7 +78,7 @@ const sanitizeProductPayload = (payload = {}) => {
   return nextPayload;
 };
 
-// POST /api/products
+// POST /api/products — nhận multipart/form-data, upload ảnh lên Pinata
 const createProduct = async (req, res, next) => {
   try {
     const body = req.body || {};
@@ -87,13 +86,11 @@ const createProduct = async (req, res, next) => {
       productCode,
       productName,
       brand,
-      model,
       color,
-      configuration,
-      specifications,
-      imageUrl,
+      config,
       price,
       warrantyMonths,
+      description,
     } = body;
 
     const normalizedCode = normalizeProductCode(productCode || "");
@@ -140,18 +137,41 @@ const createProduct = async (req, res, next) => {
       });
     }
 
+    // -------------------------------------------------------
+    // XỬ LÝ ẢNH: Upload lên Pinata nếu có file
+    // -------------------------------------------------------
+    let imageUrl = typeof body.imageUrl === "string" ? body.imageUrl.trim() : undefined;
+
+    if (req.file && process.env.PINATA_JWT) {
+      try {
+        const imageCID = await uploadFileToPinata(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+        );
+        imageUrl = `ipfs://${imageCID}`;
+        console.log(`[Pinata] Ảnh sản phẩm ${normalizedCode} uploaded: ${imageUrl}`);
+      } catch (ipfsError) {
+        console.error("[Pinata] Upload ảnh thất bại:", ipfsError.message);
+        return sendError(res, {
+          statusCode: 502,
+          errorCode: "E502_IPFS",
+          message: `Upload ảnh lên IPFS thất bại: ${ipfsError.message}`,
+        });
+      }
+    }
+
     const product = new Product(
       sanitizeProductPayload({
         productCode: normalizedCode,
         productName: normalizedName,
         brand: normalizedBrand,
-        model,
         color,
-        configuration,
-        specifications: specifications || undefined,
+        config,
         imageUrl,
         price: parsedPrice,
         warrantyMonths: parsedWarrantyMonths,
+        description,
       }),
     );
 
@@ -180,24 +200,116 @@ const createProduct = async (req, res, next) => {
 // GET /api/products
 const listProducts = async (req, res, next) => {
   try {
-    const includeInactive = req.query.includeInactive === "true";
+    // Mặc định: Trừ 'user' (khách hàng) ra thì tất cả các role khác (admin, staff, tech...) đều được xem hết để quản lý
+    const filter = (req.user && req.user.role && req.user.role !== "user") ? {} : { isActive: true };
 
-    // Chỉ admin mới được xem cả sản phẩm đã ẩn.
-    if (includeInactive && (!req.user || req.user.role !== "admin")) {
-      return sendError(res, {
-        statusCode: 403,
-        errorCode: "E403_FORBIDDEN",
-        message: "Bạn không có quyền xem sản phẩm đã ẩn",
-      });
+    // Debug context
+    // console.log(`[Database Debug] Current DB: ${mongoose.connection.name}`);
+    // const colls = await mongoose.connection.db.listCollections().toArray();
+    // console.log(`[Database Debug] Collections: ${colls.map(c => c.name).join(", ")}`);
+
+    // Sử dụng Aggregation nguyên bản: Tận dụng cơ chế Array Lookup của MongoDB
+    const products = await Product.aggregate([
+      { $match: filter },
+      // Bước 1: Lấy danh sách bảo hành gắn với productCode
+      {
+        $lookup: {
+          from: "warranties",
+          localField: "productCode",
+          foreignField: "productCode",
+          as: "warrantyDocs",
+        },
+      },
+      // Bước 2: Lấy tất cả lịch sử sửa chữa khớp với các serial trong warrantyDocs
+      {
+        $lookup: {
+          from: "repair_log",
+          localField: "warrantyDocs.serialNumber",
+          foreignField: "serialNumber",
+          as: "allRepairs",
+        },
+      },
+      // Bước 3: Lấy bản ghi mới nhất
+      {
+        $addFields: {
+          latestRepairRaw: {
+            $reduce: {
+              input: "$allRepairs",
+              initialValue: null,
+              in: {
+                $cond: [
+                  { 
+                    $or: [
+                      { $eq: ["$$value", null] },
+                      { $gt: ["$$this.repairDate", "$$value.repairDate"] }
+                    ]
+                  },
+                  "$$this",
+                  "$$value"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          latestRepair: {
+            $cond: [
+              { $eq: ["$latestRepairRaw", null] },
+              null,
+              {
+                $mergeObjects: [
+                  "$latestRepairRaw",
+                  {
+                    repairContent: {
+                      $let: {
+                        vars: {
+                          pendingEntry: {
+                            $filter: {
+                              input: { $ifNull: ["$latestRepairRaw.timeline", []] },
+                              as: "t",
+                              cond: { $eq: ["$$t.status", "pending"] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: [
+                            { $gt: [{ $size: "$$pendingEntry" }, 0] },
+                            { $arrayElemAt: ["$$pendingEntry.note", 0] },
+                            ""
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      { $project: { warrantyDocs: 0, allRepairs: 0, latestRepairRaw: 0 } }
+    ]);
+
+    // Debug log chi tiết để kiểm tra trường thời gian
+    /*
+    if (products.length > 0) {
+      const foundCount = products.filter(p => p.latestRepair).length;
+      const hasTimeCount = products.filter(p => p.createdAt || p.updatedAt).length;
+      console.log(`[Debug] Products: ${products.length}, latestRepair: ${foundCount}, hasTimestamps: ${hasTimeCount}`);
     }
-
-    const filter = includeInactive ? {} : { isActive: true };
-    const products = await Product.find(filter);
+    */
 
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy danh sách sản phẩm thành công",
-      data: products.map((product) => toProductResponse(product)),
+      data: products.map((product) =>
+        toProductResponse(product, {
+          includeCreatedAt: true,
+          includeUpdatedAt: true,
+        }),
+      ),
     });
   } catch (error) {
     return next(error);
@@ -231,7 +343,10 @@ const getProduct = async (req, res, next) => {
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy thông tin sản phẩm thành công",
-      data: toProductResponse(product),
+      data: toProductResponse(product, {
+        includeCreatedAt: true,
+        includeUpdatedAt: true,
+      }),
     });
   } catch (error) {
     return next(error);
@@ -270,6 +385,26 @@ const updateProduct = async (req, res, next) => {
       }
     });
 
+    // Xử lý upload ảnh mới nếu có (PUT cũng hỗ trợ multipart)
+    if (req.file && process.env.PINATA_JWT) {
+      try {
+        const imageCID = await uploadFileToPinata(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+        );
+        updates.imageUrl = `ipfs://${imageCID}`;
+        console.log(`[Pinata] Ảnh sản phẩm cập nhật uploaded: ${updates.imageUrl}`);
+      } catch (ipfsError) {
+        console.error("[Pinata] Upload ảnh thất bại:", ipfsError.message);
+        return sendError(res, {
+          statusCode: 502,
+          errorCode: "E502_IPFS",
+          message: `Upload ảnh lên IPFS thất bại: ${ipfsError.message}`,
+        });
+      }
+    }
+
     if (Object.keys(updates).length === 0) {
       return sendError(res, {
         statusCode: 400,
@@ -304,6 +439,10 @@ const updateProduct = async (req, res, next) => {
         });
       }
       updates.warrantyMonths = parsedWarrantyMonths;
+    }
+
+    if (updates.isActive !== undefined) {
+      updates.isActive = String(updates.isActive) === "true";
     }
 
     const product = await Product.findOneAndUpdate(
@@ -341,7 +480,7 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
-// DELETE /api/products/:idOrCode
+// DELETE /api/products/:idOrCode (soft delete)
 const deleteProduct = async (req, res, next) => {
   try {
     const identifier = req.params.idOrCode;

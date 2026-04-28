@@ -19,29 +19,27 @@ Quy trình chuẩn cho Frontend thực hiện chức năng Mint Thẻ Bảo Hàn
 
 - **Endpoint:** `POST /api/warranties`
 - **Headers:** 
-  - `Content-Type: application/json`
+  - `Content-Type: multipart/form-data`
   - `Authorization: Bearer <ADMIN_OR_STAFF_TOKEN>`
-- **Body (JSON):**
-```json
-{
-  "serialNumber": "SN-MACBOOK-TEST-001",
-  "productCode": "MAC-M3-PRO",
-  "ownerAddress": "0x1234567890123456789012345678901234567890",
-  "warrantyMonths": 24
-}
-```
+- **Body (Fields):**
+  - `serialNumber`: "SN-MACBOOK-TEST-001"
+  - `productCode`: "MAC-M3-PRO"
+  - `ownerWallet`: "0x1234567890123456789012345678901234567890"
+  - `expiryDate`: 1807541114
+  - `image`: [File ảnh] (Tùy chọn)
+
 - **Kết quả mong đợi (201 Created):**
 ```json
 {
-  "statusCode": 201,
+  "success": true,
   "message": "Tạo phiếu bảo hành Pre-mint thành công",
   "data": {
+    "id": "60d5ecb8b392d7001f3e43a9",
     "serialNumber": "SN-MACBOOK-TEST-001",
-    "ownerAddress": "0x1234567890123456789012345678901234567890",
+    "ownerWallet": "0x1234567890123456789012345678901234567890",
     "productCode": "MAC-M3-PRO",
-    "tokenURI": "ipfs://QmYourIpfsHashFromPinata...",
-    "status": true,
-    "id": "60d5ecb8b392d7001f3e43a9"
+    "tokenURI": "ipfs://bafkrei...",
+    "status": true
   }
 }
 ```
@@ -67,13 +65,13 @@ Quy trình chuẩn cho Frontend thực hiện chức năng Mint Thẻ Bảo Hàn
 - **Kết quả mong đợi (200 OK):**
 ```json
 {
-  "statusCode": 200,
-  "message": "Cập nhật mint và tạo lịch sử chuyển nhượng (mint) thành công",
+  "success": true,
+  "message": "Cập nhật thông tin Mint thành công",
   "data": {
     "id": "60d5ecb8b392d7001f3e43a9",
     "tokenId": "999",
-    "mintTxHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-    "tokenURI": "ipfs://QmYourIpfsHashFromPinata...",
+    "txHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+    "tokenURI": "ipfs://bafkrei...",
     "mintedAt": "2026-04-10T15:00:00.000Z",
     "status": true
   }
@@ -92,15 +90,15 @@ Quy trình chuẩn cho Frontend thực hiện chức năng Mint Thẻ Bảo Hàn
 - **Kết quả mong đợi (200 OK):**
 ```json
 {
-  "statusCode": 200,
+  "success": true,
   "message": "Tra cứu bảo hành thành công",
   "data": {
     "serialNumber": "SN-MACBOOK-TEST-001",
-    "ownerAddress": "0x1234...7890",
+    "ownerWallet": "0x1234...7890",
     "productCode": "MAC-M3-PRO",
     "tokenId": "999",
-    "tokenURI": "ipfs://QmYourIpfsHashFromPinata...",
-    "mintTxHash": "0xabcdef...",
+    "tokenURI": "ipfs://bafkrei...",
+    "txHash": "0xabcdef...",
     "isMinted": true,
     "status": true
   }

@@ -1,6 +1,6 @@
 # API Contract - Repair Logs
 
-Ngay cap nhat: 2026-04-05
+Ngay cap nhat: 2026-04-17 (Refactored)
 
 ## 1) Data model dung cho FE
 
@@ -8,15 +8,15 @@ RepairLog object:
 
 ```json
 {
-  "_id": "661100aa22bb33cc44dd8811",
+  "id": "661100aa22bb33cc44dd8811",
   "warrantyId": "661100aa22bb33cc44dd7711",
   "serialNumber": "SN-7K2M-2024-X9",
-  "tokenId": "12345",
-  "description": "Replace battery and test charging",
-  "parts": ["BAT-02"],
+  "technicianWallet": "0xTechnicianWallet...",
+  "repairContent": "Thay pin và vệ sinh máy",
+  "isWarrantyCovered": true,
+  "status": "done",
   "cost": 0,
-  "performedAt": "2026-04-03T09:30:00.000Z",
-  "createdBy": "0xTechnicianWallet...",
+  "repairDate": "2026-04-03T09:30:00.000Z",
   "createdAt": "2026-04-03T09:30:00.000Z",
   "updatedAt": "2026-04-03T09:30:00.000Z"
 }
@@ -30,17 +30,15 @@ Header:
 
 - Authorization: Bearer <JWT_TOKEN>
 
-Request:
+Request Body:
 
 ```json
 {
-  "warrantyId": "661100aa22bb33cc44dd7711",
   "serialNumber": "SN-7K2M-2024-X9",
-  "tokenId": "12345",
-  "description": "Replace battery and test charging",
-  "parts": ["BAT-02"],
-  "cost": 0,
-  "performedAt": "2026-04-03T09:30:00.000Z"
+  "repairContent": "Thay màn hình chính hãng",
+  "isWarrantyCovered": true,
+  "status": "in_progress",
+  "cost": 0
 }
 ```
 
@@ -49,38 +47,37 @@ Success 201:
 ```json
 {
   "success": true,
-  "message": "Repair log created",
+  "message": "Tạo nhật ký sửa chữa thành công",
   "data": {
-    "_id": "661100aa22bb33cc44dd8811",
+    "id": "661100aa22bb33cc44dd8811",
     "serialNumber": "SN-7K2M-2024-X9",
-    "description": "Replace battery and test charging",
-    "parts": ["BAT-02"],
+    "repairContent": "Thay màn hình chính hãng",
+    "isWarrantyCovered": true,
+    "status": "in_progress",
     "cost": 0,
-    "createdBy": "0xTechnicianWallet..."
+    "technicianWallet": "0xTechnicianWallet..."
   }
 }
 ```
 
-### 2.2 GET /api/repair-logs/:serialNumber (Public)
+### 2.2 GET /api/repair-logs/device/:serialNumber (Public)
 
 Muc dich:
-
-- Khach vang lai tra cuu lich su sua chua theo serial.
+- Khach hang tra cuu lich su sua chua cua thiet bi.
 
 Success 200:
 
 ```json
 {
   "success": true,
-  "message": "Repair logs retrieved",
+  "message": "Lấy lịch sử sửa chữa thành công",
   "data": [
     {
-      "_id": "661100aa22bb33cc44dd8811",
+      "id": "661100aa22bb33cc44dd8811",
       "serialNumber": "SN-7K2M-2024-X9",
-      "description": "Replace battery and test charging",
-      "parts": ["BAT-02"],
-      "cost": 0,
-      "performedAt": "2026-04-03T09:30:00.000Z"
+      "repairContent": "Thay pin",
+      "status": "done",
+      "repairDate": "2026-04-03T09:30:00.000Z"
     }
   ]
 }
@@ -92,18 +89,12 @@ Header:
 
 - Authorization: Bearer <JWT_TOKEN>
 
-Quyen:
-
-- Admin: sua moi log.
-- Technician: chi sua log do chinh minh tao.
-
 Request:
 
 ```json
 {
-  "description": "Replace battery, clean charging port",
-  "parts": ["BAT-02", "PORT-CLEAN"],
-  "cost": 10
+  "repairContent": "Đã thay pin xong, đang sạc thử",
+  "status": "done"
 }
 ```
 
@@ -112,12 +103,11 @@ Success 200:
 ```json
 {
   "success": true,
-  "message": "Repair log updated",
+  "message": "Cập nhật nhật ký sửa chữa thành công",
   "data": {
-    "_id": "661100aa22bb33cc44dd8811",
-    "description": "Replace battery, clean charging port",
-    "parts": ["BAT-02", "PORT-CLEAN"],
-    "cost": 10,
+    "id": "661100aa22bb33cc44dd8811",
+    "repairContent": "Đã thay pin xong, đang sạc thử",
+    "status": "done",
     "updatedAt": "2026-04-05T12:10:00.000Z"
   }
 }

@@ -55,7 +55,7 @@ const createTransfer = async (req, res) => {
     }
 
     // Ownership check
-    if (String(warranty.ownerAddress).toLowerCase() !== normalizedSender) {
+    if (String(warranty.ownerWallet).toLowerCase() !== normalizedSender) {
       return sendError(res, {
         statusCode: 403,
         message: "Bạn không phải chủ sở hữu NFT này, không có quyền chuyển!",
@@ -68,7 +68,7 @@ const createTransfer = async (req, res) => {
       // Update warranty owner
       const updatedWarranty = await Warranty.findByIdAndUpdate(
         warranty._id,
-        { ownerAddress: normalizedTo },
+        { ownerWallet: normalizedTo },
         { new: true, runValidators: true },
       );
 

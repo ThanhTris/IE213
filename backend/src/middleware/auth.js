@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const { sendError } = require("../utils/apiResponse");
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-jwt-secret";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
+const getJwtSecret = () => process.env.JWT_SECRET || "dev-jwt-secret";
+const getJwtExpiresIn = () => process.env.JWT_EXPIRES_IN || "1d";
 
 const extractBearerToken = (authorizationHeader = "") => {
   if (!authorizationHeader.startsWith("Bearer ")) return null;
@@ -16,8 +16,8 @@ const generateToken = (user) => {
       walletAddress: user.walletAddress,
       role: user.role,
     },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN },
+    getJwtSecret(),
+    { expiresIn: getJwtExpiresIn() },
   );
 };
 
@@ -32,7 +32,7 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     req.user = decoded;
     return next();
   } catch (_error) {
@@ -49,7 +49,7 @@ const optionalAuthenticate = async (req, _res, next) => {
     const token = extractBearerToken(req.headers.authorization || "");
     if (!token) return next();
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     req.user = decoded;
     return next();
   } catch (_error) {

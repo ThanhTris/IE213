@@ -1,0 +1,605 @@
+@import "./main.css";
+
+.bw-hero {
+  background: linear-gradient(
+    135deg,
+    #1e40af 0%,
+    var(--navy-primary) 50%,
+    #1e40af 100%
+  );
+  padding: 6rem;
+  text-align: center;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.bw-hero-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.bw-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 2rem;
+  border-radius: 99.9rem;
+  background: var(--color-success);
+  border: none;
+  font-size: var(--text-md);
+  font-weight: 700;
+  margin-bottom: 4rem;
+  color: var(--white);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.bw-hero-title {
+  font-size: clamp(
+    calc(var(--text-2xl) * 1.5),
+    8vw,
+    calc(var(--text-2xl) * 2.5)
+  );
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 3rem;
+  letter-spacing: -0.03em;
+}
+
+.accent {
+  color: var(--color-success);
+  /* Sử dụng biến an toàn từ hệ thống */
+}
+
+.bw-hero-lead {
+  font-size: var(--text-lg);
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 auto 5rem;
+  line-height: 1.8;
+}
+
+.bw-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.bw-hero .btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.8rem 4rem;
+  background: var(--color-success);
+  color: var(--white);
+  font-size: var(--text-md);
+  font-weight: 700;
+  border-radius: 1.2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+}
+
+.bw-hero .btn-hero-primary:hover {
+  background: #059669;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+}
+
+.bw-hero .btn-hero-outline {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.8rem 4rem;
+  background: var(--white);
+  color: var(--navy-primary);
+  font-size: var(--text-md);
+  font-weight: 700;
+  border-radius: 1.2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.bw-hero .btn-hero-outline:hover {
+  background: #f8fafc;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.btn-hero-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-3px);
+}
+
+/* Zebra Striping Sections */
+.bw-section {
+  padding: 6rem;
+  background: #ffffff;
+}
+
+.bw-section.alt {
+  background: #f1f5f9;
+  /* Làm nền tối hơn một chút để thẻ trắng nổi bật hẳn lên */
+}
+
+.bw-inner {
+  max-width: 120rem;
+  margin: 0 auto;
+}
+
+.bw-h2 {
+  text-align: center;
+  color: var(--navy-900);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  margin-bottom: 2rem;
+}
+
+.bw-sub {
+  text-align: center;
+  color: var(--grey-600);
+  max-width: 64rem;
+  margin: 0 auto 5rem;
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+
+.bw-feature-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.bw-feature-card {
+  background: var(--white);
+  padding: 4rem;
+  border-radius: 2.4rem;
+  /* Đổ bóng cực mạnh để tạo độ nổi khối rõ rệt */
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.1),
+    0 5px 15px rgba(0, 0, 0, 0.04);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  /* Viền đậm hơn */
+  text-align: center;
+}
+
+.bw-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border-color: var(--color-success);
+}
+
+.bw-icon-em {
+  width: 6rem;
+  height: 6rem;
+  background: var(--color-success-light);
+  color: var(--color-success);
+  border-radius: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.bw-feature-card h4 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--navy-900);
+}
+
+.bw-feature-card p {
+  font-size: var(--text-base);
+  color: var(--grey-600);
+  line-height: 1.6;
+}
+
+.bw-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+}
+
+.bw-step-card {
+  background: var(--navy-primary);
+  /* Đổi sang màu chính */
+  padding: 4rem 3rem;
+  border-radius: 2.4rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+  color: var(--white);
+  /* Chữ trắng trên nền xanh */
+  box-shadow: 0 10px 30px rgba(41, 85, 206, 0.2);
+}
+
+.bw-step-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(41, 85, 206, 0.3);
+  background: #1e40af;
+  /* Màu xanh đậm hơn khi hover */
+}
+
+.bw-step-num {
+  width: 5rem;
+  height: 5rem;
+  background: var(--white);
+  /* Số màu xanh trên nền trắng */
+  color: var(--navy-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2.5rem;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bw-step-card h4 {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: var(--white);
+}
+
+.bw-step-card p {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bw-trust {
+  background: var(--navy-primary-dark);
+  border-radius: 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  align-items: stretch;
+  /* Đảm bảo cả 2 cột đều cao bằng nhau */
+  overflow: hidden;
+  /* Để ảnh tràn lề không bị lòi ra khỏi bo góc */
+  color: var(--white);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+.bw-trust-visual {
+  width: 100%;
+  height: 100%;
+}
+
+.trust-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Ảnh tràn đều và đầy cột */
+  display: block;
+}
+
+.bw-trust-copy {
+  padding: 6rem;
+  /* Chỉ thêm padding cho phần nội dung bên phải */
+  text-align: left;
+}
+
+.bw-trust-copy h3 {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  margin-bottom: 2.4rem;
+  line-height: 1.3;
+}
+
+.bw-check-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-top: 2.4rem;
+  /* UL cách P 2.4rem */
+}
+
+.bw-check-list li {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 1.8rem;
+  /* Khoảng cách giữa các li nhỏ hơn p với ul */
+}
+
+.bw-check-ic {
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 2px solid var(--color-success);
+  /* Viền tròn màu an toàn */
+  color: var(--color-success);
+  /* Dấu tick màu an toàn */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.2rem;
+  background: transparent;
+  /* Nền trong suốt để hiện rõ viền */
+}
+
+.bw-check-list li div {
+  display: flex;
+  flex-direction: column;
+  /* Tách dòng tiêu đề và mô tả */
+  gap: 0.5rem;
+}
+
+.bw-check-list li strong {
+  color: var(--white);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.bw-check-list li span {
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.bw-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.bw-mini-card {
+  background: var(--navy-primary);
+  /* Đổi sang màu chính */
+  padding: 4rem 3rem;
+  border-radius: 2.4rem;
+  text-align: center;
+  /* Căn giữa toàn bộ chữ */
+  transition: all 0.3s ease;
+  color: var(--white);
+  box-shadow: 0 10px 30px rgba(41, 85, 206, 0.2);
+}
+
+.bw-mini-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(41, 85, 206, 0.3);
+  background: #1e40af;
+}
+
+.bw-mini-card .bw-icon-em {
+  width: 5.4rem;
+  height: 5.4rem;
+  background: var(--white);
+  /* Icon nổi bật trên nền trắng */
+  color: var(--navy-primary);
+  border-radius: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bw-mini-card h4 {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: var(--white);
+}
+
+.bw-mini-card p {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bw-testimonials {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.bw-quote {
+  padding: 4rem;
+  background: var(--white);
+  border-radius: 2.4rem;
+  text-align: center;
+  /* Căn giữa toàn bộ */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bw-quote:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-success);
+}
+
+.bw-stars {
+  font-size: var(--text-2xl);
+  color: #fbbf24;
+  margin-bottom: 2rem;
+  letter-spacing: 0.5rem;
+}
+
+.bw-quote p {
+  font-size: var(--text-base);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--grey-700);
+  margin-bottom: 3rem;
+}
+
+.bw-author {
+  display: flex;
+  flex-direction: column;
+  /* Căn dọc các thành phần tác giả */
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: auto;
+}
+
+.bw-avatar {
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-success-light);
+}
+
+.bw-author-info {
+  text-align: center;
+}
+
+.bw-author-info strong {
+  display: block;
+  font-size: var(--text-md);
+  color: var(--navy-900);
+  margin-bottom: 0.4rem;
+}
+
+.bw-author-info span {
+  font-size: var(--text-sm);
+  color: var(--grey-500);
+}
+
+/* Location Card Styles */
+.bw-location-card {
+  background: var(--navy-primary-dark);
+  border-radius: 4rem;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: stretch;
+  overflow: hidden;
+  color: var(--white);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+.bw-location-content {
+  padding: 6rem 0 6rem 6rem;
+  /* Top Right Bottom Left */
+  text-align: left;
+}
+
+.bw-h2-light {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 2.4rem;
+  /* Giảm 10px: 3.4 -> 2.4 */
+  color: var(--white);
+}
+
+.bw-location-desc {
+  font-size: var(--text-base);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.4rem;
+  /* Giảm 10px: 2.4 -> 1.4 */
+}
+
+.bw-address-box h3 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: 1.4rem;
+  /* Giảm 10px: 2.4 -> 1.4 */
+  color: var(--white);
+}
+
+.bw-addr-text {
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+  /* Giảm 10px: 2.4 -> 1.4 */
+}
+
+.bw-addr-ic {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 1rem;
+  margin-top: -0.4rem;
+  /* Căn chỉnh nhẹ để icon nằm giữa dòng đầu */
+  color: var(--white);
+  /* Đổi sang màu trắng theo yêu cầu */
+  opacity: 0.9;
+  /* Giảm nhẹ độ đậm để hài hòa với chữ */
+}
+
+.bw-contact-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.bw-contact-badge {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1rem 2rem;
+  border-radius: 1.2rem;
+  font-size: var(--text-base);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bw-contact-badge strong {
+  color: var(--color-success-light);
+  margin-right: 0.5rem;
+}
+
+.bw-stats-row {
+  display: flex;
+  gap: 4.5rem;
+  /* Giảm nhẹ gap để cân đối 3 cột */
+}
+
+.bw-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-num {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  color: var(--white);
+}
+
+.stat-label {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+.bw-location-map {
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  /* Thêm một chút padding để map nằm gọn bên trong */
+}
+
+.bw-location-map iframe {
+  border-radius: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .bw-feature-row,
+  .bw-steps,
+  .bw-testimonials,
+  .bw-grid-6,
+  .bw-trust,
+  .location-container,
+  .bw-footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
