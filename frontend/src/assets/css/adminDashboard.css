@@ -192,14 +192,6 @@
   padding: 2.8rem;
 }
 
-@media (max-width:76.8rem) {
-
-  .create-warranty-layout,
-  .log-repairs-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
 .dashboard-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -758,16 +750,6 @@
   transform: translateY(-1px);
 }
 
-@media (max-width:76.8rem) {
-
-  .dashboard-charts,
-  .dashboard-metrics,
-  .search-filter-section {
-    flex-direction: column;
-    grid-template-columns: 1fr;
-  }
-}
-
 /* Pagination */
 .admin-pagination {
   display: grid;
@@ -1164,8 +1146,10 @@
   background: var(--grey-50);
   padding: 1.6rem 2.4rem;
 }
+
 /* New Badge Styles for User Management */
-.status-badge-v2, .role-badge-v2 {
+.status-badge-v2,
+.role-badge-v2 {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -1203,9 +1187,11 @@
   color: var(--navy-primary);
   background: rgba(41, 85, 206, 0.05);
 }
+
 .filter-btn.info:hover {
   background: rgba(41, 85, 206, 0.1);
 }
+
 .filter-btn.info.active {
   background: var(--navy-primary);
   border-color: var(--navy-primary);
@@ -1219,9 +1205,11 @@
   color: #8b5cf6;
   background: rgba(139, 92, 246, 0.05);
 }
+
 .filter-btn.purple:hover {
   background: rgba(139, 92, 246, 0.1);
 }
+
 .filter-btn.purple.active {
   background: #8b5cf6;
   border-color: #8b5cf6;

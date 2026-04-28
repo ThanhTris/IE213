@@ -98,25 +98,6 @@
   align-items: stretch;
 }
 
-@media (max-width: 1400px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .owner-card {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 1024px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .owner-card {
-    grid-column: span 1;
-  }
-}
 
 /* Column Cards */
 .column-card {

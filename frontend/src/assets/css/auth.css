@@ -5,7 +5,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%); /* Xanh sáng hơn một chút */
+  background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+  /* Xanh sáng hơn một chút */
   position: relative;
   overflow: hidden;
 }
@@ -16,7 +17,8 @@
   border-radius: 50%;
   filter: blur(80px);
   z-index: 0;
-  opacity: 0.5; /* Khôi phục độ mờ để nổi bật trên nền xanh */
+  opacity: 0.5;
+  /* Khôi phục độ mờ để nổi bật trên nền xanh */
 }
 
 .orb-1 {
@@ -264,22 +266,4 @@
 .link:hover {
   color: var(--emerald-500);
   text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  .btn-back-absolute {
-    top: 1.5rem;
-    left: 1.5rem;
-    padding: 0.8rem 1.6rem;
-    font-size: 1.2rem;
-  }
-  
-  .auth-card {
-    padding: 2.4rem;
-    margin: 8rem 1.5rem 2rem;
-  }
-  
-  .auth-title {
-    font-size: 2.4rem;
-  }
 }
