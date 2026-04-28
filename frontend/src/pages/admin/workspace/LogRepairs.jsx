@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { repairService } from "../../services/repairService";
-import { warrantyService } from "../../services/warrantyService";
-import { API_ROOT } from "../../utils/api";
+import { repairService } from "../../../services/repairService";
+import { warrantyService } from "../../../services/warrantyService";
+import { API_ROOT } from "../../../utils/api";
 
 const WrenchIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

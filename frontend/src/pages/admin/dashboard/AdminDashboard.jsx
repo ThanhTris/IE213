@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import ProductList from "./ProductList";
-import RepairHistory from "./RepairHistory";
-import UserManagement from "./UserManagement";
-import { productService } from "../../services/productService";
-import { warrantyService } from "../../services/warrantyService";
-import { repairService } from "../../services/repairService";
+import { NavLink, Outlet } from "react-router-dom";
+import { productService } from "../../../services/productService";
+import { warrantyService } from "../../../services/warrantyService";
+import { repairService } from "../../../services/repairService";
 import { Package, ShieldCheck, Wrench, CheckCircle, TrendingUp, TrendingDown, Activity, Check } from "lucide-react";
-import "../../assets/css/admin-views.css";
+import "../../../assets/css/adminDashboard.css";
 
 
 // ─── SVG LINE CHART ───────────────────────────────────────────────────────────
@@ -20,7 +18,7 @@ function LineChart({ data }) {
   const plotW = W - PAD.l - PAD.r;
   const plotH = H - PAD.t - PAD.b;
   const maxVal = Math.max(...data.map((d) => d.value), 10);
-  
+
   // Step 10 for better precision
   const step = 10;
   const yMax = Math.ceil(maxVal / step) * step;
@@ -87,7 +85,7 @@ function PieChart({ data }) {
   if (!data || data.length === 0) return <p style={{ color: "#94a3b8", textAlign: "center", padding: 20, fontSize: 32, fontWeight: 800 }}>0</p>;
   const R = 80, CX = 100, CY = 100;
   const toRad = (deg) => (deg * Math.PI) / 180;
-  
+
   const arc = (startDeg, endDeg, isHovered) => {
     const rIn = isHovered ? R + 5 : R;
     const x1 = CX + rIn * Math.cos(toRad(startDeg));
@@ -154,7 +152,7 @@ function BarChart({ data }) {
   const PAD = { t: 25, r: 20, b: 40, l: 44 };
   const plotW = W - PAD.l - PAD.r;
   const plotH = H - PAD.t - PAD.b;
-  
+
   const maxVal = Math.max(...data.map((d) => d.value), 10);
   // Interval of 5 as requested
   const step = 5;
@@ -185,14 +183,14 @@ function BarChart({ data }) {
           const x = PAD.l + i * gap + (gap - barW) / 2;
           const y = PAD.t + plotH - bH;
           const isHovered = hovered?.index === i;
-          
+
           return (
             <g key={i}>
               <rect
                 x={x} y={y} width={barW} height={bH} rx="6"
                 fill={isHovered ? "#059669" : "#10b981"}
                 style={{ transition: "fill 0.2s", cursor: "pointer" }}
-                onMouseEnter={() => setHovered({ index: i, ...d, x: x + barW/2, y: y })}
+                onMouseEnter={() => setHovered({ index: i, ...d, x: x + barW / 2, y: y })}
                 onMouseLeave={() => setHovered(null)}
               />
               <text x={x + barW / 2} y={H - PAD.b + 22} textAnchor="middle" fontSize="0.8rem" fontWeight="600" fill="#64748b">{d.label}</text>
@@ -253,7 +251,6 @@ const tabs = [
 // To use real API data, pass the following props:
 //   metrics, lineData, pieData, barData
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("products");
   const [metrics, setMetrics] = useState([]);
   const [lineData, setLineData] = useState([]);
   const [pieData, setPieData] = useState([]);
@@ -281,7 +278,7 @@ function AdminDashboard() {
         const monthNames = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
         const today = new Date();
         const last6Months = [];
-        
+
         for (let i = 5; i >= 0; i--) {
           const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
           last6Months.push({
@@ -296,7 +293,7 @@ function AdminDashboard() {
           const rDate = new Date(r.repairDate || r.createdAt);
           const rMonth = rDate.getMonth();
           const rYear = rDate.getFullYear();
-          
+
           const match = last6Months.find(m => m.monthIdx === rMonth && m.year === rYear);
           if (match) match.value++;
         });
@@ -308,18 +305,18 @@ function AdminDashboard() {
           acc[p.brand] = (acc[p.brand] || 0) + 1;
           return acc;
         }, {});
-        
+
         // Sort brands by count descending
         const sortedBrands = Object.entries(brandsCount)
           .sort((a, b) => b[1] - a[1]);
-        
+
         const top5 = sortedBrands.slice(0, 5);
         const others = sortedBrands.slice(5);
         const othersCount = others.reduce((sum, item) => sum + item[1], 0);
 
         const totalProds = products.length || 1;
         const COLORS = ["#1e3a8a", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#64748b"]; // Added grey for Other
-        
+
         const newPieData = top5.map(([brand, count], idx) => ({
           label: brand,
           pct: Math.round((count / totalProds) * 100),
@@ -357,12 +354,12 @@ function AdminDashboard() {
         }));
         setBarData(newBarData);
 
-        const warrantyRate = products.length > 0 
-          ? Math.round((activeWarranties / products.length) * 100) 
+        const warrantyRate = products.length > 0
+          ? Math.round((activeWarranties / products.length) * 100)
           : 0;
-        
-        const repairRate = repairs.length > 0 
-          ? Math.round((completedRepairs / repairs.length) * 100) 
+
+        const repairRate = repairs.length > 0
+          ? Math.round((completedRepairs / repairs.length) * 100)
           : 0;
 
         setMetrics([
@@ -420,8 +417,8 @@ function AdminDashboard() {
     <div className="admin-page-wrapper">
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem", marginBottom: "2rem" }}>
         {metrics.map((m, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             style={{
               background: "white",
               borderRadius: "1rem",
@@ -443,14 +440,14 @@ function AdminDashboard() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ 
-                width: "3rem", 
-                height: "3rem", 
-                borderRadius: "0.75rem", 
+              <div style={{
+                width: "3rem",
+                height: "3rem",
+                borderRadius: "0.75rem",
                 background: m.bgColor,
-                display: "flex", 
-                alignItems: "center", 
-                justifyContent: "center" 
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }}>
                 {m.icon}
               </div>
@@ -472,20 +469,20 @@ function AdminDashboard() {
             </div>
 
             <div>
-              <p style={{ 
-                color: "#1e293b", 
-                fontSize: "1.5rem", 
-                fontWeight: 800, 
+              <p style={{
+                color: "#1e293b",
+                fontSize: "1.5rem",
+                fontWeight: 800,
                 margin: "0 0 0.5rem 0",
                 letterSpacing: "-0.01em",
                 lineHeight: 1.2
               }}>
                 {m.label}
               </p>
-              <h3 style={{ 
-                fontSize: "3rem", 
-                fontWeight: 900, 
-                color: "#0f172a", 
+              <h3 style={{
+                fontSize: "3rem",
+                fontWeight: 900,
+                color: "#0f172a",
                 margin: 0,
                 letterSpacing: "-0.03em",
                 lineHeight: 1
@@ -538,18 +535,20 @@ function AdminDashboard() {
       <div className="admin-tabs-container">
         <div className="admin-tabs">
           {tabs.map((tab) => (
-            <button key={tab.id} className={`admin-tab ${activeTab === tab.id ? "active" : ""}`} onClick={() => setActiveTab(tab.id)}>
+            <NavLink
+              key={tab.id}
+              to={tab.id}
+              className={({ isActive }) => `admin-tab ${isActive ? "active" : ""}`}
+            >
               <span className="tab-icon">{tab.icon}</span>
               <span className="tab-label">{tab.label}</span>
-            </button>
+            </NavLink>
           ))}
         </div>
       </div>
 
       <div className="admin-content">
-        {activeTab === "products" && <ProductList />}
-        {activeTab === "repair-history" && <RepairHistory />}
-        {activeTab === "user-management" && <UserManagement />}
+        <Outlet />
       </div>
     </div>
   );

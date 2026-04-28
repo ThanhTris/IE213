@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
-import { productService } from "../../services/productService";
+import { productService } from "../../../services/productService";
 
 const BoxIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -11,13 +11,13 @@ const BoxIcon = () => (
 
 const TagIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" />
   </svg>
 );
 
 const CameraIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" />
   </svg>
 );
 
@@ -94,13 +94,13 @@ function CreateNewProduct() {
       formData.append("warrantyMonths", form.warrantyPeriod);
       formData.append("price", form.price);
       formData.append("description", form.description);
-      
+
       if (form.imageFile) {
         formData.append("image", form.imageFile);
       }
 
       const res = await productService.createProduct(formData);
-      
+
       if (res.success) {
         toast.success("Sản phẩm đã được tạo thành công!");
         setSubmitted(true);
@@ -121,7 +121,7 @@ function CreateNewProduct() {
   return (
     <div className="cp-container">
       <div className="cp-grid">
-        
+
         {/* Left: Form Column */}
         <div className="cp-form-col">
           <div className="cp-card cp-main-card">
@@ -226,7 +226,7 @@ function CreateNewProduct() {
                       <div className="cp-image-preview-wrapper">
                         <img src={imagePreview} alt="Preview" className="cp-image-full" />
                         <button type="button" className="cp-remove-img-btn" onClick={removeImage}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                         </button>
                       </div>
                     ) : (
@@ -316,7 +316,7 @@ function CreateNewProduct() {
 
               <div className="cp-preview-footer">
                 <div className="cp-preview-notice">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                   Hệ thống sẽ tự động tạo ID sản phẩm
                 </div>
               </div>

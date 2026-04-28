@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { productService } from "../../services/productService";
-import { repairService } from "../../services/repairService";
-import { getStatusConfig } from "../../utils/statusStyles";
+import { productService } from "../../../services/productService";
+import { repairService } from "../../../services/repairService";
+import { getStatusConfig } from "../../../utils/statusStyles";
 
 
 const BASE_CATEGORIES = ["Samsung", "Apple"];
@@ -44,12 +44,12 @@ function FilterModal({ isOpen, onClose, brands, filterBrand, setFilterBrand, pri
           <div style={{ marginBottom: 24 }}>
             <h4 style={{ fontSize: 13, textTransform: "uppercase", color: "#94a3b8", letterSpacing: "0.05em", marginBottom: 12, fontWeight: 700 }}>Chọn Hãng</h4>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <button 
+              <button
                 className={`filter-btn${filterBrand === "all" ? " active" : ""}`}
                 onClick={() => setFilterBrand("all")}
               >Tất cả Hãng</button>
               {brands.map(b => (
-                <button 
+                <button
                   key={b}
                   className={`filter-btn${filterBrand === b ? " active" : ""}`}
                   onClick={() => setFilterBrand(b)}
@@ -62,26 +62,26 @@ function FilterModal({ isOpen, onClose, brands, filterBrand, setFilterBrand, pri
             <h4 style={{ fontSize: 13, textTransform: "uppercase", color: "#94a3b8", letterSpacing: "0.05em", marginBottom: 12, fontWeight: 700 }}>Khoảng giá (VND)</h4>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
               {pricePresets.map(p => (
-                <button 
+                <button
                   key={p.label}
                   className={`filter-btn${priceRange.label === p.label ? " active" : ""}`}
                   onClick={() => setPriceRange(p)}
                 >{p.label}</button>
               ))}
             </div>
-            
+
             <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#f8fafc", padding: "12px 16px", borderRadius: 16, border: "1.5px solid #e2e8f0" }}>
-              <input 
-                type="number" 
-                placeholder="Giá tối thiểu" 
+              <input
+                type="number"
+                placeholder="Giá tối thiểu"
                 value={priceRange.min === 0 && priceRange.label !== "" ? "" : priceRange.min}
                 onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value), label: "Tùy chọn" })}
                 style={{ background: "transparent", border: "none", width: "100%", fontSize: 14, outline: "none" }}
               />
               <div style={{ width: 12, height: 2, background: "#cbd5e1" }} />
-              <input 
-                type="number" 
-                placeholder="Giá tối đa" 
+              <input
+                type="number"
+                placeholder="Giá tối đa"
                 value={priceRange.max === Infinity ? "" : priceRange.max}
                 onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value), label: "Tùy chọn" })}
                 style={{ background: "transparent", border: "none", width: "100%", fontSize: 14, outline: "none" }}
@@ -91,14 +91,14 @@ function FilterModal({ isOpen, onClose, brands, filterBrand, setFilterBrand, pri
         </div>
 
         <div style={{ padding: "16px 24px", background: "#f8fafc", display: "flex", justifyContent: "flex-end", gap: 12 }}>
-          <button 
+          <button
             onClick={() => {
               setFilterBrand("all");
               setPriceRange({ min: 0, max: Infinity, label: "Tất cả mức giá" });
             }}
             style={{ padding: "10px 20px", borderRadius: 999, border: "1.5px solid #cbd5e1", background: "white", color: "#475569", fontWeight: 700, cursor: "pointer", fontSize: 14 }}
           >Làm mới</button>
-          <button 
+          <button
             onClick={onClose}
             style={{ padding: "10px 24px", borderRadius: 999, border: "none", background: "#1e40af", color: "white", fontWeight: 700, cursor: "pointer", fontSize: 14 }}
           >Áp dụng</button>
@@ -126,12 +126,12 @@ function DeleteConfirmModal({ product, onClose, onConfirm }) {
           </p>
         </div>
         <div style={{ padding: "0 24px 24px", display: "flex", gap: 12 }}>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             style={{ flex: 1, padding: "12px", borderRadius: 12, border: "1.5px solid #e2e8f0", background: "white", color: "#475569", fontWeight: 700, cursor: "pointer" }}
           >Hủy bỏ</button>
-          <button 
-            onClick={() => onConfirm(product)} 
+          <button
+            onClick={() => onConfirm(product)}
             style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: "#ef4444", color: "white", fontWeight: 700, cursor: "pointer" }}
           >Xác nhận xóa</button>
         </div>
@@ -142,7 +142,7 @@ function DeleteConfirmModal({ product, onClose, onConfirm }) {
 
 function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
   const isAdd = mode === "add";
-  
+
   const [formData, setFormData] = useState({
     productCode: product?.productCode || "",
     productName: product?.productName || "",
@@ -177,7 +177,7 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
       if (imageFile) {
         data.append("image", imageFile);
       }
-      
+
       if (isAdd) {
         await productService.createProduct(data);
         toast.success("Tạo sản phẩm thành công!");
@@ -220,11 +220,11 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
 
             <div style={{ gridColumn: isAdd ? "span 1" : "span 2" }}>
               <label style={fieldLabel}>Tên sản phẩm <span style={{ color: "#ef4444" }}>*</span></label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="VD: iPhone 15 Pro Max"
-                value={formData.productName} 
-                onChange={e => setFormData({ ...formData, productName: e.target.value })} 
+                value={formData.productName}
+                onChange={e => setFormData({ ...formData, productName: e.target.value })}
                 required
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
@@ -233,11 +233,11 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
             {isAdd && (
               <div>
                 <label style={fieldLabel}>Mã sản phẩm <span style={{ color: "#ef4444" }}>*</span></label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="VD: APL-IP15PM"
-                  value={formData.productCode} 
-                  onChange={e => setFormData({ ...formData, productCode: e.target.value })} 
+                  value={formData.productCode}
+                  onChange={e => setFormData({ ...formData, productCode: e.target.value })}
                   required
                   style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
                 />
@@ -246,11 +246,11 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
 
             <div>
               <label style={fieldLabel}>Hãng sản xuất <span style={{ color: "#ef4444" }}>*</span></label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="VD: Apple"
-                value={formData.brand} 
-                onChange={e => setFormData({ ...formData, brand: e.target.value })} 
+                value={formData.brand}
+                onChange={e => setFormData({ ...formData, brand: e.target.value })}
                 required
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
@@ -258,21 +258,21 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
 
             <div>
               <label style={fieldLabel}>Màu sắc</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="VD: Titan xanh"
-                value={formData.color} 
-                onChange={e => setFormData({ ...formData, color: e.target.value })} 
+                value={formData.color}
+                onChange={e => setFormData({ ...formData, color: e.target.value })}
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
             </div>
 
             <div>
               <label style={fieldLabel}>Giá tiền (VND) <span style={{ color: "#ef4444" }}>*</span></label>
-              <input 
-                type="number" 
-                value={formData.price} 
-                onChange={e => setFormData({ ...formData, price: e.target.value })} 
+              <input
+                type="number"
+                value={formData.price}
+                onChange={e => setFormData({ ...formData, price: e.target.value })}
                 required
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
@@ -280,10 +280,10 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
 
             <div>
               <label style={fieldLabel}>Bảo hành (Tháng) <span style={{ color: "#ef4444" }}>*</span></label>
-              <input 
-                type="number" 
-                value={formData.warrantyMonths} 
-                onChange={e => setFormData({ ...formData, warrantyMonths: e.target.value })} 
+              <input
+                type="number"
+                value={formData.warrantyMonths}
+                onChange={e => setFormData({ ...formData, warrantyMonths: e.target.value })}
                 required
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
@@ -325,32 +325,32 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
 
             <div style={{ gridColumn: "span 2" }}>
               <label style={fieldLabel}>Cấu hình chi tiết</label>
-              <input 
-                type="text" 
-                value={formData.config} 
-                onChange={e => setFormData({ ...formData, config: e.target.value })} 
+              <input
+                type="text"
+                value={formData.config}
+                onChange={e => setFormData({ ...formData, config: e.target.value })}
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
               />
             </div>
 
             <div style={{ gridColumn: "span 2" }}>
               <label style={fieldLabel}>Mô tả sản phẩm</label>
-              <textarea 
+              <textarea
                 rows="3"
-                value={formData.description} 
-                onChange={e => setFormData({ ...formData, description: e.target.value })} 
+                value={formData.description}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
                 style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", resize: "none", background: "white" }}
               />
             </div>
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 8 }}>
-            <button 
+            <button
               type="button"
-              onClick={onClose} 
+              onClick={onClose}
               style={{ padding: "12px 24px", borderRadius: 14, border: "1.5px solid #e2e8f0", background: "white", color: "#475569", fontWeight: 700, cursor: "pointer" }}
             >Hủy</button>
-            <button 
+            <button
               type="submit"
               disabled={saving}
               style={{ padding: "12px 32px", borderRadius: 14, border: "none", background: "#1e40af", color: "white", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.7 : 1 }}
@@ -416,7 +416,7 @@ function ProductDetailModal({ product, onClose }) {
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
       {/* Container expanded to 1100px */}
-      <div 
+      <div
         style={{
           background: "white",
           borderRadius: 24,
@@ -452,7 +452,7 @@ function ProductDetailModal({ product, onClose }) {
 
         {/* Dual Panel Body */}
         <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-          
+
           {/* LEFT PANEL: REPAIR HISTORY (40%) */}
           <div className="hide-scrollbar" style={{ width: "40%", borderRight: "1.5px solid #f1f5f9", overflowY: "auto", background: "white", padding: 24 }}>
             <h3 style={{ fontSize: 14, fontWeight: 800, color: "#1e293b", marginBottom: 16, display: "flex", alignItems: "center", gap: 8, letterSpacing: "0.01em" }}>
@@ -480,13 +480,13 @@ function ProductDetailModal({ product, onClose }) {
                           <div style={{ position: "absolute", left: -5, top: 4, width: 8, height: 8, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.1)" }}></div>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
                             <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>{new Date(r.repairDate).toLocaleDateString("vi-VN")}</div>
-                            <div style={{ 
-                               fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 12,
-                               background: getStatusConfig(r.status).background,
-                               color: getStatusConfig(r.status).color,
-                               border: `1px solid ${getStatusConfig(r.status).borderColor}`,
+                            <div style={{
+                              fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 12,
+                              background: getStatusConfig(r.status).background,
+                              color: getStatusConfig(r.status).color,
+                              border: `1px solid ${getStatusConfig(r.status).borderColor}`,
                             }}>
-                               {getStatusConfig(r.status).label}
+                              {getStatusConfig(r.status).label}
 
                             </div>
                           </div>
@@ -504,12 +504,12 @@ function ProductDetailModal({ product, onClose }) {
           {/* RIGHT PANEL: PRODUCT INFO (60%) */}
           <div className="hide-scrollbar" style={{ width: "60%", overflowY: "auto", padding: 32 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              
+
               {/* IMAGE: Span 4 Rows on Left Side */}
               <div style={{ gridRow: "span 4", background: "#f8fafc", borderRadius: 16, border: "1.5px solid #f1f5f9", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {product.imageUrl ? (
-                  <img 
-                    src={product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")} 
+                  <img
+                    src={product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")}
                     alt={product.productName}
                     style={{ width: "100%", height: "100%", objectFit: "contain", padding: 12 }}
                   />
@@ -614,7 +614,7 @@ function ProductList() {
   const allCategories = useMemo(() => {
     // Normalize and collect unique brands
     const categories = new Set(BASE_CATEGORIES.map(b => b.trim()));
-    products.forEach(p => { 
+    products.forEach(p => {
       if (p.brand) {
         // Ensure we don't add duplicates with different casing
         const exists = Array.from(categories).some(c => c.toLowerCase() === p.brand.toLowerCase());
@@ -628,12 +628,12 @@ function ProductList() {
     return products.filter((p) => {
       const isActiveStatus = p.isActive === true || p.status === "active";
       const isExpiredStatus = p.isActive === false || p.status === "expired";
-      
+
       // Logic lọc theo yêu cầu:
       // - Nếu chọn "Tất cả" hoặc "Hoạt động": Chỉ hiện máy đang hoạt động (ẩn máy đã xóa/khóa)
       // - Nếu chọn "Tạm khóa": Hiện máy đã khóa/hết hạn
-      const statusMatch = 
-        (filterStatus === "all" && isActiveStatus) || 
+      const statusMatch =
+        (filterStatus === "all" && isActiveStatus) ||
         (filterStatus === "active" && isActiveStatus) ||
         (filterStatus === "expired" && isExpiredStatus);
 
@@ -642,7 +642,7 @@ function ProductList() {
       const typeMatch = filterType === "Tất cả" || derivedType === filterType;
 
       // Lọc theo hãng (trong Popup)
-      const brandMatch = filterBrand === "all" || 
+      const brandMatch = filterBrand === "all" ||
         (p.brand && p.brand.toLowerCase() === filterBrand.toLowerCase());
 
       // Lọc theo giá (trong Popup)
@@ -653,7 +653,7 @@ function ProductList() {
         searchTerm === "" ||
         p.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.productCode?.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
       return statusMatch && typeMatch && brandMatch && priceMatch && searchMatch;
     });
   }, [products, filterStatus, filterType, filterBrand, priceRange, searchTerm]);
@@ -679,41 +679,41 @@ function ProductList() {
   return (
     <div ref={listTopRef} className="product-list-container">
       {/* Detail Modal */}
-      <ProductDetailModal 
-        product={selectedProduct} 
-        onClose={() => setSelectedProduct(null)} 
+      <ProductDetailModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
       />
 
       {/* Add Modal */}
       {isAddingProduct && (
-        <ProductFormModal 
+        <ProductFormModal
           mode="add"
-          onClose={() => setIsAddingProduct(false)} 
+          onClose={() => setIsAddingProduct(false)}
           onSave={fetchProducts}
         />
       )}
 
       {/* Edit Modal */}
       {editingProduct && (
-        <ProductFormModal 
+        <ProductFormModal
           mode="edit"
-          product={editingProduct} 
-          onClose={() => setEditingProduct(null)} 
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
           onSave={handleUpdateProduct}
         />
       )}
 
       {/* Delete Modal */}
-      <DeleteConfirmModal 
-        product={deletingProduct} 
-        onClose={() => setDeletingProduct(null)} 
+      <DeleteConfirmModal
+        product={deletingProduct}
+        onClose={() => setDeletingProduct(null)}
         onConfirm={handleDeleteProduct}
       />
 
       {/* Filter Modal */}
-      <FilterModal 
-        isOpen={isFilterModalOpen} 
-        onClose={() => setIsFilterModalOpen(false)} 
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
         brands={allCategories}
         filterBrand={filterBrand}
         setFilterBrand={setFilterBrand}
@@ -733,10 +733,10 @@ function ProductList() {
           <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.02em" }}>Danh sách sản phẩm</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button 
+          <button
             onClick={() => setIsAddingProduct(true)}
             style={{
-              display: "flex", alignItems: "center", gap: 8, padding: "0 20px", 
+              display: "flex", alignItems: "center", gap: 8, padding: "0 20px",
               height: 40, borderRadius: 999, border: "none", background: "#1e40af", color: "white",
               fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease",
               boxShadow: "0 4px 10px rgba(30, 64, 175, 0.2)"
@@ -755,10 +755,10 @@ function ProductList() {
             </svg>
             Thêm sản phẩm
           </button>
-          <span style={{ 
-            background: "#f1f5f9", border: "1.25px solid #e2e8f0", borderRadius: 999, 
+          <span style={{
+            background: "#f1f5f9", border: "1.25px solid #e2e8f0", borderRadius: 999,
             height: 40, padding: "0 16px", display: "flex", alignItems: "center",
-            fontSize: 12, color: "#64748b", fontWeight: 600 
+            fontSize: 12, color: "#64748b", fontWeight: 600
           }}>
             {filteredProducts.length} sản phẩm
           </span>
@@ -782,18 +782,18 @@ function ProductList() {
             </svg>
           </span>
         </div>
-        <button 
-          className="action-btn" 
+        <button
+          className="action-btn"
           onClick={() => setIsFilterModalOpen(true)}
-          style={{ 
-            width: "auto", 
-            padding: "0 24px", 
+          style={{
+            width: "auto",
+            padding: "0 24px",
             height: 44,
-            gap: 8, 
-            display: "flex", 
-            alignItems: "center", 
-            fontSize: 14, 
-            fontWeight: 700, 
+            gap: 8,
+            display: "flex",
+            alignItems: "center",
+            fontSize: 14,
+            fontWeight: 700,
             borderRadius: 999,
             background: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "#1e40af" : "white",
             borderColor: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "#1e40af" : "#cbd5e1",
@@ -810,11 +810,11 @@ function ProductList() {
       </div>
 
       {/* Status + Category filter pills */}
-      <div style={{ 
-        display: "flex", 
-        gap: 8, 
-        marginBottom: 24, 
-        overflowX: "auto", 
+      <div style={{
+        display: "flex",
+        gap: 8,
+        marginBottom: 24,
+        overflowX: "auto",
         paddingBottom: "8px"
       }}>
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
@@ -824,18 +824,18 @@ function ProductList() {
               className={`filter-btn${filterStatus === s ? " active" : ""}`}
               onClick={() => setFilterStatus(s)}
               style={
-                filterStatus === s 
-                  ? { 
-                      background: s === "active" ? "#10b981" : s === "expired" ? "#ef4444" : "#1e40af",
-                      color: "white",
-                      borderColor: s === "active" ? "#10b981" : s === "expired" ? "#ef4444" : "#1e40af",
-                      boxShadow: `0 4px 12px ${s === "active" ? "rgba(16,185,129,0.3)" : s === "expired" ? "rgba(239,68,68,0.25)" : "rgba(30,64,175,0.25)"}`
-                    }
+                filterStatus === s
+                  ? {
+                    background: s === "active" ? "#10b981" : s === "expired" ? "#ef4444" : "#1e40af",
+                    color: "white",
+                    borderColor: s === "active" ? "#10b981" : s === "expired" ? "#ef4444" : "#1e40af",
+                    boxShadow: `0 4px 12px ${s === "active" ? "rgba(16,185,129,0.3)" : s === "expired" ? "rgba(239,68,68,0.25)" : "rgba(30,64,175,0.25)"}`
+                  }
                   : s === "active"
-                  ? { borderColor: "#10b981", color: "#10b981", background: "rgba(16, 185, 129, 0.05)" }
-                  : s === "expired"
-                  ? { borderColor: "#ef4444", color: "#ef4444", background: "rgba(239, 68, 68, 0.05)" }
-                  : {}
+                    ? { borderColor: "#10b981", color: "#10b981", background: "rgba(16, 185, 129, 0.05)" }
+                    : s === "expired"
+                      ? { borderColor: "#ef4444", color: "#ef4444", background: "rgba(239, 68, 68, 0.05)" }
+                      : {}
               }
             >
               {s === "all" ? "Tất cả" : s === "active" ? "Đang hoạt động" : "Tạm khóa"}
@@ -874,8 +874,8 @@ function ProductList() {
           </thead>
           <tbody>
             {paginatedProducts.map((product) => (
-              <tr 
-                key={product._id} 
+              <tr
+                key={product._id}
                 className="product-row"
                 onClick={() => setSelectedProduct(product)}
                 onMouseOver={(e) => e.currentTarget.style.background = "#f8fafc"}
@@ -884,30 +884,30 @@ function ProductList() {
                 <td>
                   <div style={{ display: "flex", alignItems: "center", paddingLeft: 0, overflow: "hidden" }}>
                     {/* Image with Status Halo */}
-                    <div style={{ 
-                      width: 44, height: 44, borderRadius: 10, overflow: "hidden", 
-                      background: "#f8fafc", 
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 10, overflow: "hidden",
+                      background: "#f8fafc",
                       border: `2px solid ${(product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "#10b981" : "#ef4444"}`,
                       boxShadow: `0 0 10px ${(product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.1)"}`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       flexShrink: 0, marginRight: 12, transition: "all 0.3s ease"
                     }}>
                       {product.imageUrl ? (
-                        <img 
-                          src={product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")} 
+                        <img
+                          src={product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")}
                           alt={product.productName}
                           style={{ width: "100%", height: "100%", objectFit: "contain" }}
                         />
                       ) : (
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                         </svg>
                       )}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 1, overflow: "hidden" }}>
-                      <div style={{ 
+                      <div style={{
                         color: "#1e40af", fontWeight: 700, fontSize: "0.9rem", lineHeight: 1.2,
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" 
+                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
                       }} title={product.productName}>
                         {product.productName}
                       </div>
@@ -915,7 +915,7 @@ function ProductList() {
                         <span style={{ fontSize: "0.8rem", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {product.productCode}
                         </span>
-                        <span style={{ 
+                        <span style={{
                           fontSize: "0.75rem", fontWeight: 700, textTransform: "lowercase", flexShrink: 0,
                           color: (product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "#10b981" : "#ef4444",
                         }}>
@@ -934,12 +934,12 @@ function ProductList() {
                   </div>
                 </td>
                 <td>
-                   <div style={{ fontSize: "0.85rem", color: "#475569", textAlign: "left" }}>{product.warrantyMonths} tháng</div>
+                  <div style={{ fontSize: "0.85rem", color: "#475569", textAlign: "left" }}>{product.warrantyMonths} tháng</div>
                 </td>
                 <td>
-                  <div style={{ 
-                    fontSize: "0.85rem", color: "#475569", maxWidth: 170, 
-                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" 
+                  <div style={{
+                    fontSize: "0.85rem", color: "#475569", maxWidth: 170,
+                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
                   }} title={product.config}>
                     {product.config || "Tiêu chuẩn"}
                   </div>
@@ -947,7 +947,7 @@ function ProductList() {
                 <td>
                   {product.latestRepair ? (
                     <div style={{ overflow: "hidden" }}>
-                      <div style={{ 
+                      <div style={{
                         fontWeight: 700, color: "#1e40af", fontSize: "0.85rem", lineHeight: 1.3,
                         whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
                       }} title={product.latestRepair.repairContent}>
@@ -971,10 +971,10 @@ function ProductList() {
                         e.stopPropagation();
                         setEditingProduct(product);
                       }}
-                      style={{ 
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #1e40af", 
-                        color: "#1e40af", background: "white", display: "flex", alignItems: "center", 
-                        justifyContent: "center", cursor: "pointer" 
+                      style={{
+                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #1e40af",
+                        color: "#1e40af", background: "white", display: "flex", alignItems: "center",
+                        justifyContent: "center", cursor: "pointer"
                       }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -982,17 +982,17 @@ function ProductList() {
                       </svg>
                     </button>
                     {/* Nút Xóa */}
-                    <button 
-                      className="action-btn download-btn" 
+                    <button
+                      className="action-btn download-btn"
                       title="Xóa sản phẩm"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeletingProduct(product);
                       }}
-                      style={{ 
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444", 
-                        color: "#ef4444", background: "white", display: "flex", alignItems: "center", 
-                        justifyContent: "center", cursor: "pointer" 
+                      style={{
+                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444",
+                        color: "#ef4444", background: "white", display: "flex", alignItems: "center",
+                        justifyContent: "center", cursor: "pointer"
                       }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1012,8 +1012,8 @@ function ProductList() {
 
       {/* Pagination Controls */}
       {totalPages > 0 && (
-        <div style={{ 
-          display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", 
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center",
           marginTop: 24, padding: "0 8px"
         }}>
           {/* Left Spacer */}

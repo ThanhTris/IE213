@@ -1,25 +1,17 @@
-import AdminDashboard from "./admin/AdminDashboard";
-import CreateWarranty from "./admin/CreateWarranty";
-import CreateNewProduct from "./admin/CreateNewProduct";
-import LogRepairs from "./admin/LogRepairs";
-import Footer from "../components/Footer";
-import "../assets/views/admin-portal.css";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import Footer from "../../../components/Footer";
+import "../../../assets/css/adminWorkspace.css";
 
-import { useNavigate, Link } from "react-router-dom";
-
-function AdminPage({ adminActiveTab, onSetAdminTab }) {
+function AdminPage() {
   const navigate = useNavigate();
-  const activeTab = adminActiveTab ?? "create";
-  const setActiveTab = onSetAdminTab ?? (() => {});
 
   const handleReturnToPortal = () => {
-    setActiveTab("create");
-    navigate("/admin");
+    navigate("/admin/dashboard");
   };
 
   const tabs = [
     {
-      id: "create",
+      id: "warranty",
       label: "Cấp Bảo Hành",
       icon: (
         <svg
@@ -37,7 +29,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
       ),
     },
     {
-      id: "log-repairs",
+      id: "repair",
       label: "Ghi Nhận Sửa Chữa",
       icon: (
         <svg
@@ -55,7 +47,7 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
       ),
     },
     {
-      id: "create-new-product",
+      id: "product",
       label: "Thêm Sản Phẩm",
       icon: (
         <svg
@@ -78,34 +70,28 @@ function AdminPage({ adminActiveTab, onSetAdminTab }) {
   return (
     <>
       <div className="view active">
-        {activeTab === "dashboard" ? (
-          <AdminDashboard onReturnToPortal={handleReturnToPortal} />
-        ) : (
-          <div className="admin-page-wrapper">
-            {/* Tab Navigation */}
-            <div className="admin-tabs-container">
-              <div className="admin-tabs">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    className={`admin-tab ${activeTab === tab.id ? "active" : ""}`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    <span className="tab-icon">{tab.icon}</span>
-                    <span className="tab-label">{tab.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Tab Content */}
-            <div className="admin-content">
-              {activeTab === "create" && <CreateWarranty />}
-              {activeTab === "log-repairs" && <LogRepairs />}
-              {activeTab === "create-new-product" && <CreateNewProduct />}
+        <div className="admin-page-wrapper">
+          {/* Tab Navigation */}
+          <div className="admin-tabs-container">
+            <div className="admin-tabs">
+              {tabs.map((tab) => (
+                <NavLink
+                  key={tab.id}
+                  to={tab.id}
+                  className={({ isActive }) => `admin-tab ${isActive ? "active" : ""}`}
+                >
+                  <span className="tab-icon">{tab.icon}</span>
+                  <span className="tab-label">{tab.label}</span>
+                </NavLink>
+              ))}
             </div>
           </div>
-        )}
+
+          {/* Tab Content */}
+          <div className="admin-content">
+            <Outlet />
+          </div>
+        </div>
       </div>
       <Footer />
     </>

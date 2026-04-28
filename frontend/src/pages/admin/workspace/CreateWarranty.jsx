@@ -1,8 +1,8 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
-import { API_ROOT } from "../../utils/api";
-import { buildFakeHash } from "../../utils/hashPreview";
+import { API_ROOT } from "../../../utils/api";
+import { buildFakeHash } from "../../../utils/hashPreview";
 import { toast } from "sonner";
-import { warrantyService } from "../../services/warrantyService";
+import { warrantyService } from "../../../services/warrantyService";
 
 function CreateWarranty() {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -22,7 +22,7 @@ function CreateWarranty() {
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState("");
-  
+
   // Custom Dropdown States
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [productSearch, setProductSearch] = useState("");
@@ -45,11 +45,11 @@ function CreateWarranty() {
 
         const res = await fetch(`${API_ROOT}/products`, { headers });
         const data = await res.json().catch(() => ({}));
-        
+
         if (!res.ok || data.success === false) {
-           throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
+          throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
         }
-        
+
         if (data.success && Array.isArray(data.data)) {
           setDeviceModels(data.data);
           if (data.data.length > 0) {
@@ -73,7 +73,7 @@ function CreateWarranty() {
 
         const res = await fetch(`${API_ROOT}/users`, { headers });
         const data = await res.json().catch(() => ({}));
-        
+
         if (data.success && Array.isArray(data.data)) {
           setUsers(data.data);
         }
@@ -223,7 +223,7 @@ function CreateWarranty() {
                   <div className="cw-dropdown-panel">
                     <div className="cw-dropdown-search-wrap">
                       <svg className="cw-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                       </svg>
                       <input
                         type="text"
@@ -237,7 +237,7 @@ function CreateWarranty() {
                     </div>
                     <div className="cw-dropdown-list">
                       {deviceModels
-                        .filter(p => 
+                        .filter(p =>
                           p.productName.toLowerCase().includes(productSearch.toLowerCase()) ||
                           p.productCode.toLowerCase().includes(productSearch.toLowerCase())
                         )
@@ -339,7 +339,7 @@ function CreateWarranty() {
                   <div className="cw-dropdown-panel">
                     <div className="cw-dropdown-list">
                       {users
-                        .filter(u => 
+                        .filter(u =>
                           u.fullName?.toLowerCase().includes(userSearch.toLowerCase()) ||
                           u.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
                           u.walletAddress?.toLowerCase().includes(userSearch.toLowerCase())
@@ -504,7 +504,7 @@ function CreateWarranty() {
                 ) : (
                   <div className="cw-nft-thumb-placeholder">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                     </svg>
                     <span>Chưa có hình ảnh</span>
                   </div>
