@@ -66,7 +66,25 @@
   --status-cancelled: #dc2626;
   --status-cancelled-bg: #fef2f2;
   --status-cancelled-border: #fecaca;
+
+  /* User Role Colors */
+  --role-admin: #f59e0b;
+  --role-admin-bg: #fffbeb;
+  --role-admin-border: #fde68a;
+
+  --role-staff: #3b82f6;
+  --role-staff-bg: #eff6ff;
+  --role-staff-border: #bfdbfe;
+
+  --role-technician: #8b5cf6;
+  --role-technician-bg: #f5f3ff;
+  --role-technician-border: #ddd6fe;
+
+  --role-user: #10b981;
+  --role-user-bg: #ecfdf5;
+  --role-user-border: #a7f3d0;
 }
+
 
 *,
 *::before,

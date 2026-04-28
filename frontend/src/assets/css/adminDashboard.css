@@ -437,14 +437,14 @@
 .repair-table td {
   border-bottom: .1rem solid #e2e8f0;
   color: #475569;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   padding: 1.8rem 1rem;
 }
 
 .device-name,
 .product-name {
   color: var(--navy-900);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 700;
 }
 
@@ -485,7 +485,7 @@
 .product-cell-title {
   color: var(--navy-primary);
   font-weight: 700;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -511,11 +511,11 @@
 .product-cell-price {
   font-weight: 700;
   color: var(--navy-900);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .product-cell-text {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--navy-800);
 }
 
@@ -526,7 +526,7 @@
 }
 
 .product-cell-meta {
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   color: var(--grey-400);
   margin-top: 0.2rem;
 }
@@ -744,19 +744,18 @@
   padding: 0 1.6rem;
   height: 4rem;
   border-radius: 99.9rem;
-  border: 1.5px solid var(--grey-200);
+  border: 1.5px solid var(--navy-primary);
   background: var(--white);
-  color: var(--navy-900);
+  color: var(--navy-primary);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
 }
 
 .admin-secondary-btn:hover {
-  border-color: var(--navy-primary);
-  color: var(--navy-primary);
-  background: var(--grey-50);
+  background: rgba(41, 85, 206, 0.05);
+  transform: translateY(-1px);
 }
 
 @media (max-width:76.8rem) {
@@ -1164,4 +1163,68 @@
 .admin-modal-footer.light-bg {
   background: var(--grey-50);
   padding: 1.6rem 2.4rem;
+}
+/* New Badge Styles for User Management */
+.status-badge-v2, .role-badge-v2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-badge-v2.success {
+  background: #ecfdf5;
+  color: #10b981;
+  border: 1px solid #d1fae5;
+}
+
+.status-badge-v2.danger {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+}
+
+.role-badge-v2 {
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.05);
+}
+
+.role-badge-v2 svg {
+  flex-shrink: 0;
+}
+
+/* Info variant (Blue) */
+.filter-btn.info {
+  border-color: var(--navy-primary);
+  color: var(--navy-primary);
+  background: rgba(41, 85, 206, 0.05);
+}
+.filter-btn.info:hover {
+  background: rgba(41, 85, 206, 0.1);
+}
+.filter-btn.info.active {
+  background: var(--navy-primary);
+  border-color: var(--navy-primary);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(41, 85, 206, 0.3);
+}
+
+/* Purple variant */
+.filter-btn.purple {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.05);
+}
+.filter-btn.purple:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+.filter-btn.purple.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
