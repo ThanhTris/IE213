@@ -367,7 +367,7 @@ function UserManagement() {
       </div>
 
       {/* Role + Status filters */}
-      <div className="admin-list-filters-row">
+      <div className="admin-list-filters-row user-management-filters">
         {["all", "admin", "staff", "technician", "user"].map((r) => (
           <button
             key={r}

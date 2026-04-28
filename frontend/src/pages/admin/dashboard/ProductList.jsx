@@ -756,7 +756,7 @@ function ProductList() {
       </div>
 
       {/* Status + Category filter pills */}
-      <div className="admin-list-filters-row">
+      <div className="admin-list-filters-row product-list-filters">
         {["all", "active", "expired"].map((s) => (
           <button
             key={s}

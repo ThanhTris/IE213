@@ -408,7 +408,7 @@ function RepairHistory() {
       </div>
 
       {/* Status + Type filter pills */}
-      <div className="admin-list-filters-row" style={{ marginBottom: 24 }}>
+      <div className="admin-list-filters-row repair-history-filters">
         {[
           { id: "all", label: "Tất cả", colorVar: "var(--navy-primary)" },
           { id: "pending", label: "Tiếp nhận", colorVar: "var(--status-pending)" },
