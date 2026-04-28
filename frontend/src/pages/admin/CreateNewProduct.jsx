@@ -127,26 +127,26 @@ function CreateNewProduct() {
           <div className="cp-card cp-main-card">
             <div className="cp-card-header">
               <div className="cp-header-icon blue"><BoxIcon /></div>
-              <h2 className="cp-card-title">Product Information</h2>
+              <h2 className="cp-card-title">Thông tin sản phẩm</h2>
             </div>
 
             <form onSubmit={handleSubmit}>
               <div className="cp-row-split">
                 <div className="cp-field">
-                  <label className="cp-label">Product Code <span className="cp-required">*</span></label>
+                  <label className="cp-label">Mã sản phẩm <span className="cp-required">*</span></label>
                   <input
                     type="text" className={`cp-input ${errors.productCode ? "cp-input--error" : ""}`}
                     value={form.productCode} onChange={updateField("productCode")}
-                    placeholder="e.g., GLX-W-ULTRA"
+                    placeholder="VD: GLX-W-ULTRA"
                   />
                   {errors.productCode && <div className="cp-error-msg">{errors.productCode}</div>}
                 </div>
                 <div className="cp-field">
-                  <label className="cp-label">Product Name <span className="cp-required">*</span></label>
+                  <label className="cp-label">Tên sản phẩm <span className="cp-required">*</span></label>
                   <input
                     type="text" className={`cp-input ${errors.productName ? "cp-input--error" : ""}`}
                     value={form.productName} onChange={updateField("productName")}
-                    placeholder="e.g., Samsung Galaxy Watch Ultra"
+                    placeholder="VD: Samsung Galaxy Watch Ultra"
                   />
                   {errors.productName && <div className="cp-error-msg">{errors.productName}</div>}
                 </div>
@@ -154,45 +154,45 @@ function CreateNewProduct() {
 
               <div className="cp-row-split">
                 <div className="cp-field">
-                  <label className="cp-label">Brand <span className="cp-required">*</span></label>
+                  <label className="cp-label">Thương hiệu <span className="cp-required">*</span></label>
                   <input
                     type="text" className={`cp-input ${errors.brand ? "cp-input--error" : ""}`}
                     value={form.brand} onChange={updateField("brand")}
-                    placeholder="e.g., Samsung"
+                    placeholder="VD: Samsung"
                   />
                   {errors.brand && <div className="cp-error-msg">{errors.brand}</div>}
                 </div>
                 <div className="cp-field">
-                  <label className="cp-label">Color</label>
+                  <label className="cp-label">Màu sắc</label>
                   <input
                     type="text" className="cp-input"
                     value={form.color} onChange={updateField("color")}
-                    placeholder="e.g., Titanium"
+                    placeholder="VD: Titanium"
                   />
                 </div>
               </div>
 
               <div className="cp-row-split">
                 <div className="cp-field">
-                  <label className="cp-label">Configuration</label>
+                  <label className="cp-label">Cấu hình</label>
                   <input
                     type="text" className="cp-input"
                     value={form.config} onChange={updateField("config")}
-                    placeholder="e.g., 47mm, Titanium, 10ATM"
+                    placeholder="VD: 47mm, Titanium, 10ATM"
                   />
                 </div>
                 <div className="cp-field">
-                  <label className="cp-label">Warranty Period</label>
+                  <label className="cp-label">Thời hạn bảo hành</label>
                   <div className="cp-select-wrap">
                     <select
                       className="cp-select"
                       value={form.warrantyPeriod} onChange={updateField("warrantyPeriod")}
                     >
-                      <option value="6">6 Months</option>
-                      <option value="12">12 Months</option>
-                      <option value="18">18 Months</option>
-                      <option value="24">24 Months</option>
-                      <option value="36">36 Months</option>
+                      <option value="6">6 Tháng</option>
+                      <option value="12">12 Tháng</option>
+                      <option value="18">18 Tháng</option>
+                      <option value="24">24 Tháng</option>
+                      <option value="36">36 Tháng</option>
                     </select>
                     <span className="cp-select-arrow">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -205,7 +205,7 @@ function CreateNewProduct() {
 
               <div className="cp-row-split">
                 <div className="cp-field">
-                  <label className="cp-label">Price (VND) <span className="cp-required">*</span></label>
+                  <label className="cp-label">Giá bán (VND) <span className="cp-required">*</span></label>
                   <div className="cp-input-icon-wrap">
                     <span className="cp-input-icon">₫</span>
                     <input
@@ -219,7 +219,7 @@ function CreateNewProduct() {
               </div>
 
               <div className="cp-field">
-                <label className="cp-label">Product Image</label>
+                <label className="cp-label">Hình ảnh sản phẩm</label>
                 <div className="cp-upload-container">
                   <div className="cp-upload-box" onClick={() => fileInputRef.current?.click()}>
                     {imagePreview ? (
@@ -232,8 +232,8 @@ function CreateNewProduct() {
                     ) : (
                       <div className="cp-upload-placeholder">
                         <CameraIcon />
-                        <span>Click to upload product image</span>
-                        <p>PNG, JPG or WebP (Max 10MB)</p>
+                        <span>Nhấn để tải lên hình ảnh sản phẩm</span>
+                        <p>PNG, JPG hoặc WebP (Tối đa 10MB)</p>
                       </div>
                     )}
                   </div>
@@ -242,11 +242,11 @@ function CreateNewProduct() {
               </div>
 
               <div className="cp-field">
-                <label className="cp-label">Description</label>
+                <label className="cp-label">Mô tả sản phẩm</label>
                 <textarea
                   className="cp-textarea"
                   value={form.description} onChange={updateField("description")}
-                  placeholder="Enter detailed product description..."
+                  placeholder="Nhập mô tả chi tiết sản phẩm..."
                   rows={4}
                 />
               </div>
@@ -255,12 +255,12 @@ function CreateNewProduct() {
                 {isLoading ? (
                   <>
                     <span className="cp-spinner"></span>
-                    Creating...
+                    Đang tạo...
                   </>
                 ) : (
                   <>
                     <BoxIcon />
-                    Create Product
+                    Tạo sản phẩm
                   </>
                 )}
               </button>
@@ -273,7 +273,7 @@ function CreateNewProduct() {
           <div className="cp-card cp-preview-card">
             <div className="cp-card-header">
               <div className="cp-header-icon green"><TagIcon /></div>
-              <h2 className="cp-card-title">Live Preview</h2>
+              <h2 className="cp-card-title">Xem trước trực tiếp</h2>
             </div>
 
             <div className="cp-preview-content">
@@ -283,31 +283,31 @@ function CreateNewProduct() {
                 ) : (
                   <div className="cp-preview-image-placeholder">
                     <BoxIcon />
-                    <span>No image uploaded</span>
+                    <span>Chưa có hình ảnh</span>
                   </div>
                 )}
               </div>
 
               <div className="cp-preview-main-info">
-                <h3 className="cp-preview-name">{form.productName || "Product Name"}</h3>
-                <div className="cp-preview-code-badge">{form.productCode || "CODE-000"}</div>
+                <h3 className="cp-preview-name">{form.productName || "Tên sản phẩm"}</h3>
+                <div className="cp-preview-code-badge">{form.productCode || "MÃ-000"}</div>
               </div>
 
               <div className="cp-preview-details">
                 <div className="cp-preview-detail-row">
-                  <span className="cp-preview-detail-label">Brand:</span>
+                  <span className="cp-preview-detail-label">Thương hiệu:</span>
                   <span className="cp-preview-detail-value">{form.brand || "—"}</span>
                 </div>
                 <div className="cp-preview-detail-row">
-                  <span className="cp-preview-detail-label">Color:</span>
+                  <span className="cp-preview-detail-label">Màu sắc:</span>
                   <span className="cp-preview-detail-value">{form.color || "—"}</span>
                 </div>
                 <div className="cp-preview-detail-row">
-                  <span className="cp-preview-detail-label">Warranty:</span>
-                  <span className="cp-preview-detail-value">{form.warrantyPeriod} Months</span>
+                  <span className="cp-preview-detail-label">Bảo hành:</span>
+                  <span className="cp-preview-detail-value">{form.warrantyPeriod} Tháng</span>
                 </div>
                 <div className="cp-preview-detail-row price">
-                  <span className="cp-preview-detail-label">Price:</span>
+                  <span className="cp-preview-detail-label">Giá bán:</span>
                   <span className="cp-preview-detail-value">
                     {form.price ? `${Number(form.price).toLocaleString()} ₫` : "0 ₫"}
                   </span>
@@ -317,7 +317,7 @@ function CreateNewProduct() {
               <div className="cp-preview-footer">
                 <div className="cp-preview-notice">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  System will generate product ID automatically
+                  Hệ thống sẽ tự động tạo ID sản phẩm
                 </div>
               </div>
             </div>
@@ -340,10 +340,10 @@ function CreateNewProduct() {
         }
 
         .cp-card {
-          background: #fff;
-          border-radius: 1.6rem;
-          border: 0.1rem solid #e2e8f0;
-          box-shadow: 0 0.4rem 2rem rgba(15,23,42,0.05);
+          background: var(--white);
+          border-radius: var(--radius-lg);
+          border: 0.1rem solid var(--grey-200);
+          box-shadow: var(--shadow-sm);
           overflow: hidden;
         }
 
@@ -353,7 +353,7 @@ function CreateNewProduct() {
 
         .cp-card-header {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 1.2rem;
           margin-bottom: 2.8rem;
         }
@@ -365,16 +365,17 @@ function CreateNewProduct() {
           align-items: center;
           justify-content: center;
           border-radius: 1rem;
+          margin-top: -0.2rem;
         }
 
-        .cp-header-icon.blue { background: #eff6ff; color: #2563eb; }
-        .cp-header-icon.green { background: #ecfdf5; color: #10b981; }
+        .cp-header-icon.blue { background: var(--grey-100); color: var(--navy-primary); }
+        .cp-header-icon.green { background: var(--color-success-light); color: var(--color-success); }
 
         .cp-card-title {
           margin: 0;
-          font-size: 1.8rem;
+          font-size: var(--text-xl);
           font-weight: 800;
-          color: #0f172a;
+          color: var(--navy-primary-dark);
           letter-spacing: -0.02em;
         }
 
@@ -390,33 +391,33 @@ function CreateNewProduct() {
 
         .cp-label {
           display: block;
-          font-size: 1.35rem;
+          font-size: var(--text-base);
           font-weight: 700;
-          color: #475569;
+          color: var(--grey-600);
           margin-bottom: 0.8rem;
         }
 
-        .cp-required { color: #ef4444; }
+        .cp-required { color: var(--color-danger); }
 
         .cp-input {
           width: 100%;
           padding: 1.2rem 1.4rem;
-          background: #fff;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          background: var(--white);
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           font-size: 1.4rem;
           outline: none;
           transition: all 0.2s;
         }
 
         .cp-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 0.3rem rgba(59,130,246,0.1);
+          border-color: var(--navy-primary);
+          box-shadow: 0 0 0 0.3rem rgba(41, 85, 206, 0.1);
         }
 
         .cp-input--error {
-          border-color: #ef4444;
-          background: #fef2f2;
+          border-color: var(--color-danger);
+          background: var(--color-danger-light);
         }
 
         .cp-input-icon-wrap {
@@ -429,7 +430,7 @@ function CreateNewProduct() {
           top: 50%;
           transform: translateY(-50%);
           font-size: 1.4rem;
-          color: #94a3b8;
+          color: var(--grey-400);
           font-weight: 700;
         }
 
@@ -445,9 +446,9 @@ function CreateNewProduct() {
           width: 100%;
           padding: 1.2rem 1.4rem;
           padding-right: 3.6rem;
-          background: #fff;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          background: var(--white);
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           font-size: 1.4rem;
           appearance: none;
           outline: none;
@@ -460,7 +461,7 @@ function CreateNewProduct() {
           top: 50%;
           transform: translateY(-50%);
           pointer-events: none;
-          color: #94a3b8;
+          color: var(--grey-400);
         }
 
         .cp-upload-container {
@@ -471,9 +472,9 @@ function CreateNewProduct() {
         .cp-upload-box {
           width: 32rem;
           height: 20rem;
-          border: 0.2rem dashed #d1d5db;
-          border-radius: 1.2rem;
-          background: #f8fafc;
+          border: 0.2rem dashed var(--grey-400);
+          border-radius: var(--radius-md);
+          background: var(--grey-50);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -484,8 +485,8 @@ function CreateNewProduct() {
         }
 
         .cp-upload-box:hover {
-          border-color: #3b82f6;
-          background: #eff6ff;
+          border-color: var(--navy-primary);
+          background: var(--grey-100);
         }
 
         .cp-upload-placeholder {
@@ -493,13 +494,13 @@ function CreateNewProduct() {
           flex-direction: column;
           align-items: center;
           gap: 0.8rem;
-          color: #94a3b8;
+          color: var(--grey-400);
         }
 
         .cp-upload-placeholder span {
           font-size: 1.4rem;
           font-weight: 600;
-          color: #64748b;
+          color: var(--grey-600);
         }
 
         .cp-upload-placeholder p {
@@ -531,7 +532,7 @@ function CreateNewProduct() {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #ef4444;
+          color: var(--color-danger);
           cursor: pointer;
           box-shadow: 0 0.2rem 1rem rgba(0,0,0,0.15);
           transition: all 0.2s;
@@ -540,7 +541,7 @@ function CreateNewProduct() {
 
         .cp-remove-img-btn:hover {
           transform: scale(1.1);
-          background: #fff;
+          background: var(--white);
         }
 
         .cp-file-input-hidden { display: none; }
@@ -548,8 +549,8 @@ function CreateNewProduct() {
         .cp-textarea {
           width: 100%;
           padding: 1.2rem 1.4rem;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           font-size: 1.4rem;
           outline: none;
           font-family: inherit;
@@ -559,10 +560,10 @@ function CreateNewProduct() {
         .cp-submit-btn {
           width: 100%;
           padding: 1.4rem;
-          background: linear-gradient(135deg, #2563eb, #1d4ed8);
-          color: white;
+          background: linear-gradient(135deg, var(--navy-primary), var(--navy-primary-dark));
+          color: var(--white);
           border: none;
-          border-radius: 1.2rem;
+          border-radius: var(--radius-sm);
           font-size: 1.6rem;
           font-weight: 800;
           display: flex;
@@ -583,7 +584,7 @@ function CreateNewProduct() {
           width: 1.8rem;
           height: 1.8rem;
           border: 0.3rem solid rgba(255,255,255,0.3);
-          border-top-color: #fff;
+          border-top-color: var(--white);
           border-radius: 50%;
           animation: cp-spin 0.8s linear infinite;
         }
@@ -598,9 +599,9 @@ function CreateNewProduct() {
         .cp-preview-image-box {
           width: 100%;
           height: 18rem; /* Fixed height like warranty page */
-          background: #f8fafc;
-          border-radius: 1.2rem;
-          border: 0.1rem solid #f1f5f9;
+          background: var(--grey-50);
+          border-radius: var(--radius-md);
+          border: 0.1rem solid var(--grey-100);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -619,7 +620,7 @@ function CreateNewProduct() {
           flex-direction: column;
           align-items: center;
           gap: 1rem;
-          color: #cbd5e1;
+          color: var(--grey-400);
         }
 
         .cp-preview-image-placeholder span {
@@ -639,15 +640,15 @@ function CreateNewProduct() {
           margin: 0;
           font-size: 1.8rem;
           font-weight: 800;
-          color: #0f172a;
+          color: var(--navy-900);
           line-height: 1.2;
         }
 
         .cp-preview-code-badge {
           font-size: 1.1rem;
           font-weight: 700;
-          color: #2563eb;
-          background: #eff6ff;
+          color: var(--navy-primary);
+          background: var(--grey-100);
           padding: 0.3rem 1rem;
           border-radius: 99rem;
           white-space: nowrap;
@@ -658,39 +659,43 @@ function CreateNewProduct() {
           flex-direction: column;
           gap: 1rem;
           padding: 1.6rem;
-          background: #f8fafc;
-          border-radius: 1.2rem;
+          background: var(--grey-50);
+          border-radius: var(--radius-md);
           margin-bottom: 2.4rem;
         }
 
         .cp-preview-detail-row {
           display: flex;
           justify-content: space-between;
-          font-size: 1.35rem;
+          font-size: var(--text-base);
         }
 
-        .cp-preview-detail-label { color: #64748b; }
-        .cp-preview-detail-value { color: #0f172a; font-weight: 600; }
+        .cp-preview-detail-label { color: var(--grey-600); }
+        .cp-preview-detail-value { color: var(--navy-900); font-weight: 600; }
 
         .cp-preview-detail-row.price {
           margin-top: 0.4rem;
           padding-top: 0.8rem;
-          border-top: 0.1rem dashed #e2e8f0;
+          border-top: 0.1rem dashed var(--grey-200);
         }
 
         .cp-preview-detail-row.price .cp-preview-detail-value {
-          color: #10b981;
+          color: var(--color-success);
           font-size: 1.6rem;
           font-weight: 800;
         }
 
         .cp-preview-notice {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 0.8rem;
-          font-size: 1.15rem;
-          color: #94a3b8;
+          font-size: var(--text-sm);
+          color: var(--grey-400);
           font-weight: 500;
+        }
+        
+        .cp-preview-notice svg {
+          margin-top: 0.3rem;
         }
 
         @media (max-width: 1024px) {
