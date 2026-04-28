@@ -9,6 +9,82 @@ const getInitials = (name) => {
   return name.trim().split(" ").map(p => p[0].toUpperCase()).slice(0, 2).join("");
 };
 
+function FilterModal({ isOpen, onClose, priceRange, setPriceRange }) {
+  if (!isOpen) return null;
+
+  const countPresets = [
+    { label: "Tất cả", min: 0, max: Infinity },
+    { label: "0 sản phẩm", min: 0, max: 0 },
+    { label: "1 - 3 sản phẩm", min: 1, max: 3 },
+    { label: "Trên 3 sản phẩm", min: 4, max: Infinity },
+  ];
+
+  return (
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-content" style={{ maxWidth: "50rem" }} onClick={(e) => e.stopPropagation()}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">Bộ lọc nâng cao</h3>
+          <button onClick={onClose} className="admin-modal-close-btn">×</button>
+        </div>
+
+        <div className="admin-modal-body hide-scrollbar" style={{ maxHeight: "70vh" }}>
+          <div>
+            <h4 className="detail-section-title filter-section-header" style={{ fontWeight: 700, fontSize: 13, color: "#475569", marginBottom: 12, textTransform: "uppercase" }}>Số lượng sản phẩm bảo hành</h4>
+            <div className="filter-button-group" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: "1.6rem" }}>
+              {countPresets.map((p) => (
+                <button
+                  key={p.label}
+                  className={`filter-btn ${priceRange.label === p.label ? "active" : ""}`}
+                  onClick={() => setPriceRange(p)}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="filter-range-container" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <input
+                type="number"
+                placeholder="Tối thiểu"
+                value={priceRange.min === 0 && priceRange.label !== "Tất cả" ? "" : priceRange.min}
+                onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value), label: "Tùy chọn" })}
+                style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14 }}
+              />
+              <div style={{ width: 12, height: 1.5, background: "#cbd5e1" }} />
+              <input
+                type="number"
+                placeholder="Tối đa"
+                value={priceRange.max === Infinity ? "" : priceRange.max}
+                onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value), label: "Tùy chọn" })}
+                style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14 }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-modal-footer light-bg" style={{ padding: 20, display: "flex", gap: 12, borderTop: "1px solid #f1f5f9", justifyContent: "center" }}>
+          <button
+            onClick={() => {
+              setPriceRange({ min: 0, max: Infinity, label: "Tất cả" });
+            }}
+            className="admin-secondary-btn"
+            style={{ padding: "12px 24px", minWidth: "140px", textAlign: "center" }}
+          >
+            Làm mới bộ lọc
+          </button>
+          <button
+            onClick={onClose}
+            className="admin-primary-btn"
+            style={{ padding: "12px 32px", minWidth: "140px", textAlign: "center" }}
+          >
+            Áp dụng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const ROLE_STYLES = {
   admin: { background: "#f59e0b", color: "white" },
   staff: { background: "#3b82f6", color: "white" },
@@ -54,6 +130,9 @@ function UserManagement() {
   const [userWarranties, setUserWarranties] = useState([]);
   const [loadingWarranties, setLoadingWarranties] = useState(false);
   const [newUser, setNewUser] = useState({ fullName: "", email: "", walletAddress: "", role: "user", phone: "" });
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [filterBrand, setFilterBrand] = useState("all"); 
+  const [priceRange, setPriceRange] = useState({ label: "Tất cả mức giá", min: 0, max: Infinity });
 
   const fetchUserWarranties = async (wallet) => {
     try {
@@ -128,9 +207,10 @@ function UserManagement() {
         (u.walletAddress || "").toLowerCase().includes(q);
       const matchRole = filterRole === "all" || u.role === filterRole;
       const matchStatus = filterStatus === "all" || u.status === filterStatus;
-      return matchSearch && matchRole && matchStatus;
+      const matchCount = u.warrantyCount >= priceRange.min && u.warrantyCount <= priceRange.max;
+      return matchSearch && matchRole && matchStatus && matchCount;
     });
-  }, [users, searchQuery, filterRole, filterStatus]);
+  }, [users, searchQuery, filterRole, filterStatus, priceRange]);
 
   const handleAddUser = async () => {
     if (!newUser.walletAddress) { toast.error("Cần địa chỉ ví!"); return; }
@@ -260,7 +340,7 @@ function UserManagement() {
         </div>
       </div>
 
-      {/* Search + Filters */}
+      {/* Search + Filter row */}
       <div className="admin-list-toolbar">
         <div className="admin-list-search">
           <input
@@ -275,7 +355,11 @@ function UserManagement() {
             </svg>
           </span>
         </div>
-        <button className="admin-secondary-btn">
+        <button
+          className={`admin-secondary-btn ${ (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "active-filter" : "" }`}
+          onClick={() => setIsFilterModalOpen(true)}
+          style={ (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? { background: "var(--navy-primary)", color: "white", borderColor: "var(--navy-primary)" } : {} }
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
@@ -307,6 +391,13 @@ function UserManagement() {
       </div>
 
       {/* Table */}
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+      />
+
       <div className="table-wrapper">
         <table className="product-table">
           <thead>
