@@ -93,7 +93,6 @@ function AdminPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }
