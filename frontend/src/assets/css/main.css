@@ -41,6 +41,31 @@
   --text-lg: 1.8rem;
   --text-xl: 2rem;
   --text-2xl: 2.4rem;
+
+  /* Repair Status Colors */
+  --status-pending: #2563eb;
+  --status-pending-bg: #eff6ff;
+  --status-pending-border: #bfdbfe;
+
+  --status-waiting: #d97706;
+  --status-waiting-bg: #fffbeb;
+  --status-waiting-border: #fde68a;
+
+  --status-fixing: #7c3aed;
+  --status-fixing-bg: #f5f3ff;
+  --status-fixing-border: #ddd6fe;
+
+  --status-completed: #059669;
+  --status-completed-bg: #ecfdf5;
+  --status-completed-border: #a7f3d0;
+
+  --status-delivered: #0d9488;
+  --status-delivered-bg: #f0fdfa;
+  --status-delivered-border: #99f6e4;
+
+  --status-cancelled: #dc2626;
+  --status-cancelled-bg: #fef2f2;
+  --status-cancelled-border: #fecaca;
 }
 
 *,
