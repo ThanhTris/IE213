@@ -1,15 +1,18 @@
 @import "./main.css";
 
 .bw-hero {
-  background: linear-gradient(135deg, #1e40af 0%, var(--navy-primary) 50%, #1e40af 100%);
-  padding: 4rem 2rem 12rem;
+  background: linear-gradient(
+    135deg,
+    #1e40af 0%,
+    var(--navy-primary) 50%,
+    #1e40af 100%
+  );
+  padding: 6rem;
   text-align: center;
   color: var(--white);
   position: relative;
   overflow: hidden;
 }
-
-
 
 .bw-hero-inner {
   max-width: 80rem;
@@ -26,7 +29,7 @@
   border-radius: 99.9rem;
   background: var(--color-success);
   border: none;
-  font-size: 1.8rem;
+  font-size: var(--text-md);
   font-weight: 700;
   margin-bottom: 4rem;
   color: var(--white);
@@ -34,7 +37,11 @@
 }
 
 .bw-hero-title {
-  font-size: clamp(4rem, 8vw, 6.4rem);
+  font-size: clamp(
+    calc(var(--text-2xl) * 1.5),
+    8vw,
+    calc(var(--text-2xl) * 2.5)
+  );
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 3rem;
@@ -47,7 +54,7 @@
 }
 
 .bw-hero-lead {
-  font-size: 2rem;
+  font-size: var(--text-lg);
   color: rgba(255, 255, 255, 0.65);
   margin: 0 auto 5rem;
   line-height: 1.8;
@@ -66,7 +73,7 @@
   padding: 1.8rem 4rem;
   background: var(--color-success);
   color: var(--white);
-  font-size: 1.8rem;
+  font-size: var(--text-md);
   font-weight: 700;
   border-radius: 1.2rem;
   border: none;
@@ -87,7 +94,7 @@
   padding: 1.8rem 4rem;
   background: var(--white);
   color: var(--navy-primary);
-  font-size: 1.8rem;
+  font-size: var(--text-md);
   font-weight: 700;
   border-radius: 1.2rem;
   border: none;
@@ -110,7 +117,7 @@
 
 /* Zebra Striping Sections */
 .bw-section {
-  padding: 10rem 1.5rem;
+  padding: 6rem;
   background: #ffffff;
 }
 
@@ -127,7 +134,7 @@
 .bw-h2 {
   text-align: center;
   color: var(--navy-900);
-  font-size: 3.6rem;
+  font-size: var(--text-2xl);
   font-weight: 800;
   margin-bottom: 2rem;
 }
@@ -137,7 +144,7 @@
   color: var(--grey-600);
   max-width: 64rem;
   margin: 0 auto 5rem;
-  font-size: 1.8rem;
+  font-size: var(--text-md);
   line-height: 1.6;
 }
 
@@ -152,7 +159,9 @@
   padding: 4rem;
   border-radius: 2.4rem;
   /* Đổ bóng cực mạnh để tạo độ nổi khối rõ rệt */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.1),
+    0 5px 15px rgba(0, 0, 0, 0.04);
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   border: 1px solid rgba(0, 0, 0, 0.1);
   /* Viền đậm hơn */
@@ -179,14 +188,14 @@
 }
 
 .bw-feature-card h4 {
-  font-size: 2rem;
+  font-size: var(--text-lg);
   font-weight: 700;
   margin-bottom: 1.2rem;
   color: var(--navy-900);
 }
 
 .bw-feature-card p {
-  font-size: 1.6rem;
+  font-size: var(--text-base);
   color: var(--grey-600);
   line-height: 1.6;
 }
@@ -228,20 +237,20 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 2.5rem;
-  font-size: 2rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .bw-step-card h4 {
-  font-size: 2.2rem;
+  font-size: var(--text-xl);
   font-weight: 800;
   margin-bottom: 1.5rem;
   color: var(--white);
 }
 
 .bw-step-card p {
-  font-size: 1.6rem;
+  font-size: var(--text-base);
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
 }
@@ -279,7 +288,7 @@
 }
 
 .bw-trust-copy h3 {
-  font-size: 3.2rem;
+  font-size: var(--text-2xl);
   font-weight: 800;
   margin-bottom: 2.4rem;
   line-height: 1.3;
@@ -329,12 +338,12 @@
 
 .bw-check-list li strong {
   color: var(--white);
-  font-size: 1.8rem;
+  font-size: var(--text-md);
   font-weight: 700;
 }
 
 .bw-check-list li span {
-  font-size: 1.6rem;
+  font-size: var(--text-base);
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.7);
 }
@@ -378,14 +387,14 @@
 }
 
 .bw-mini-card h4 {
-  font-size: 2.2rem;
+  font-size: var(--text-xl);
   font-weight: 800;
   margin-bottom: 1.5rem;
   color: var(--white);
 }
 
 .bw-mini-card p {
-  font-size: 1.6rem;
+  font-size: var(--text-base);
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
 }
@@ -418,14 +427,14 @@
 }
 
 .bw-stars {
-  font-size: 3rem;
+  font-size: var(--text-2xl);
   color: #fbbf24;
   margin-bottom: 2rem;
   letter-spacing: 0.5rem;
 }
 
 .bw-quote p {
-  font-size: 1.7rem;
+  font-size: var(--text-base);
   font-style: italic;
   line-height: 1.6;
   color: var(--grey-700);
@@ -455,13 +464,13 @@
 
 .bw-author-info strong {
   display: block;
-  font-size: 1.8rem;
+  font-size: var(--text-md);
   color: var(--navy-900);
   margin-bottom: 0.4rem;
 }
 
 .bw-author-info span {
-  font-size: 1.4rem;
+  font-size: var(--text-sm);
   color: var(--grey-500);
 }
 
@@ -484,7 +493,7 @@
 }
 
 .bw-h2-light {
-  font-size: 3.6rem;
+  font-size: var(--text-2xl);
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 2.4rem;
@@ -493,7 +502,7 @@
 }
 
 .bw-location-desc {
-  font-size: 1.7rem;
+  font-size: var(--text-base);
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 1.4rem;
@@ -501,7 +510,7 @@
 }
 
 .bw-address-box h3 {
-  font-size: 2.2rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   margin-bottom: 1.4rem;
   /* Giảm 10px: 2.4 -> 1.4 */
@@ -509,7 +518,7 @@
 }
 
 .bw-addr-text {
-  font-size: 1.7rem;
+  font-size: var(--text-base);
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
   margin-bottom: 1.4rem;
@@ -538,7 +547,7 @@
   background: rgba(255, 255, 255, 0.08);
   padding: 1rem 2rem;
   border-radius: 1.2rem;
-  font-size: 1.5rem;
+  font-size: var(--text-base);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -559,13 +568,13 @@
 }
 
 .stat-num {
-  font-size: 3.2rem;
+  font-size: var(--text-2xl);
   font-weight: 800;
   color: var(--white);
 }
 
 .stat-label {
-  font-size: 1.4rem;
+  font-size: var(--text-sm);
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
@@ -583,71 +592,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Footer Styling - UPGRADED VERSION */
-.bw-footer {
-  background: var(--navy-primary);
-  color: var(--white);
-  padding: 10rem 1.5rem 5rem;
-}
-
-.bw-footer-grid {
-  max-width: 120rem;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 3.5fr 1fr 1fr 1fr;
-  /* Tăng mạnh cột đầu tiên */
-  gap: 6rem;
-  margin-bottom: 8rem;
-}
-
-.bw-footer-col h4 {
-  font-size: 2.2rem;
-  /* Tăng từ 1.8 */
-  margin-bottom: 2.5rem;
-  font-weight: 700;
-  color: var(--white);
-}
-
-.bw-footer-col ul {
-  list-style: none;
-  padding: 0;
-}
-
-.bw-footer-col ul li {
-  margin-bottom: 1.2rem;
-}
-
-.bw-footer-col ul li a {
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  font-size: 2rem;
-  /* Tăng thêm lên 2rem */
-  transition: all 0.3s ease;
-}
-
-.bw-footer-col ul li a:hover {
-  color: var(--white);
-}
-
-.bw-footer-bottom {
-  max-width: 120rem;
-  margin: 0 auto;
-  padding-top: 3rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.8);
-  /* Tăng độ đậm màu */
-  font-size: 2.2rem;
-  /* Phóng to lên 2.2rem */
-  font-weight: 500;
-  text-align: center;
-}
-
-
 @media (max-width: 768px) {
-
   .bw-feature-row,
   .bw-steps,
   .bw-testimonials,

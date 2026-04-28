@@ -39,7 +39,7 @@
   --text-base: 1.5rem;
   --text-md: 1.6rem;
   --text-lg: 1.8rem;
-  --text-xl: 2.0rem;
+  --text-xl: 2rem;
   --text-2xl: 2.4rem;
 }
 
@@ -196,7 +196,7 @@ body {
 }
 
 .header-user-address {
-  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-family: ui-monospace, "Cascadia Code", monospace;
   font-size: 1.5rem;
   color: var(--navy-800);
   background: var(--grey-100);
@@ -322,7 +322,7 @@ body {
   background: transparent;
   border: none;
   padding: 10px 24px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #475569;
   cursor: pointer;
@@ -359,16 +359,17 @@ body {
 
 .bw-footer {
   background: var(--navy-primary-dark);
-  color: rgba(255, 255, 255, 0.85);
-  padding: 3rem 1.5rem 2rem;
+  color: var(--white);
+  padding: 5rem 2rem 2rem;
 }
 
 .bw-footer-grid {
-  max-width: 1120px;
-  margin: 0 auto 2rem;
+  max-width: 120rem;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.6fr repeat(3, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 3.5fr 1fr 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 4rem;
 }
 
 @media (max-width: 768px) {
@@ -384,24 +385,25 @@ body {
 }
 
 .bw-footer-brand strong {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  display: block;
+  margin-bottom: 1.5rem;
   color: var(--white);
-  font-size: 1.1rem;
 }
 
 .bw-footer-brand p {
-  font-size: 0.875rem;
-  line-height: 1.55;
-  margin: 0.75rem 0 0;
-  opacity: 0.85;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  max-width: 40rem;
+  opacity: 0.8;
 }
 
-.bw-footer-col h5 {
-  margin: 0 0 1rem;
-  font-size: 0.75rem;
+.bw-footer-col h4 {
+  font-size: var(--text-xl);
+  margin-bottom: 1.5rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--white);
 }
 
 .bw-footer-col ul {
@@ -410,27 +412,35 @@ body {
   margin: 0;
 }
 
+.bw-footer-col ul li {
+  margin-bottom: 1rem;
+}
+
 .bw-footer-col a {
   display: block;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: var(--text-base);
   padding: 0.35rem 0;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .bw-footer-col a:hover {
   color: var(--white);
 }
 
-.bw-footer-copy {
-  max-width: 1120px;
-  margin: 2.5rem auto 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+.bw-footer-bottom {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--text-base);
+  font-weight: 400;
   text-align: center;
-  font-size: 0.8rem;
-  opacity: 0.65;
 }
 
 /* Modals & Others */
