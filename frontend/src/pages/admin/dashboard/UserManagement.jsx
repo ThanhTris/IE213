@@ -13,7 +13,7 @@ function FilterModal({ isOpen, onClose, priceRange, setPriceRange }) {
   if (!isOpen) return null;
 
   const countPresets = [
-    { label: "Tất cả", min: 0, max: Infinity },
+    { label: "Tất cả mức giá", min: 0, max: Infinity },
     { label: "0 sản phẩm", min: 0, max: 0 },
     { label: "1 - 3 sản phẩm", min: 1, max: 3 },
     { label: "Trên 3 sản phẩm", min: 4, max: Infinity },
@@ -87,7 +87,7 @@ function FilterModal({ isOpen, onClose, priceRange, setPriceRange }) {
 
 const ROLE_STYLES = {
   admin: { background: "#f59e0b", color: "white" },
-  staff: { background: "#3b82f6", color: "white" },
+  staff: { background: "#2955ce", color: "white" },
   technician: { background: "#8b5cf6", color: "white" },
   user: { background: "#10b981", color: "white" },
 };
@@ -131,7 +131,7 @@ function UserManagement() {
   const [loadingWarranties, setLoadingWarranties] = useState(false);
   const [newUser, setNewUser] = useState({ fullName: "", email: "", walletAddress: "", role: "user", phone: "" });
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filterBrand, setFilterBrand] = useState("all"); 
+  const [filterBrand, setFilterBrand] = useState("all");
   const [priceRange, setPriceRange] = useState({ label: "Tất cả mức giá", min: 0, max: Infinity });
 
   const fetchUserWarranties = async (wallet) => {
@@ -328,9 +328,8 @@ function UserManagement() {
           <button
             onClick={() => setIsAddOpen(true)}
             className="admin-primary-btn"
-            style={{ background: "#10b981", boxShadow: "0 4px 10px rgba(16, 185, 129, 0.2)" }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#059669")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#10b981")}
+            style={{ boxShadow: "0 4px 10px rgba(41, 85, 206, 0.2)" }}
+
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="7" r="4" /><path d="M5.5 21a7.5 7.5 0 0 1 13 0" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" />
@@ -356,9 +355,9 @@ function UserManagement() {
           </span>
         </div>
         <button
-          className={`admin-secondary-btn ${ (filterRole !== "all" || priceRange.label !== "Tất cả mức giá") ? "active-filter" : "" }`}
+          className={`admin-secondary-btn ${(filterRole !== "all" || filterStatus !== "all" || priceRange.min !== 0 || priceRange.max !== Infinity) ? "active-filter" : ""}`}
           onClick={() => setIsFilterModalOpen(true)}
-          style={ (filterRole !== "all" || priceRange.label !== "Tất cả mức giá") ? { background: "var(--navy-primary)", color: "white", borderColor: "var(--navy-primary)" } : {} }
+          style={(filterRole !== "all" || filterStatus !== "all" || priceRange.min !== 0 || priceRange.max !== Infinity) ? { background: "var(--navy-primary)", color: "white", borderColor: "var(--navy-primary)" } : {}}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
@@ -372,7 +371,11 @@ function UserManagement() {
         {["all", "admin", "staff", "technician", "user"].map((r) => (
           <button
             key={r}
-            className={`filter-btn ${filterRole === r ? "active" : ""} ${r === "admin" ? "warning" : ""}`}
+            className={`filter-btn ${filterRole === r ? "active" : ""} ${r === "admin" ? "warning" :
+              r === "staff" ? "info" :
+                r === "technician" ? "purple" :
+                  r === "user" ? "success" : ""
+              }`}
             onClick={() => setFilterRole(r)}
           >
             {r === "all" ? "Tất Cả" : r === "admin" ? "Quản trị viên" : r === "staff" ? "Nhân viên" : r === "technician" ? "Kỹ thuật viên" : "Người dùng"}
@@ -402,11 +405,11 @@ function UserManagement() {
         <table className="product-table">
           <thead>
             <tr>
-              <th style={{ width: "22%" }}>Người dùng</th>
-              <th style={{ width: "18%" }}>Địa chỉ ví</th>
-              <th style={{ width: "15%" }}>Vai trò</th>
-              <th style={{ width: "12%" }}>Trạng thái</th>
-              <th style={{ width: "13%" }}>Số điện thoại</th>
+              <th style={{ width: "32%" }}>Người dùng</th>
+              <th style={{ width: "16%" }}>Địa chỉ ví</th>
+              <th style={{ width: "10%" }}>Vai trò</th>
+              <th style={{ width: "10%" }}>Trạng thái</th>
+              <th style={{ width: "12%" }}>Số điện thoại</th>
               <th style={{ width: "10%" }}>Bảo hành</th>
               <th style={{ width: "10%", textAlign: "center" }}>Thao tác</th>
             </tr>
@@ -432,18 +435,18 @@ function UserManagement() {
                   </div>
                 </td>
                 <td>
-                  <span style={{ fontFamily: "monospace", fontSize: "1.2rem", color: "var(--grey-600)", background: "var(--grey-50)", padding: "0.2rem 0.8rem", borderRadius: "0.6rem", border: "1px solid var(--grey-200)" }}>
+                  <span style={{ fontFamily: "monospace", fontSize: "var(--text-base)", color: "var(--grey-600)", background: "var(--grey-50)", padding: "0.2rem 0.8rem", borderRadius: "0.6rem", border: "1px solid var(--grey-200)" }}>
                     {shortWallet(user.walletAddress)}
                   </span>
                 </td>
                 <td>
-                  <span className={`filter-btn active ${user.role === "admin" ? "warning" : ""}`} style={{ padding: "0.4rem 1.2rem", height: "auto", minHeight: "unset" }}>
+                  <span className="role-badge-v2" style={{ background: ROLE_STYLES[user.role]?.background || "#94a3b8", color: "white" }}>
                     {ROLE_ICON[user.role]}
                     {user.role === "admin" ? "Admin" : user.role === "staff" ? "Staff" : user.role === "technician" ? "Technician" : "User"}
                   </span>
                 </td>
                 <td>
-                  <span className={`filter-btn active ${user.status === "active" ? "success" : "danger"}`} style={{ padding: "0.4rem 1.2rem", height: "auto", minHeight: "unset" }}>
+                  <span className={`status-badge-v2 ${user.status === "active" ? "success" : "danger"}`}>
                     {user.status === "active" ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12" />
@@ -596,19 +599,7 @@ function UserManagement() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 14, marginTop: 32 }}>
-                <button
-                  onClick={handleAddUser}
-                  style={{
-                    flex: 1, background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "white",
-                    border: "none", borderRadius: 14, padding: "14px", fontWeight: 800, fontSize: 15,
-                    cursor: "pointer", boxShadow: "0 10px 20px -10px rgba(16,185,129,0.5)", transition: "0.2s"
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
-                  onMouseOut={(e) => e.currentTarget.style.transform = "translateY(0)"}
-                >
-                  Xác nhận thêm mới
-                </button>
+              <div style={{ display: "flex", gap: 14, marginTop: 32, justifyContent: "flex-end" }}>
                 <button
                   onClick={() => setIsAddOpen(false)}
                   style={{
@@ -617,6 +608,19 @@ function UserManagement() {
                   }}
                 >
                   Hủy bỏ
+                </button>
+                <button
+                  onClick={handleAddUser}
+                  style={{
+                    background: "var(--navy-primary)",
+                    color: "white",
+                    border: "none", borderRadius: 14, padding: "14px 40px", fontWeight: 800, fontSize: 15,
+                    cursor: "pointer", boxShadow: "0 10px 20px -10px rgba(41, 85, 206, 0.5)", transition: "0.2s"
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                  onMouseOut={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                >
+                  Xác nhận thêm mới
                 </button>
               </div>
             </div>
@@ -709,19 +713,7 @@ function UserManagement() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 14, marginTop: 32 }}>
-                <button
-                  onClick={handleSaveEdit}
-                  style={{
-                    flex: 1, background: "linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)", color: "white",
-                    border: "none", borderRadius: 14, padding: "14px", fontWeight: 800, fontSize: 15,
-                    cursor: "pointer", boxShadow: "0 10px 20px -10px rgba(30,64,175,0.5)", transition: "0.2s"
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
-                  onMouseOut={(e) => e.currentTarget.style.transform = "translateY(0)"}
-                >
-                  Lưu thay đổi
-                </button>
+              <div style={{ display: "flex", gap: 14, marginTop: 32, justifyContent: "flex-end" }}>
                 <button
                   onClick={() => setEditUser(null)}
                   style={{
@@ -731,6 +723,17 @@ function UserManagement() {
                 >
                   Hủy bỏ
                 </button>
+                <button
+                  onClick={handleSaveEdit}
+                  style={{
+                    background: "var(--navy-primary)", color: "white",
+                    border: "none", borderRadius: 14, padding: "14px 40px", fontWeight: 800, fontSize: 15,
+                    cursor: "pointer", boxShadow: "0 10px 20px -10px rgba(41, 85, 206, 0.5)", transition: "0.2s"
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                  onMouseOut={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                >
+                  Lưu thay đổi                </button>
               </div>
             </div>
           </div>
