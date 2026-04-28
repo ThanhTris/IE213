@@ -683,7 +683,10 @@ function AccountPage({ auth, onLogout }) {
 
                 {activeTab === "account" && (
                   <div className="tab-pane">
-                    <div className="danger-zone" style={{ marginTop: 0, border: "none", paddingTop: 0 }}>
+                    <div
+                      className="danger-zone"
+                      style={{ marginTop: 0, border: "none", paddingTop: 0 }}
+                    >
                       <div className="danger-card">
                         <div className="danger-info">
                           <span className="danger-title">Khóa tài khoản</span>
@@ -784,23 +787,22 @@ function AccountPage({ auth, onLogout }) {
             </div>
             <div className="modal-footer">
               <button
+                className="btn-primary"
+                onClick={handleTransfer}
+                disabled={isTransferring}
+              >
+                {isTransferring ? "Đang xử lý..." : "Xác nhận"}
+              </button>
+              <button
                 className="btn-secondary"
                 onClick={() => setShowTransferModal(false)}
               >
                 Hủy
               </button>
-              <button
-                className="btn-primary"
-                onClick={handleTransfer}
-                disabled={isTransferring}
-              >
-                {isTransferring ? "Đang xử lý..." : "Xác nhận chuyển nhượng"}
-              </button>
             </div>
           </div>
         </div>
       )}
-
 
       {showLockModal && (
         <div className="modal-overlay">
@@ -825,7 +827,8 @@ function AccountPage({ auth, onLogout }) {
                 <strong>BẠN CÓ CHẮC CHẮN MUỐN KHÓA TÀI KHOẢN?</strong>
               </p>
               <p>
-                Sau khi khóa, bạn sẽ bị đăng xuất và không thể đăng nhập lại cho đến khi được Admin mở khóa.
+                Sau khi khóa, bạn sẽ bị đăng xuất và không thể đăng nhập lại cho
+                đến khi được Admin mở khóa.
               </p>
             </div>
             <div className="modal-footer">
