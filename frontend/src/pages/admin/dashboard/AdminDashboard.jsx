@@ -469,24 +469,10 @@ function AdminDashboard() {
             </div>
 
             <div>
-              <p style={{
-                color: "#1e293b",
-                fontSize: "1.5rem",
-                fontWeight: 800,
-                margin: "0 0 0.5rem 0",
-                letterSpacing: "-0.01em",
-                lineHeight: 1.2
-              }}>
+              <p className="metric-label">
                 {m.label}
               </p>
-              <h3 style={{
-                fontSize: "3rem",
-                fontWeight: 900,
-                color: "#0f172a",
-                margin: 0,
-                letterSpacing: "-0.03em",
-                lineHeight: 1
-              }}>
+              <h3 className="metric-value">
                 {m.value}
               </h3>
             </div>
