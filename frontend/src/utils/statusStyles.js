@@ -1,39 +1,39 @@
 export const REPAIR_STATUS_CONFIG = {
   pending: {
     label: "Tiếp nhận",
-    background: "#eff6ff",
-    color: "#2563eb",
-    borderColor: "#bfdbfe"
+    background: "var(--status-pending-bg)",
+    color: "var(--status-pending)",
+    borderColor: "var(--status-pending-border)"
   },
   waiting_parts: {
     label: "Chờ linh kiện",
-    background: "#fffbeb",
-    color: "#d97706",
-    borderColor: "#fde68a"
+    background: "var(--status-waiting-bg)",
+    color: "var(--status-waiting)",
+    borderColor: "var(--status-waiting-border)"
   },
   fixing: {
     label: "Đang sửa",
-    background: "#f5f3ff",
-    color: "#7c3aed",
-    borderColor: "#ddd6fe"
+    background: "var(--status-fixing-bg)",
+    color: "var(--status-fixing)",
+    borderColor: "var(--status-fixing-border)"
   },
   completed: {
     label: "Sửa xong",
-    background: "#ecfdf5",
-    color: "#059669",
-    borderColor: "#a7f3d0"
+    background: "var(--status-completed-bg)",
+    color: "var(--status-completed)",
+    borderColor: "var(--status-completed-border)"
   },
   delivered: {
     label: "Đã giao",
-    background: "#f0fdfa",
-    color: "#0d9488",
-    borderColor: "#99f6e4"
+    background: "var(--status-delivered-bg)",
+    color: "var(--status-delivered)",
+    borderColor: "var(--status-delivered-border)"
   },
   cancelled: {
     label: "Đã hủy",
-    background: "#fef2f2",
-    color: "#dc2626",
-    borderColor: "#fecaca"
+    background: "var(--status-cancelled-bg)",
+    color: "var(--status-cancelled)",
+    borderColor: "var(--status-cancelled-border)"
   }
 };
 
