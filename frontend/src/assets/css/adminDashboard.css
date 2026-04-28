@@ -495,10 +495,11 @@
 }
 
 .product-cell-status-dot {
-  font-weight: 700;
+  font-weight: 600;
   text-transform: lowercase;
   flex-shrink: 0;
 }
+
 
 .product-cell-price {
   font-weight: 700;
@@ -1215,4 +1216,95 @@
   border-color: #8b5cf6;
   color: var(--white);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* ==========================================
+   DASHBOARD RESPONSIVE (1024px - 1280px)
+   ========================================== */
+@media (max-width: 1280px) {
+  .dashboard-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.6rem;
+  }
+
+  .metric-card {
+    padding: 2rem;
+  }
+
+  .metric-card-label {
+    font-size: 1.8rem;
+  }
+
+  .metric-card-value {
+    font-size: 2.6rem;
+  }
+
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .chart-card {
+    padding: 2rem;
+  }
+
+  /* Table Optimizations */
+  .admin-list-container {
+    padding: 2rem;
+  }
+
+  .product-table th,
+  .repair-table th {
+    padding: 1.2rem 0.6rem;
+    font-size: 1.25rem;
+  }
+
+  .product-table td,
+  .repair-table td {
+    padding: 1.2rem 0.6rem;
+    font-size: 1.2rem;
+  }
+
+  /* Compact Badges in Table - Higher specificity to avoid !important */
+  .admin-list-container .repair-table .filter-btn.active {
+    padding: 0.4rem 0.8rem;
+    font-size: 1.1rem;
+    min-height: unset;
+    height: auto;
+  }
+
+  .admin-list-container .product-cell-title,
+  .admin-list-container .product-cell-text {
+    font-size: 1.2rem;
+  }
+
+  .product-cell-price {
+    font-size: 1.25rem;
+  }
+
+  .product-cell-meta {
+    font-size: 1.1rem;
+  }
+
+  .admin-list-title {
+    font-size: 1.8rem;
+  }
+
+  /* Product List: Hide Tablet and Headphone filters */
+  .product-list-filters .filter-btn:nth-child(8),
+  .product-list-filters .filter-btn:nth-child(9) {
+    display: none;
+  }
+
+  /* User Management: Hide Divider and all Status filters (6th child onwards) */
+  .user-management-filters .admin-list-filters-divider,
+  .user-management-filters .filter-btn:nth-child(n+7) {
+    display: none;
+  }
+
+  /* Repair History: Hide Divider and all Type filters (6th child onwards) */
+  .repair-history-filters .admin-list-filters-divider,
+  .repair-history-filters .filter-btn:nth-child(n+7) {
+    display: none;
+  }
 }

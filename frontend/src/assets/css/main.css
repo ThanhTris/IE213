@@ -492,3 +492,35 @@ body {
     transform: scale(1) translateY(0);
   }
 }
+
+@media (max-width: 1280px) {
+  .header-inner {
+    padding: 1rem 2rem;
+    gap: 1.6rem;
+  }
+
+  .brand-text {
+    font-size: 2rem;
+  }
+
+  .nav-tabs {
+    gap: 0.4rem;
+    padding: 0.4rem;
+  }
+
+  .nav-tabs a {
+    padding: 0.8rem 1.4rem;
+    font-size: 1.4rem;
+    white-space: nowrap;
+  }
+
+  .header-user {
+    gap: .6rem;
+  }
+
+  .btn-login,
+  .header-user-address {
+    padding: 0.8rem 1.4rem;
+    font-size: 1.3rem;
+  }
+}
