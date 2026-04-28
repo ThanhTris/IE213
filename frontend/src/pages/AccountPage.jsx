@@ -249,7 +249,11 @@ function AccountPage({ auth, onLogout }) {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
-            <p className="info-value wallet-value">{walletAddress || "Not connected"}</p>
+            <p className="info-value wallet-value">
+              {walletAddress 
+                ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` 
+                : "Not connected"}
+            </p>
           </div>
 
           <div className="info-box member-box">

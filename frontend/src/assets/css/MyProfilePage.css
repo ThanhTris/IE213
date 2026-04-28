@@ -18,7 +18,7 @@
   padding: 12px;
   background: var(--bg-surface-hover, #f3f4f6);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: var(--text-md);
   color: var(--text-secondary, #4b5563);
   word-break: break-all;
 }
@@ -76,7 +76,7 @@
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: var(--text-md);
 }
 
 .message.success {
