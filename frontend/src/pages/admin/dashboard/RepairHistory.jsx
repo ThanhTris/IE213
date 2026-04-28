@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { repairService } from "../../services/repairService";
-import { getStatusConfig } from "../../utils/statusStyles";
+import { repairService } from "../../../services/repairService";
+import { getStatusConfig } from "../../../utils/statusStyles";
 
 
 function RepairHistory() {
   const [repairs, setRepairs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   // Modal states
   const [selectedRepair, setSelectedRepair] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,7 +75,7 @@ function RepairHistory() {
         type: updateForm.type,
         isWarrantyCovered: updateForm.isWarrantyCovered
       };
-      
+
       if (updateForm.status) {
         payload.status = updateForm.status;
         payload.note = updateForm.note || `Cập nhật trạng thái sang ${updateForm.status}`;
@@ -95,11 +95,11 @@ function RepairHistory() {
   const handleCancel = (e, repair) => {
     e.stopPropagation(); // Ngăn sự kiện click row
     if (!window.confirm(`Bạn có chắc chắn muốn HỦY phiếu sửa chữa cho thiết bị ${repair.serialNumber}?`)) return;
-    
+
     try {
-      repairService.updateRepairStatus(repair.id, { 
-        status: "cancelled", 
-        note: "Hủy phiếu sửa chữa bởi Admin" 
+      repairService.updateRepairStatus(repair.id, {
+        status: "cancelled",
+        note: "Hủy phiếu sửa chữa bởi Admin"
       }).then(() => {
         toast.success("Đã hủy phiếu sửa chữa.");
         fetchRepairs();
@@ -175,67 +175,67 @@ function RepairHistory() {
         <table className="repair-table">
           <thead>
             <tr>
-               <th>Số Serial</th>
-               <th>Loại hình</th>
-               <th>Nội dung chính</th>
-               <th>Chi phí</th>
-               <th>Kỹ thuật viên</th>
-               <th>Ngày thực hiện</th>
-               <th>Bảo hành</th>
-               <th>Trạng thái</th>
+              <th>Số Serial</th>
+              <th>Loại hình</th>
+              <th>Nội dung chính</th>
+              <th>Chi phí</th>
+              <th>Kỹ thuật viên</th>
+              <th>Ngày thực hiện</th>
+              <th>Bảo hành</th>
+              <th>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
             {filteredRecords.map((record) => (
-              <tr 
-                key={record.id} 
+              <tr
+                key={record.id}
                 onClick={() => openDetail(record, "view")}
                 style={{ cursor: "pointer" }}
                 className="hoverable-row"
               >
-                 <td>
-                   <div style={{ fontWeight: 600, color: "#1e40af", fontSize: 13 }}>{record.serialNumber}</div>
-                 </td>
-                 <td>
-                   <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{record.type || "Khác"}</div>
-                 </td>
-                 <td>
-                   <div style={{ color: "#475569", fontSize: 13, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{record.repairContent}</div>
-                 </td>
-                 <td style={{ fontWeight: 700, color: "#0f172a", fontSize: 13 }}>
-                   {record.cost > 0 ? Number(record.cost).toLocaleString("vi-VN") + " ₫" : "Miễn phí"}
-                 </td>
-                 <td>
-                   <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace", maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis" }} title={record.technicianWallet}>
-                     {record.technicianWallet ? `${record.technicianWallet.slice(0, 6)}...` : "N/A"}
-                   </div>
-                 </td>
-                 <td style={{ fontSize: 12, color: "#475569" }}>
-                   {record.repairDate ? new Date(record.repairDate).toLocaleDateString("vi-VN") : "-"}
-                 </td>
-                 <td>
-                   <span style={{
-                     display: "inline-block",
-                     background: record.isWarrantyCovered ? "#10b981" : "#ef4444",
-                     color: "white",
-                     borderRadius: 20, padding: "2px 10px",
-                     fontSize: 11, fontWeight: 700,
-                   }}>
-                     {record.isWarrantyCovered ? "Có" : "Không"}
-                   </span>
-                 </td>
-                 <td>
-                   <span style={{
-                     display: "inline-flex", alignItems: "center", gap: 4,
-                     borderRadius: 20, padding: "4px 12px",
-                     fontSize: 12, fontWeight: 700,
-                     background: getStatusConfig(record.status).background,
-                     color: getStatusConfig(record.status).color,
-                     border: `1px solid ${getStatusConfig(record.status).borderColor}`,
-                   }}>
-                     {getStatusConfig(record.status).label}
-                   </span>
-                 </td>
+                <td>
+                  <div style={{ fontWeight: 600, color: "#1e40af", fontSize: 13 }}>{record.serialNumber}</div>
+                </td>
+                <td>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{record.type || "Khác"}</div>
+                </td>
+                <td>
+                  <div style={{ color: "#475569", fontSize: 13, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{record.repairContent}</div>
+                </td>
+                <td style={{ fontWeight: 700, color: "#0f172a", fontSize: 13 }}>
+                  {record.cost > 0 ? Number(record.cost).toLocaleString("vi-VN") + " ₫" : "Miễn phí"}
+                </td>
+                <td>
+                  <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace", maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis" }} title={record.technicianWallet}>
+                    {record.technicianWallet ? `${record.technicianWallet.slice(0, 6)}...` : "N/A"}
+                  </div>
+                </td>
+                <td style={{ fontSize: 12, color: "#475569" }}>
+                  {record.repairDate ? new Date(record.repairDate).toLocaleDateString("vi-VN") : "-"}
+                </td>
+                <td>
+                  <span style={{
+                    display: "inline-block",
+                    background: record.isWarrantyCovered ? "#10b981" : "#ef4444",
+                    color: "white",
+                    borderRadius: 20, padding: "2px 10px",
+                    fontSize: 11, fontWeight: 700,
+                  }}>
+                    {record.isWarrantyCovered ? "Có" : "Không"}
+                  </span>
+                </td>
+                <td>
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                    borderRadius: 20, padding: "4px 12px",
+                    fontSize: 12, fontWeight: 700,
+                    background: getStatusConfig(record.status).background,
+                    color: getStatusConfig(record.status).color,
+                    border: `1px solid ${getStatusConfig(record.status).borderColor}`,
+                  }}>
+                    {getStatusConfig(record.status).label}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -258,7 +258,7 @@ function RepairHistory() {
               </div>
               <button className="close-btn" onClick={closeDetail}>&times;</button>
             </div>
-            
+
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, height: "70vh" }}>
               {/* Left: Timeline & Info */}
               <div style={{ padding: 24, borderRight: "1px solid #e2e8f0", overflowY: "auto", background: "#fff" }}>
@@ -299,13 +299,13 @@ function RepairHistory() {
               {/* Right: Update Form */}
               <div style={{ padding: 24, background: "#f8fafc", overflowY: "auto" }}>
                 <h4 style={{ marginTop: 0, marginBottom: 20, fontSize: 14, fontWeight: 800, textTransform: "uppercase", color: "#059669" }}>Cập nhật thông tin</h4>
-                
+
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6 }}>Chuyển trạng thái sang</label>
-                    <select 
-                      value={updateForm.status} 
-                      onChange={e => setUpdateForm({...updateForm, status: e.target.value})}
+                    <select
+                      value={updateForm.status}
+                      onChange={e => setUpdateForm({ ...updateForm, status: e.target.value })}
                       style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 13 }}
                     >
                       <option value="">-- Giữ nguyên trạng thái --</option>
@@ -319,10 +319,10 @@ function RepairHistory() {
 
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6 }}>Ghi chú cập nhật</label>
-                    <textarea 
+                    <textarea
                       placeholder="Ví dụ: Đã thay xong màn hình, đang test cảm ứng..."
                       value={updateForm.note}
-                      onChange={e => setUpdateForm({...updateForm, note: e.target.value})}
+                      onChange={e => setUpdateForm({ ...updateForm, note: e.target.value })}
                       style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 13, minHeight: 80 }}
                     />
                   </div>
@@ -330,9 +330,9 @@ function RepairHistory() {
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                     <div>
                       <label style={{ fontSize: 12, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6 }}>Loại hình</label>
-                      <select 
+                      <select
                         value={updateForm.type}
-                        onChange={e => setUpdateForm({...updateForm, type: e.target.value})}
+                        onChange={e => setUpdateForm({ ...updateForm, type: e.target.value })}
                         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 13 }}
                       >
                         <option value="Màn hình">Màn hình</option>
@@ -344,37 +344,37 @@ function RepairHistory() {
                     </div>
                     <div>
                       <label style={{ fontSize: 12, fontWeight: 700, color: "#475569", display: "block", marginBottom: 6 }}>Chi phí (VND)</label>
-                      <input 
+                      <input
                         type="number"
                         value={updateForm.cost}
-                        onChange={e => setUpdateForm({...updateForm, cost: Number(e.target.value)})}
+                        onChange={e => setUpdateForm({ ...updateForm, cost: Number(e.target.value) })}
                         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 13 }}
                       />
                     </div>
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <input 
-                      type="checkbox" 
-                      id="warrantyCheck" 
+                    <input
+                      type="checkbox"
+                      id="warrantyCheck"
                       checked={updateForm.isWarrantyCovered}
-                      onChange={e => setUpdateForm({...updateForm, isWarrantyCovered: e.target.checked})}
+                      onChange={e => setUpdateForm({ ...updateForm, isWarrantyCovered: e.target.checked })}
                     />
                     <label htmlFor="warrantyCheck" style={{ fontSize: 13, fontWeight: 600, color: "#475569" }}>Được bảo hành chi phí</label>
                   </div>
 
                   <div style={{ marginTop: 10 }}>
-                    <button 
+                    <button
                       onClick={handleUpdate}
                       disabled={isUpdating}
-                      style={{ 
-                        width: "100%", 
-                        padding: "12px", 
-                        background: "#059669", 
-                        color: "white", 
-                        border: "none", 
-                        borderRadius: 10, 
-                        fontWeight: 800, 
+                      style={{
+                        width: "100%",
+                        padding: "12px",
+                        background: "#059669",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 10,
+                        fontWeight: 800,
                         cursor: "pointer",
                         boxShadow: "0 4px 12px rgba(5, 150, 105, 0.2)"
                       }}

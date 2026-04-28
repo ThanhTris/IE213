@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { repairService } from "../../services/repairService";
-import { warrantyService } from "../../services/warrantyService";
-import { API_ROOT } from "../../utils/api";
+import { repairService } from "../../../services/repairService";
+import { warrantyService } from "../../../services/warrantyService";
+import { API_ROOT } from "../../../utils/api";
 
 const WrenchIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -127,12 +127,12 @@ function LogRepairs() {
         <div className="lr-card lr-form-card">
           <div className="lr-card-header">
             <div className="lr-header-icon"><WrenchIcon /></div>
-            <h2 className="lr-card-title">Log Repair Activity</h2>
+            <h2 className="lr-card-title">Ghi nhận hoạt động sửa chữa</h2>
           </div>
 
           {submitted && (
             <div className="lr-banner lr-banner--success">
-              ✓ Repair record submitted successfully.
+              ✓ Bản ghi sửa chữa đã được gửi thành công.
             </div>
           )}
 
@@ -140,7 +140,7 @@ function LogRepairs() {
             {/* Serial Number Searchable Dropdown */}
             <div className="lr-field">
               <label className="lr-label">
-                Serial Number <span className="lr-required">*</span>
+                Số Serial thiết bị <span className="lr-required">*</span>
               </label>
               
               <div className="lr-custom-select-container">
@@ -154,7 +154,7 @@ function LogRepairs() {
                       <span className="lr-selected-name">{selectedWarranty.productCode}</span>
                     </div>
                   ) : (
-                    <span className="lr-placeholder">Search by Serial Number...</span>
+                    <span className="lr-placeholder">Tìm kiếm theo số Serial...</span>
                   )}
                   <span className={`lr-select-arrow ${isDropdownOpen ? "open" : ""}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -170,7 +170,7 @@ function LogRepairs() {
                       <input 
                         type="text" 
                         className="lr-dropdown-search-input"
-                        placeholder="Type to filter..."
+                        placeholder="Nhập để lọc..."
                         autoFocus
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -195,7 +195,7 @@ function LogRepairs() {
                               <span className="lr-item-serial">{w.serialNumber}</span>
                               <span className="lr-item-model">{w.productCode}</span>
                             </div>
-                            {w.status && <span className="lr-item-badge">Active</span>}
+                            {w.status && <span className="lr-item-badge">Hoạt động</span>}
                           </div>
                         ))
                       ) : (
@@ -211,13 +211,13 @@ function LogRepairs() {
             {/* Repair Content */}
             <div className="lr-field">
               <label className="lr-label">
-                Repair Content <span className="lr-required">*</span>
+                Nội dung sửa chữa <span className="lr-required">*</span>
               </label>
               <textarea
                 className={`lr-textarea ${errors.repairContent ? "lr-textarea--error" : ""}`}
                 value={form.repairContent}
                 onChange={updateField("repairContent")}
-                placeholder="e.g., Thay màn hình do vỡ, thay pin..."
+                placeholder="VD: Thay màn hình do vỡ, thay pin..."
                 rows={4}
               />
               {errors.repairContent && <div className="lr-error-msg">{errors.repairContent}</div>}
@@ -226,15 +226,15 @@ function LogRepairs() {
             {/* Split row for Coverage and Status */}
             <div className="lr-row-split">
               <div className="lr-field">
-                <label className="lr-label">Warranty Covered</label>
+                <label className="lr-label">Bảo hành chi trả</label>
                 <div className="lr-select-wrap">
                   <select
                     className="lr-select"
                     value={form.warrantyCovered}
                     onChange={updateField("warrantyCovered")}
                   >
-                    <option value="yes">Yes (Covered)</option>
-                    <option value="no">No (Not Covered)</option>
+                    <option value="yes">Có (Trong bảo hành)</option>
+                    <option value="no">Không (Ngoài bảo hành)</option>
                   </select>
                   <span className="lr-select-arrow-fixed">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -295,7 +295,7 @@ function LogRepairs() {
 
             {/* Cost */}
             <div className="lr-field">
-              <label className="lr-label">Repair Cost (VND)</label>
+              <label className="lr-label">Chi phí sửa chữa (VND)</label>
               <div className="lr-input-wrap">
                 <span className="lr-input-currency">₫</span>
                 <input
@@ -318,12 +318,12 @@ function LogRepairs() {
               {loading ? (
                 <>
                   <span className="lr-spinner"></span>
-                  Submitting...
+                  Đang ghi nhận...
                 </>
               ) : (
                 <>
                   <WrenchIcon />
-                  Submit Repair Record
+                  Ghi nhận sửa chữa
                 </>
               )}
             </button>
@@ -335,13 +335,13 @@ function LogRepairs() {
           <div className="lr-card lr-info-card">
             <div className="lr-card-header">
               <div className="lr-header-icon blue"><ShieldCheckIcon /></div>
-              <h3 className="lr-card-title">Repair Tracking Benefits</h3>
+              <h3 className="lr-card-title">Lợi ích của việc theo dõi</h3>
             </div>
             <div className="lr-info-list">
               {[
-                "All repairs are permanently recorded on the blockchain, creating a complete service history",
-                "Increases trust and transparency for second-hand buyers",
-                "Helps identify patterns and improve product quality",
+                "Tất cả các lần sửa chữa được ghi lại vĩnh viễn trên blockchain, tạo ra một lịch sử dịch vụ hoàn chỉnh",
+                "Tăng sự tin tưởng và minh bạch cho những người mua lại thiết bị cũ",
+                "Giúp xác định các mẫu lỗi và cải thiện chất lượng sản phẩm",
               ].map((text, i) => (
                 <div key={i} className="lr-info-item">
                   <span className="lr-info-dot">•</span>
@@ -351,7 +351,7 @@ function LogRepairs() {
             </div>
 
             <div className="lr-note-box">
-              <p><strong>Note:</strong> Technician wallet and repair date will be automatically recorded from the current session.</p>
+              <p><strong>Lưu ý:</strong> Địa chỉ ví kỹ thuật viên và ngày sửa chữa sẽ được ghi lại tự động từ phiên làm việc hiện tại.</p>
             </div>
           </div>
         </div>
@@ -372,10 +372,10 @@ function LogRepairs() {
         }
 
         .lr-card {
-          background: #fff;
-          border-radius: 1.6rem;
-          border: 0.1rem solid #e2e8f0;
-          box-shadow: 0 0.4rem 2rem rgba(15,23,42,0.05);
+          background: var(--white);
+          border-radius: var(--radius-lg);
+          border: 0.1rem solid var(--grey-200);
+          box-shadow: var(--shadow-sm);
         }
 
         .lr-form-card {
@@ -384,7 +384,7 @@ function LogRepairs() {
 
         .lr-card-header {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 1.2rem;
           margin-bottom: 2.8rem;
         }
@@ -392,24 +392,25 @@ function LogRepairs() {
         .lr-header-icon {
           width: 3.8rem;
           height: 3.8rem;
-          background: #ecfdf5;
-          color: #10b981;
+          background: var(--color-success-light);
+          color: var(--color-success);
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 1rem;
+          border-radius: var(--radius-sm);
+          margin-top: -0.2rem;
         }
 
         .lr-header-icon.blue {
-          background: #eff6ff;
-          color: #2563eb;
+          background: var(--grey-100);
+          color: var(--navy-primary);
         }
 
         .lr-card-title {
           margin: 0;
-          font-size: 1.8rem;
+          font-size: var(--text-xl);
           font-weight: 800;
-          color: #0f172a;
+          color: var(--navy-primary-dark);
           letter-spacing: -0.02em;
         }
 
@@ -422,9 +423,9 @@ function LogRepairs() {
         }
 
         .lr-banner--success {
-          background: #f0fdf4;
-          color: #16a34a;
-          border: 0.1rem solid #bbf7d0;
+          background: var(--color-success-light);
+          color: var(--emerald-600);
+          border: 0.1rem solid var(--emerald-500);
         }
 
         .lr-field {
@@ -433,14 +434,14 @@ function LogRepairs() {
 
         .lr-label {
           display: block;
-          font-size: 1.35rem;
+          font-size: var(--text-base);
           font-weight: 700;
-          color: #475569;
+          color: var(--grey-600);
           margin-bottom: 0.8rem;
         }
 
         .lr-required {
-          color: #ef4444;
+          color: var(--color-danger);
         }
 
         /* Custom Select */
@@ -451,9 +452,9 @@ function LogRepairs() {
         .lr-dropdown-trigger {
           width: 100%;
           padding: 1.2rem 1.4rem;
-          background: #fff;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          background: var(--white);
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -462,12 +463,12 @@ function LogRepairs() {
         }
 
         .lr-dropdown-trigger:hover {
-          border-color: #94a3b8;
+          border-color: var(--grey-600);
         }
 
         .lr-dropdown-trigger--error {
-          border-color: #ef4444;
-          background: #fef2f2;
+          border-color: var(--color-danger);
+          background: var(--color-danger-light);
         }
 
         .lr-selected-info {
@@ -479,25 +480,25 @@ function LogRepairs() {
         .lr-selected-code {
           font-size: 1.4rem;
           font-weight: 700;
-          color: #0f172a;
+          color: var(--navy-900);
         }
 
         .lr-selected-name {
           font-size: 1.2rem;
-          background: #f1f5f9;
+          background: var(--grey-100);
           padding: 0.2rem 0.8rem;
           border-radius: 99rem;
-          color: #64748b;
+          color: var(--grey-600);
           font-weight: 600;
         }
 
         .lr-placeholder {
           font-size: 1.4rem;
-          color: #94a3b8;
+          color: var(--grey-400);
         }
 
         .lr-select-arrow {
-          color: #94a3b8;
+          color: var(--grey-400);
           transition: transform 0.2s;
         }
 
@@ -510,10 +511,10 @@ function LogRepairs() {
           top: calc(100% + 0.6rem);
           left: 0;
           right: 0;
-          background: #fff;
-          border: 0.1rem solid #e2e8f0;
-          border-radius: 1.2rem;
-          box-shadow: 0 1rem 3rem rgba(15,23,42,0.12);
+          background: var(--white);
+          border: 0.1rem solid var(--grey-200);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-lg);
           z-index: 100;
           overflow: hidden;
         }
@@ -523,9 +524,9 @@ function LogRepairs() {
           align-items: center;
           gap: 1rem;
           padding: 1.2rem 1.4rem;
-          background: #f8fafc;
-          border-bottom: 0.1rem solid #f1f5f9;
-          color: #94a3b8;
+          background: var(--grey-50);
+          border-bottom: 0.1rem solid var(--grey-100);
+          color: var(--grey-400);
         }
 
         .lr-dropdown-search-input {
@@ -534,7 +535,7 @@ function LogRepairs() {
           background: transparent;
           font-size: 1.4rem;
           outline: none;
-          color: #0f172a;
+          color: var(--navy-900);
         }
 
         .lr-dropdown-list {
@@ -552,7 +553,7 @@ function LogRepairs() {
         }
 
         .lr-dropdown-item:hover {
-          background: #f1f5f9;
+          background: var(--grey-100);
         }
 
         .lr-item-main {
@@ -564,18 +565,18 @@ function LogRepairs() {
         .lr-item-serial {
           font-size: 1.4rem;
           font-weight: 700;
-          color: #0f172a;
+          color: var(--navy-900);
         }
 
         .lr-item-model {
           font-size: 1.15rem;
-          color: #64748b;
+          color: var(--grey-600);
         }
 
         .lr-item-badge {
           font-size: 1.1rem;
-          background: #ecfdf5;
-          color: #10b981;
+          background: var(--color-success-light);
+          color: var(--color-success);
           padding: 0.2rem 0.8rem;
           border-radius: 99rem;
           font-weight: 700;
@@ -585,8 +586,8 @@ function LogRepairs() {
         .lr-textarea {
           width: 100%;
           padding: 1.2rem 1.4rem;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           font-size: 1.4rem;
           outline: none;
           font-family: inherit;
@@ -595,8 +596,8 @@ function LogRepairs() {
         }
 
         .lr-textarea:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 0.3rem rgba(59,130,246,0.1);
+          border-color: var(--navy-primary);
+          box-shadow: 0 0 0 0.3rem rgba(41, 85, 206, 0.1);
         }
 
         .lr-row-split {
@@ -613,9 +614,9 @@ function LogRepairs() {
           width: 100%;
           padding: 1.2rem 1.4rem;
           padding-right: 3.6rem;
-          background: #fff;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          background: var(--white);
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           font-size: 1.4rem;
           appearance: none;
           outline: none;
@@ -628,7 +629,7 @@ function LogRepairs() {
           top: 50%;
           transform: translateY(-50%);
           pointer-events: none;
-          color: #94a3b8;
+          color: var(--grey-400);
         }
 
         .lr-input-wrap {
@@ -641,15 +642,15 @@ function LogRepairs() {
           top: 50%;
           transform: translateY(-50%);
           font-size: 1.4rem;
-          color: #94a3b8;
+          color: var(--grey-400);
           font-weight: 700;
         }
 
         .lr-input {
           width: 100%;
           padding: 1.2rem 1.4rem 1.2rem 3rem;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1.1rem;
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
           font-size: 1.4rem;
           outline: none;
         }
@@ -657,10 +658,10 @@ function LogRepairs() {
         .lr-submit-btn {
           width: 100%;
           padding: 1.4rem;
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: white;
+          background: linear-gradient(135deg, var(--color-success), var(--emerald-600));
+          color: var(--white);
           border: none;
-          border-radius: 1.2rem;
+          border-radius: var(--radius-sm);
           font-size: 1.6rem;
           font-weight: 800;
           display: flex;
@@ -713,11 +714,12 @@ function LogRepairs() {
 
         .lr-info-item {
           display: flex;
+          align-items: flex-start;
           gap: 1.2rem;
         }
 
         .lr-info-dot {
-          color: #10b981;
+          color: var(--color-success);
           font-size: 2rem;
           line-height: 1;
           margin-top: -0.2rem;
@@ -725,22 +727,22 @@ function LogRepairs() {
 
         .lr-info-text {
           margin: 0;
-          font-size: 1.4rem;
-          color: #475569;
+          font-size: var(--text-sm);
+          color: var(--grey-600);
           line-height: 1.6;
         }
 
         .lr-note-box {
-          background: #f0f9ff;
-          border: 0.1rem solid #bae6fd;
+          background: var(--grey-100);
+          border: 0.1rem solid var(--grey-200);
           padding: 1.6rem;
-          border-radius: 1.2rem;
+          border-radius: var(--radius-sm);
         }
 
         .lr-note-box p {
           margin: 0;
-          font-size: 1.3rem;
-          color: #0369a1;
+          font-size: var(--text-sm);
+          color: var(--navy-primary-dark);
           line-height: 1.6;
         }
 

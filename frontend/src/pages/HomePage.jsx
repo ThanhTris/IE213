@@ -1,30 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
+import "../assets/css/home.css";
 
-function HomePage({ isAuthenticated, role }) {
+function HomePage({ auth }) {
   const navigate = useNavigate();
   const [quickSerial, setQuickSerial] = useState("");
+  const isAuthenticated = Boolean(auth?.token);
 
   const goSearch = () => {
-    try {
-      if (quickSerial.trim()) {
-        sessionStorage.setItem("bw_search_prefill", quickSerial.trim());
-      } else {
-        sessionStorage.removeItem("bw_search_prefill");
-      }
-    } catch (_e) {
-      // ignore storage failures
-    }
     navigate("/search");
   };
 
   const goPortal = () => {
-    if (!isAuthenticated) {
-      navigate("/auth");
-    } else {
-      navigate(role === "admin" ? "/admin" : "/user");
-    }
+    navigate("/account");
   };
 
   return (
@@ -33,100 +21,58 @@ function HomePage({ isAuthenticated, role }) {
         <div className="bw-hero-inner">
           <p className="bw-badge">
             <svg
-              width="14"
-              height="14"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               aria-hidden="true"
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            Blockchain-Powered Warranty
+            Bảo hành bằng Blockchain
           </p>
           <h1 className="bw-hero-title">
-            Your Products, <span className="accent">Secured Forever</span>
+            Sản phẩm của bạn, <br />
+            <span className="accent">Được bảo vệ mãi mãi</span>
           </h1>
           <p className="bw-hero-lead">
-            Transform product warranties into unforgeable digital assets. Track, transfer, and
-            verify with complete transparency.
+            Giải pháp bảo mật toàn diện cho sản phẩm của bạn bằng cách chuyển đổi chứng nhận<br />
+            bảo hành thành tài sản kỹ thuật số không thể làm giả trên Blockchain. <br />
+            Dễ dàng theo dõi lịch sử sửa chữa, chuyển nhượng quyền sở hữu tức thì và <br />
+            xác minh tính nguyên bản với sự minh bạch và tin cậy tuyệt đối.
           </p>
           <div className="bw-hero-cta">
-            <button type="button" className="btn-hero-emerald" onClick={goSearch}>
-              Try Public Search <span aria-hidden="true">→</span>
+            <button type="button" className="btn-hero-primary" onClick={goSearch}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '10px' }}>
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              Tra cứu công khai
             </button>
             <button
               type="button"
               className="btn-hero-outline"
               onClick={goPortal}
             >
-              Access Your Wallet
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="bw-section" id="track">
-        <div className="bw-inner">
-          <h2 className="bw-h2">Track Your Warranty</h2>
-          <p className="bw-sub">Enter a device serial number or scan QR code to verify warranty status.</p>
-          <div className="bw-track-card">
-            <div className="bw-search-row">
-              <div className="bw-search-input-wrap">
-                <span aria-hidden="true" className="bw-search-ic">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="M21 21l-4.35-4.35" />
-                  </svg>
-                </span>
-                <input
-                  type="search"
-                  placeholder="Enter Device Serial Number (e.g., FNQW8123XYZ)"
-                  aria-label="Serial number"
-                  value={quickSerial}
-                  onChange={(e) => setQuickSerial(e.target.value)}
-                />
-              </div>
-              <button type="button" className="bw-search-btn" onClick={goSearch}>
-                Search Warranty
-              </button>
-            </div>
-            <p className="bw-hint">Or scan QR code from product packaging.</p>
-          </div>
-          <div className="bw-start-card">
-            <div className="bw-start-icon" aria-hidden="true">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '10px' }}>
+                <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+                <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+                <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
               </svg>
-            </div>
-            <h3>Start Your Search</h3>
-            <p>Enter a serial number above to view warranty details and repair history.</p>
+              Truy cập Ví của bạn
+            </button>
           </div>
         </div>
       </section>
 
       <section className="bw-section alt" id="welcome">
         <div className="bw-inner">
-          <h2 className="bw-h2">Welcome to the Future of Product Warranties</h2>
+          <h2 className="bw-h2">Chào mừng đến với Tương lai của Bảo hành</h2>
           <p className="bw-sub">
-            BlockWarranty revolutionizes how warranties are issued, managed, and transferred. Say goodbye to lost
-            paper receipts and fraudulent claims. Say hello to secure, verifiable, and transferable digital warranties.
+            E-Warranty cách mạng hóa việc cấp, quản lý và chuyển nhượng bảo hành.<br />
+            Tạm biệt hóa đơn giấy dễ mất và các khiếu nại giả mạo.
           </p>
           <div className="bw-feature-row">
             <article className="bw-feature-card">
@@ -142,8 +88,8 @@ function HomePage({ isAuthenticated, role }) {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
-              <h4>Tamper-Proof</h4>
-              <p>Every warranty is stored on the blockchain, making it impossible to forge, alter, or lose.</p>
+              <h4>Chống làm giả</h4>
+              <p>Mọi thông tin bảo hành được lưu trên blockchain, không thể giả mạo, thay đổi hoặc làm mất.</p>
             </article>
             <article className="bw-feature-card">
               <div className="bw-icon-em" aria-hidden="true">
@@ -159,8 +105,8 @@ function HomePage({ isAuthenticated, role }) {
                   <path d="M2 12h20M12 2a15 15 0 0115 15" />
                 </svg>
               </div>
-              <h4>Globally Accessible</h4>
-              <p>Access your warranties from anywhere in the world, anytime, with just an internet connection.</p>
+              <h4>Truy cập Toàn cầu</h4>
+              <p>Truy cập thông tin bảo hành của bạn <br /> ở bất cứ đâu, bất cứ lúc nào chỉ với <br /> kết nối internet.</p>
             </article>
             <article className="bw-feature-card">
               <div className="bw-icon-em" aria-hidden="true">
@@ -175,8 +121,8 @@ function HomePage({ isAuthenticated, role }) {
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
               </div>
-              <h4>Instant Transfer</h4>
-              <p>Transfer warranties to new owners instantly when selling your products, adding value to resale.</p>
+              <h4>Chuyển nhượng Tức thì</h4>
+              <p>Chuyển giao quyền bảo hành cho <br /> chủ sở hữu mới ngay lập tức <br /> khi bán lại sản phẩm.</p>
             </article>
           </div>
         </div>
@@ -184,23 +130,23 @@ function HomePage({ isAuthenticated, role }) {
 
       <section className="bw-section" id="how">
         <div className="bw-inner">
-          <h2 className="bw-h2">How It Works</h2>
-          <p className="bw-sub">Three simple steps to secure your products with blockchain technology.</p>
+          <h2 className="bw-h2">Cách thức Hoạt động</h2>
+          <p className="bw-sub">Ba bước đơn giản để bảo mật sản phẩm của bạn với công nghệ blockchain.</p>
           <div className="bw-steps">
             <article className="bw-step-card">
               <div className="bw-step-num">1</div>
-              <h4>Purchase Product</h4>
-              <p>Buy from participating retailers and manufacturers.</p>
+              <h4>Mua Sản phẩm</h4>
+              <p>Mua hàng từ các đại lý và nhà sản xuất <br /> có liên kết với hệ thống.</p>
             </article>
             <article className="bw-step-card">
               <div className="bw-step-num">2</div>
-              <h4>Receive NFT Warranty</h4>
-              <p>A unique digital warranty is minted and sent to your wallet.</p>
+              <h4>Nhận Bảo hành NFT</h4>
+              <p>Một chứng nhận bảo hành kỹ thuật số <br /> duy nhất sẽ được gửi vào ví của bạn.</p>
             </article>
             <article className="bw-step-card">
               <div className="bw-step-num">3</div>
-              <h4>Manage &amp; Transfer</h4>
-              <p>Track repairs, claim warranty, and transfer ownership seamlessly.</p>
+              <h4>Quản lý & Chuyển giao</h4>
+              <p>Theo dõi sửa chữa, yêu cầu bảo hành <br /> và chuyển quyền sở hữu dễ dàng.</p>
             </article>
           </div>
         </div>
@@ -210,79 +156,53 @@ function HomePage({ isAuthenticated, role }) {
         <div className="bw-inner">
           <div className="bw-trust">
             <div className="bw-trust-visual">
-              <div className="bw-trust-mock">
-                <svg
-                  className="shield-lg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  aria-hidden="true"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                <span>BLOCKCHAIN</span>
-              </div>
+              <img
+                src="https://www.atulhost.com/wp-content/uploads/2023/01/blockchain-wallet.jpg"
+                alt="Blockchain Wallet Security"
+                className="trust-image"
+              />
             </div>
             <div className="bw-trust-copy">
               <h3>
-                Built on Trust, Powered by <span className="accent">Innovation</span>
+                Xây dựng trên sự Tin tưởng, <br />Thúc đẩy bởi <span className="accent">Sự đổi mới</span>
               </h3>
               <p>
-                BlockWarranty combines enterprise-grade blockchain security with a modern, wallet-inspired experience
-                your customers already understand.
+                E-Warranty kết hợp bảo mật blockchain cấp doanh nghiệp với <br /> trải nghiệm hiện đại,
+                giúp khách hàng của bạn an tâm tuyệt đối.
               </p>
               <ul className="bw-check-list">
                 <li>
-                  <span className="bw-check-ic" aria-hidden="true">
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                    >
-                      <path d="M20 6L9 17l-5-5" />
+                  <span className="bw-check-ic">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <polyline points="20 6 9 17 5 12" />
                     </svg>
                   </span>
-                  <span>
-                    <strong>Enterprise-Grade Security</strong> Military-grade encryption and blockchain immutability.
-                  </span>
+                  <div>
+                    <strong>Bảo mật Cấp doanh nghiệp</strong>
+                    <span>Mã hóa cấp quân đội và tính bất biến của blockchain.</span>
+                  </div>
                 </li>
                 <li>
-                  <span className="bw-check-ic" aria-hidden="true">
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                    >
-                      <path d="M20 6L9 17l-5-5" />
+                  <span className="bw-check-ic">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <polyline points="20 6 9 17 5 12" />
                     </svg>
                   </span>
-                  <span>
-                    <strong>User-Friendly Interface</strong> No blockchain knowledge required — simple as a wallet app.
-                  </span>
+                  <div>
+                    <strong>Giao diện Thân thiện</strong>
+                    <span>Không cần kiến thức blockchain — đơn giản như một ứng dụng ví.</span>
+                  </div>
                 </li>
                 <li>
-                  <span className="bw-check-ic" aria-hidden="true">
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                    >
-                      <path d="M20 6L9 17l-5-5" />
+                  <span className="bw-check-ic">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <polyline points="20 6 9 17 5 12" />
                     </svg>
                   </span>
-                  <span>
-                    <strong>24/7 Customer Support</strong> Our team is always here to help you and your customers.
-                  </span>
+                  <div>
+                    <strong>Hỗ trợ Khách hàng 24/7</strong>
+                    <span>Đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ bạn.</span>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -292,8 +212,8 @@ function HomePage({ isAuthenticated, role }) {
 
       <section className="bw-section" id="why">
         <div className="bw-inner">
-          <h2 className="bw-h2">Why Choose BlockWarranty?</h2>
-          <p className="bw-sub">Join the revolution and provide your customers with unmatched warranty protection.</p>
+          <h2 className="bw-h2">Tại sao chọn E-Warranty?</h2>
+          <p className="bw-sub">Tham gia cuộc cách mạng và cung cấp cho khách hàng sự bảo vệ chưa từng có.</p>
           <div className="bw-grid-6">
             <article className="bw-mini-card">
               <div className="bw-icon-em" aria-hidden="true">
@@ -309,8 +229,8 @@ function HomePage({ isAuthenticated, role }) {
                   <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
                 </svg>
               </div>
-              <h4>Increase Resale Value</h4>
-              <p>Products with transferable warranties are worth more in the secondary market.</p>
+              <h4>Tăng Giá trị Bán lại</h4>
+              <p>Sản phẩm có bảo hành chuyển nhượng có giá trị cao hơn trên thị trường thứ cấp.</p>
             </article>
             <article className="bw-mini-card">
               <div className="bw-icon-em" aria-hidden="true">
@@ -326,8 +246,8 @@ function HomePage({ isAuthenticated, role }) {
                   <path d="M17 6h6v6" />
                 </svg>
               </div>
-              <h4>Reduce Fraud</h4>
-              <p>Eliminate counterfeit warranties with verification and immutable records.</p>
+              <h4>Giảm thiểu Gian lận</h4>
+              <p>Loại bỏ các bảo hành giả mạo bằng hồ sơ bất biến và xác minh tức thì.</p>
             </article>
             <article className="bw-mini-card">
               <div className="bw-icon-em" aria-hidden="true">
@@ -343,58 +263,8 @@ function HomePage({ isAuthenticated, role }) {
                   <path d="M22 4L12 14.01l-3-3" />
                 </svg>
               </div>
-              <h4>Instant Verification</h4>
-              <p>Service centers verify warranty status instantly, reducing wait times.</p>
-            </article>
-            <article className="bw-mini-card">
-              <div className="bw-icon-em" aria-hidden="true">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M2 12h20M12 2a15 15 0 0115 15" />
-                </svg>
-              </div>
-              <h4>Global Coverage</h4>
-              <p>Your warranty works anywhere — ideal for travelers and global businesses.</p>
-            </article>
-            <article className="bw-mini-card">
-              <div className="bw-icon-em" aria-hidden="true">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0110 0v4" />
-                </svg>
-              </div>
-              <h4>Privacy Protected</h4>
-              <p>Personal data stays private while authenticity remains publicly verifiable.</p>
-            </article>
-            <article className="bw-mini-card">
-              <div className="bw-icon-em" aria-hidden="true">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-              </div>
-              <h4>Eco-Friendly</h4>
-              <p>Go paperless and reduce environmental impact while improving warranty management.</p>
+              <h4>Xác minh Tức thì</h4>
+              <p>Các trung tâm dịch vụ xác minh trạng thái bảo hành ngay lập tức, giảm thời gian chờ.</p>
             </article>
           </div>
         </div>
@@ -402,26 +272,26 @@ function HomePage({ isAuthenticated, role }) {
 
       <section className="bw-section alt" id="testimonials">
         <div className="bw-inner">
-          <h2 className="bw-h2">Trusted by Thousands</h2>
-          <p className="bw-sub">See what our customers and partners are saying about BlockWarranty.</p>
+          <h2 className="bw-h2">Tin tưởng bởi Hàng ngàn người</h2>
+          <p className="bw-sub">Xem những gì đối tác và khách hàng của chúng tôi nói về E-Warranty.</p>
           <div className="bw-testimonials">
             <blockquote className="bw-quote">
               <div className="bw-stars">★★★★★</div>
-              <p>“We cut warranty disputes by half. Customers love scanning the QR at the counter.”</p>
+              <p>“Chúng tôi đã cắt giảm một nửa <br /> các tranh chấp bảo hành. Khách hàng <br /> rất thích quét mã QR để kiểm tra.”</p>
               <div className="bw-author">
-                <span className="bw-avatar" aria-hidden="true" />
-                <div>
+                <img src="https://i.pravatar.cc/150?u=sarah" alt="Sarah Chen" className="bw-avatar" />
+                <div className="bw-author-info">
                   <strong>Sarah Chen</strong>
-                  <span>Retail Operations Lead</span>
+                  <span>Trưởng phòng Vận hành Bán lẻ</span>
                 </div>
               </div>
             </blockquote>
             <blockquote className="bw-quote featured">
               <div className="bw-stars">★★★★★</div>
-              <p>“Finally a blockchain product that doesn’t feel like blockchain. Onboarding took one afternoon.”</p>
+              <p>“Cuối cùng cũng có một sản phẩm blockchain thực tế. Việc triển khai chỉ mất một buổi chiều làm việc.”</p>
               <div className="bw-author">
-                <span className="bw-avatar" aria-hidden="true" />
-                <div>
+                <img src="https://i.pravatar.cc/150?u=marcus" alt="Marcus Rodriguez" className="bw-avatar" />
+                <div className="bw-author-info">
                   <strong>Marcus Rodriguez</strong>
                   <span>CTO, FutureTech</span>
                 </div>
@@ -429,31 +299,81 @@ function HomePage({ isAuthenticated, role }) {
             </blockquote>
             <blockquote className="bw-quote">
               <div className="bw-stars">★★★★★</div>
-              <p>“Resale value messaging at point of sale is a clear win. Support tickets dropped noticeably.”</p>
+              <p>“Giá trị bán lại tăng lên nhờ bảo hành chuyển nhượng là một lợi thế <br /> cạnh tranh tuyệt vời cho chúng tôi.”</p>
               <div className="bw-author">
-                <span className="bw-avatar" aria-hidden="true" />
-                <div>
+                <img src="https://i.pravatar.cc/150?u=elena" alt="Elena Volkov" className="bw-avatar" />
+                <div className="bw-author-info">
                   <strong>Elena Volkov</strong>
-                  <span>Channel Partner Manager</span>
+                  <span>Quản lý Đối tác Kênh</span>
                 </div>
               </div>
             </blockquote>
           </div>
-          <h2 className="bw-h2 bw-h2-spaced">Trusted by Leading Brands</h2>
-          <p className="bw-sub">Join 500+ companies already protecting their products with blockchain.</p>
-          <div className="bw-logo-strip" aria-label="Partner logos">
-            {["TechCorp", "GlobalElectronics", "SmartDevices", "FutureTech", "ProGadgets", "NextGen", "InnoTech", "DigiWorld"].map(
-              (x) => (
-                <span key={x} className="bw-logo-pill">
-                  {x}
-                </span>
-              ),
-            )}
-          </div>
         </div>
       </section>
 
-      <Footer />
+      {/* Map & Contact Section - NEW DARK STYLE */}
+      <section className="bw-section" id="location">
+        <div className="bw-inner">
+          <div className="bw-location-card">
+            <div className="bw-location-content">
+              <h2 className="bw-h2-light">
+                Hệ thống Trung tâm Bảo hành
+              </h2>
+              <p className="bw-location-desc">
+                Chúng tôi hợp tác cùng các đơn vị uy tín hàng đầu để đảm bảo <br /> chất lượng dịch vụ.
+              </p>
+
+              <div className="bw-address-box">
+                <h3>Trường Đại học Công nghệ Thông tin - <br /> ĐHQG TP.HCM (UIT)</h3>
+                <p className="bw-addr-text">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="bw-addr-ic">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  Khu phố 34, Phường Linh Xuân, Thành phố Hồ Chí Minh.
+                </p>
+              </div>
+
+              <div className="bw-contact-row">
+                <div className="bw-contact-badge">
+                  <strong>SĐT:</strong> (028) 372 52002
+                </div>
+                <div className="bw-contact-badge">
+                  <strong>Email:</strong> info@uit.edu.vn
+                </div>
+              </div>
+
+              <div className="bw-stats-row">
+                <div className="bw-stat-item">
+                  <span className="stat-num">500+</span>
+                  <span className="stat-label">Điểm tiếp nhận</span>
+                </div>
+                <div className="bw-stat-item">
+                  <span className="stat-num">24/7</span>
+                  <span className="stat-label">Hỗ trợ kỹ thuật</span>
+                </div>
+                <div className="bw-stat-item">
+                  <span className="stat-num">99%</span>
+                  <span className="stat-label">Hài lòng</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bw-location-map">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.231240416692!2d106.80086541533418!3d10.870008892257916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317527587e9ad5bf%3A0xafa66f9d8bc3c21!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBDw7RuZyBuZ2jhu4cgVGjDtG5nIHRpbiAtIMSQSFFHIFRQLkhDTQ!5e0!3m2!1svi!2s!4v1714210000000!5m2!1svi!2s"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                title="UIT Map"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

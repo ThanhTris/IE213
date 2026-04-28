@@ -1,8 +1,8 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
-import { API_ROOT } from "../../utils/api";
-import { buildFakeHash } from "../../utils/hashPreview";
+import { API_ROOT } from "../../../utils/api";
+import { buildFakeHash } from "../../../utils/hashPreview";
 import { toast } from "sonner";
-import { warrantyService } from "../../services/warrantyService";
+import { warrantyService } from "../../../services/warrantyService";
 
 function CreateWarranty() {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -22,7 +22,7 @@ function CreateWarranty() {
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState("");
-  
+
   // Custom Dropdown States
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [productSearch, setProductSearch] = useState("");
@@ -45,11 +45,11 @@ function CreateWarranty() {
 
         const res = await fetch(`${API_ROOT}/products`, { headers });
         const data = await res.json().catch(() => ({}));
-        
+
         if (!res.ok || data.success === false) {
-           throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
+          throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
         }
-        
+
         if (data.success && Array.isArray(data.data)) {
           setDeviceModels(data.data);
           if (data.data.length > 0) {
@@ -73,7 +73,7 @@ function CreateWarranty() {
 
         const res = await fetch(`${API_ROOT}/users`, { headers });
         const data = await res.json().catch(() => ({}));
-        
+
         if (data.success && Array.isArray(data.data)) {
           setUsers(data.data);
         }
@@ -172,13 +172,13 @@ function CreateWarranty() {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </span>
-            <h2 className="cw-card-title">Issue New Warranty NFT</h2>
+            <h2 className="cw-card-title">Cấp thẻ bảo hành NFT mới</h2>
           </div>
 
           {/* Success / Error banners */}
           {submitted && (
             <div className="cw-banner cw-banner--success">
-              ✓ Warranty NFT issued successfully on blockchain!
+              ✓ Thẻ bảo hành NFT đã được cấp thành công trên blockchain!
             </div>
           )}
           {errors.fetchError && (
@@ -191,7 +191,7 @@ function CreateWarranty() {
           <form onSubmit={handleSubmit} className={isLoading ? "cw-form-loading" : ""}>
             {/* Device Model - Optimized Searchable Dropdown */}
             <div className="cw-field">
-              <label className="cw-label">Device Model</label>
+              <label className="cw-label">Mẫu thiết bị</label>
               <div className="cw-custom-select-container">
                 <button
                   type="button"
@@ -208,7 +208,7 @@ function CreateWarranty() {
                         <span className="cw-selected-code">{selectedProduct.productCode}</span>
                       </div>
                     ) : (
-                      <span className="cw-muted-text">Select Device Model</span>
+                      <span className="cw-muted-text">Chọn mẫu thiết bị</span>
                     )}
                   </div>
                   <span className={`cw-select-arrow ${isDropdownOpen ? "open" : ""}`}>
@@ -223,12 +223,12 @@ function CreateWarranty() {
                   <div className="cw-dropdown-panel">
                     <div className="cw-dropdown-search-wrap">
                       <svg className="cw-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                       </svg>
                       <input
                         type="text"
                         className="cw-dropdown-search-input"
-                        placeholder="Search products..."
+                        placeholder="Tìm kiếm sản phẩm..."
                         value={productSearch}
                         onChange={(e) => setProductSearch(e.target.value)}
                         autoFocus
@@ -237,7 +237,7 @@ function CreateWarranty() {
                     </div>
                     <div className="cw-dropdown-list">
                       {deviceModels
-                        .filter(p => 
+                        .filter(p =>
                           p.productName.toLowerCase().includes(productSearch.toLowerCase()) ||
                           p.productCode.toLowerCase().includes(productSearch.toLowerCase())
                         )
@@ -273,7 +273,7 @@ function CreateWarranty() {
 
             {/* Serial Number */}
             <div className="cw-field">
-              <label className="cw-label" htmlFor="serialNumber">Serial Number</label>
+              <label className="cw-label" htmlFor="serialNumber">Số Serial</label>
               <div className="cw-input-wrap">
                 <span className="cw-input-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -289,7 +289,7 @@ function CreateWarranty() {
                   id="serialNumber"
                   type="text"
                   className={`cw-input ${errors.serialNumber ? "cw-input--error" : ""}`}
-                  placeholder="Enter device serial number"
+                  placeholder="Nhập số serial của thiết bị"
                   value={form.serialNumber}
                   onChange={updateField("serialNumber")}
                   disabled={isLoading}
@@ -300,7 +300,7 @@ function CreateWarranty() {
 
             {/* Customer Wallet Address - Optimized Searchable Search */}
             <div className="cw-field">
-              <label className="cw-label" htmlFor="walletAddress">Customer Wallet Address</label>
+              <label className="cw-label" htmlFor="walletAddress">Địa chỉ ví khách hàng</label>
               <div className="cw-custom-select-container">
                 <div className="cw-input-combined-wrap">
                   <span className="cw-input-icon">
@@ -314,7 +314,7 @@ function CreateWarranty() {
                     id="walletAddress"
                     type="text"
                     className={`cw-input cw-input-searchable ${errors.walletAddress ? "cw-input--error" : ""}`}
-                    placeholder="Search by name/email or enter 0x..."
+                    placeholder="Tìm theo tên/email hoặc nhập 0x..."
                     value={form.walletAddress}
                     onChange={(e) => {
                       updateField("walletAddress")(e);
@@ -339,7 +339,7 @@ function CreateWarranty() {
                   <div className="cw-dropdown-panel">
                     <div className="cw-dropdown-list">
                       {users
-                        .filter(u => 
+                        .filter(u =>
                           u.fullName?.toLowerCase().includes(userSearch.toLowerCase()) ||
                           u.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
                           u.walletAddress?.toLowerCase().includes(userSearch.toLowerCase())
@@ -357,8 +357,8 @@ function CreateWarranty() {
                           >
                             <div className="cw-user-item-content">
                               <div className="cw-user-primary">
-                                <span className="cw-user-name">{u.fullName || "Anonymous"}</span>
-                                <span className="cw-user-email">{u.email || "No email"}</span>
+                                <span className="cw-user-name">{u.fullName || "Ẩn danh"}</span>
+                                <span className="cw-user-email">{u.email || "Không có email"}</span>
                               </div>
                               <code className="cw-user-wallet">{u.walletAddress.slice(0, 6)}...{u.walletAddress.slice(-4)}</code>
                             </div>
@@ -400,7 +400,7 @@ function CreateWarranty() {
 
             {/* Device Image - Enhanced Upload UI */}
             <div className="cw-field">
-              <label className="cw-label">Product Image (Optional)</label>
+              <label className="cw-label">Hình ảnh sản phẩm (Tùy chọn)</label>
               <div className="cw-image-upload-area">
                 {imagePreview ? (
                   <div className="cw-image-preview-wrapper">
@@ -416,7 +416,7 @@ function CreateWarranty() {
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                       </svg>
-                      <span>Change Image</span>
+                      <span>Đổi hình ảnh</span>
                     </button>
                   </div>
                 ) : (
@@ -442,7 +442,7 @@ function CreateWarranty() {
                         <circle cx="8.5" cy="8.5" r="1.5" />
                         <polyline points="21 15 16 10 5 21" />
                       </svg>
-                      <span>Click to upload image</span>
+                      <span>Nhấn để tải lên hình ảnh</span>
                     </div>
                   </label>
                 )}
@@ -452,7 +452,7 @@ function CreateWarranty() {
             {/* Smart contract notice */}
             <div className="cw-notice">
               <span className="cw-notice-icon">#</span>
-              <span>Smart contract will automatically verify and issue NFT</span>
+              <span>Hợp đồng thông minh sẽ tự động xác thực và cấp NFT</span>
             </div>
 
             {/* Submit button */}
@@ -467,14 +467,14 @@ function CreateWarranty() {
                   {currentStep || "Đang xử lý..."}
                 </>
               ) : submitted ? (
-                <>✓ Issued Successfully!</>
+                <>✓ Cấp thẻ thành công!</>
               ) : (
                 <>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
-                  Issue Warranty on Blockchain
+                  Cấp thẻ bảo hành trên Blockchain
                 </>
               )}
             </button>
@@ -489,11 +489,11 @@ function CreateWarranty() {
             {/* Preview header label */}
             <div className="cw-preview-header-label">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                stroke="var(--navy-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
               </svg>
-              <span>Warranty NFT Preview</span>
+              <span>Xem trước thẻ bảo hành NFT</span>
             </div>
 
             {/* NFT Horizontal Header */}
@@ -504,16 +504,17 @@ function CreateWarranty() {
                 ) : (
                   <div className="cw-nft-thumb-placeholder">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                     </svg>
+                    <span>Chưa có hình ảnh</span>
                   </div>
                 )}
               </div>
               <div className="cw-nft-header-info">
                 <div className="cw-nft-name-row">
                   <div>
-                    <h3 className="cw-nft-title">{selectedProduct?.productName || "Product Name"}</h3>
-                    <p className="cw-nft-serial">Serial: {maskedSerial}</p>
+                    <h3 className="cw-nft-title">{selectedProduct?.productName || "Tên sản phẩm"}</h3>
+                    <p className="cw-nft-serial">Số Serial: {maskedSerial}</p>
                   </div>
                   <span className="cw-nft-badge">NFT</span>
                 </div>
@@ -529,19 +530,19 @@ function CreateWarranty() {
                 </span>
               </div>
               <div className="cw-nft-row">
-                <span className="cw-nft-row-label">Owner</span>
+                <span className="cw-nft-row-label">Chủ sở hữu</span>
                 <span className="cw-nft-row-value cw-nft-row-value--muted">
-                  {form.walletAddress ? `${form.walletAddress.slice(0, 8)}...` : "Not set"}
+                  {form.walletAddress ? `${form.walletAddress.slice(0, 8)}...` : "Chưa thiết lập"}
                 </span>
               </div>
               <div className="cw-nft-row">
-                <span className="cw-nft-row-label">Issued</span>
+                <span className="cw-nft-row-label">Ngày cấp</span>
                 <span className="cw-nft-row-value">{today}</span>
               </div>
               <div className="cw-nft-row">
-                <span className="cw-nft-row-label">Expires</span>
+                <span className="cw-nft-row-label">Ngày hết hạn</span>
                 <span className={`cw-nft-row-value ${calculatedExpiryDate ? "" : "cw-nft-row-value--orange"}`}>
-                  {calculatedExpiryDate || "Not set"}
+                  {calculatedExpiryDate || "Chưa thiết lập"}
                 </span>
               </div>
             </div>
@@ -562,18 +563,18 @@ function CreateWarranty() {
 
           {/* Warranty Details card */}
           <div className="cw-details-card">
-            <h4 className="cw-details-title">Warranty Details</h4>
+            <h4 className="cw-details-title">Chi tiết bảo hành</h4>
             <ul className="cw-details-list">
-              <li>NFT minted on Ethereum blockchain</li>
-              <li>Transferable to new owners</li>
-              <li>Immutable proof of authenticity</li>
-              <li>Globally verifiable warranty status</li>
+              <li>Thẻ NFT được đúc trên blockchain Ethereum</li>
+              <li>Có thể chuyển nhượng cho chủ sở hữu mới</li>
+              <li>Bằng chứng bất biến về tính xác thực</li>
+              <li>Trạng thái bảo hành có thể xác minh toàn cầu</li>
             </ul>
           </div>
 
           {/* Gas fee note */}
           <div className="cw-gas-note">
-            Gas fees will be calculated at time of minting. Ensure wallet has sufficient funds.
+            Phí gas sẽ được tính tại thời điểm đúc thẻ. Hãy đảm bảo ví có đủ số dư.
           </div>
         </div>
 
@@ -594,11 +595,11 @@ function CreateWarranty() {
 
         /* ─── Form card ─── */
         .cw-form-card {
-          background: #fff;
-          border: 1px solid #e2e8f0;
-          border-radius: 18px;
+          background: var(--white);
+          border: 1px solid var(--grey-200);
+          border-radius: var(--radius-lg);
           padding: 28px;
-          box-shadow: 0 4px 24px rgba(15,23,42,0.07);
+          box-shadow: var(--shadow-sm);
         }
 
         .cw-card-header {
@@ -614,17 +615,17 @@ function CreateWarranty() {
           justify-content: center;
           width: 36px;
           height: 36px;
-          background: #eff6ff;
-          border-radius: 10px;
-          color: #2563eb;
+          background: var(--grey-100);
+          border-radius: var(--radius-sm);
+          color: var(--navy-primary);
           flex-shrink: 0;
         }
 
         .cw-card-title {
           margin: 0;
-          font-size: 17px;
+          font-size: var(--text-xl);
           font-weight: 700;
-          color: #0f172a;
+          color: var(--navy-primary-dark);
         }
 
         /* Banner */
@@ -636,13 +637,13 @@ function CreateWarranty() {
           margin-bottom: 20px;
         }
         .cw-banner--success {
-          background: #f0fdf4;
-          color: #16a34a;
-          border: 1px solid #bbf7d0;
+          background: var(--color-success-light);
+          color: var(--emerald-600);
+          border: 1px solid var(--emerald-500);
         }
         .cw-banner--error {
-          background: #fef2f2;
-          color: #dc2626;
+          background: var(--color-danger-light);
+          color: var(--danger-600);
           border: 1px solid #fecaca;
         }
 
@@ -653,9 +654,9 @@ function CreateWarranty() {
 
         .cw-label {
           display: block;
-          font-size: 13px;
+          font-size: var(--text-base);
           font-weight: 600;
-          color: #374151;
+          color: var(--grey-600);
           margin-bottom: 8px;
         }
 
@@ -671,7 +672,7 @@ function CreateWarranty() {
           left: 1.4rem;
           top: 50%;
           transform: translateY(-50%);
-          color: #94a3b8;
+          color: var(--grey-400);
           display: flex;
           align-items: center;
           pointer-events: none;
@@ -683,22 +684,22 @@ function CreateWarranty() {
           padding: 1.1rem 1.4rem 1.1rem 4rem; /* Left padding for icon */
           font-size: 1.4rem;
           font-family: inherit;
-          border: 0.1rem solid #d1d5db;
-          border-radius: 1rem;
-          background: #fff;
-          color: #0f172a;
+          border: 0.1rem solid var(--grey-400);
+          border-radius: var(--radius-sm);
+          background: var(--white);
+          color: var(--navy-900);
           outline: none;
           transition: border-color 0.2s, box-shadow 0.2s;
           box-sizing: border-box;
         }
 
         .cw-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+          border-color: var(--navy-primary);
+          box-shadow: 0 0 0 3px rgba(41, 85, 206, 0.15);
         }
 
         .cw-input--error {
-          border-color: #ef4444;
+          border-color: var(--color-danger);
         }
 
         .cw-input-searchable {
@@ -716,10 +717,10 @@ function CreateWarranty() {
           padding: 11px 40px 11px 14px;
           font-size: 14px;
           font-family: inherit;
-          border: 1px solid #d1d5db;
-          border-radius: 10px;
-          background: #fff;
-          color: #0f172a;
+          border: 1px solid var(--grey-400);
+          border-radius: var(--radius-sm);
+          background: var(--white);
+          color: var(--navy-900);
           outline: none;
           appearance: none;
           -webkit-appearance: none;
@@ -729,14 +730,14 @@ function CreateWarranty() {
         }
 
         .cw-select:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+          border-color: var(--navy-primary);
+          box-shadow: 0 0 0 3px rgba(41, 85, 206, 0.15);
         }
 
         .cw-select-arrow {
           position: absolute;
           right: 13px;
-          color: #94a3b8;
+          color: var(--grey-400);
           pointer-events: none;
           display: flex;
           align-items: center;
@@ -745,21 +746,21 @@ function CreateWarranty() {
         .cw-error-msg {
           margin: 5px 0 0;
           font-size: 12px;
-          color: #ef4444;
+          color: var(--color-danger);
           font-weight: 500;
         }
 
         /* Notice */
         .cw-notice {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 10px;
-          background: #f0fdf4;
-          border: 1px solid #bbf7d0;
-          border-radius: 10px;
+          background: var(--color-success-light);
+          border: 1px solid var(--emerald-500);
+          border-radius: var(--radius-sm);
           padding: 13px 16px;
-          color: #16a34a;
-          font-size: 13.5px;
+          color: var(--emerald-600);
+          font-size: var(--text-sm);
           font-weight: 600;
           margin-bottom: 24px;
         }
@@ -767,7 +768,7 @@ function CreateWarranty() {
         .cw-notice-icon {
           font-size: 16px;
           font-weight: 800;
-          color: #16a34a;
+          color: var(--emerald-600);
           flex-shrink: 0;
         }
 
@@ -782,17 +783,17 @@ function CreateWarranty() {
           font-size: 15px;
           font-weight: 700;
           font-family: inherit;
-          color: #fff;
-          background: linear-gradient(135deg, #2d4fc4 0%, #1e3a8a 100%);
+          color: var(--white);
+          background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-primary-dark) 100%);
           border: none;
-          border-radius: 12px;
+          border-radius: var(--radius-md);
           cursor: pointer;
           transition: all 0.25s ease;
           box-shadow: 0 4px 16px rgba(30,64,175,0.25);
         }
 
         .cw-btn-submit:hover:not(:disabled) {
-          background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+          background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-primary-dark) 100%);
           box-shadow: 0 8px 24px rgba(30,64,175,0.35);
           transform: translateY(-1px);
         }
@@ -848,12 +849,10 @@ function CreateWarranty() {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 13px;
+          font-size: var(--text-xl);
           font-weight: 700;
-          color: #64748b;
+          color: var(--navy-primary-dark);
           margin-bottom: 20px;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
         }
 
         .cw-nft-name-row {
@@ -909,13 +908,13 @@ function CreateWarranty() {
         }
 
         .cw-nft-row-label {
-          font-size: 13.5px;
+          font-size: var(--text-base);
           color: #475569;
           font-weight: 500;
         }
 
         .cw-nft-row-value {
-          font-size: 13.5px;
+          font-size: var(--text-base);
           color: #0f172a;
           font-weight: 600;
           text-align: right;
@@ -939,14 +938,14 @@ function CreateWarranty() {
 
         .cw-hash-label {
           margin: 0 0 4px;
-          font-size: 12px;
+          font-size: var(--text-base);
           font-weight: 600;
           color: rgba(255,255,255,0.75);
         }
 
         .cw-hash-code {
           font-family: "JetBrains Mono", "Monaco", monospace;
-          font-size: 13px;
+          font-size: var(--text-base);
           color: rgba(255,255,255,0.9);
           word-break: break-all;
         }
@@ -1234,12 +1233,12 @@ function CreateWarranty() {
         }
 
         .cw-nft-thumb-box {
-          flex: 0 0 10rem;
-          height: 10rem;
-          border-radius: 1.6rem;
+          flex: 0 0 11.5rem;
+          height: 11.5rem;
+          border-radius: 1.8rem;
           overflow: hidden;
           background: #f8fafc;
-          border: none; /* Removed border */
+          border: 0.15rem dashed #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1253,7 +1252,19 @@ function CreateWarranty() {
         }
 
         .cw-nft-thumb-placeholder {
-          color: #cbd5e1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
+          color: #94a3b8;
+          text-align: center;
+          padding: 1rem;
+        }
+
+        .cw-nft-thumb-placeholder span {
+          font-size: 1.15rem;
+          font-weight: 600;
+          line-height: 1.3;
         }
 
         .cw-nft-header-info {
@@ -1295,7 +1306,7 @@ function CreateWarranty() {
           display: flex;
           align-items: flex-start;
           gap: 8px;
-          font-size: 13.5px;
+          font-size: var(--text-sm);
           color: #475569;
           line-height: 1.45;
         }
@@ -1314,7 +1325,7 @@ function CreateWarranty() {
           border: 1px solid #fde68a;
           border-radius: 10px;
           padding: 12px 16px;
-          font-size: 12.5px;
+          font-size: var(--text-sm);
           color: #92400e;
           line-height: 1.55;
         }

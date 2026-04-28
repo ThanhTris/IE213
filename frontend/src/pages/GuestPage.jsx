@@ -1,137 +1,105 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { toast } from "sonner";
+import { useParams, useNavigate } from "react-router-dom";
 import { warrantyService } from "../services/warrantyService";
 import { repairService } from "../services/repairService";
-import { getStatusConfig } from "../utils/statusStyles";
-import Footer from "../components/Footer";
+import { toast } from "sonner";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import Footer from "../components/Footer";
+import "../assets/css/guest.css";
 
 function GuestPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { id: urlSerialNumber } = useParams();
-  const certificateRef = useRef(null);
+  const navigate = useNavigate();
 
-  const initialPrefill = (() => {
-    try {
-      return urlSerialNumber || sessionStorage.getItem("bw_search_prefill") || "W01-APL-IP15PM-001";
-    } catch (_e) {
-      return urlSerialNumber || "W01-APL-IP15PM-001";
-    }
-  })();
-  const [serialOrToken, setSerialOrToken] = useState(initialPrefill);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [serialOrToken, setSerialOrToken] = useState("");
   const [result, setResult] = useState(null);
   const [repairLogs, setRepairLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [isExporting, setIsExporting] = useState(false);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const d = new Date(dateString);
-    return d.toLocaleDateString("vi-VN");
+  const certificateRef = useRef(null);
+
+  const maskString = (str, start = 6, end = 4) => {
+    if (!str) return "N/A";
+    if (str.length <= start + end) return str;
+    return `${str.substring(0, start)}...${str.substring(str.length - end)}`;
   };
 
-  const formatExpiry = (expiryDateNumber) => {
-    const epochSeconds = Number(expiryDateNumber);
-    if (!epochSeconds || Number.isNaN(epochSeconds)) return "N/A";
-    const d = new Date(epochSeconds * 1000);
-    return d.toLocaleDateString("vi-VN");
+  const maskContact = (str) => {
+    if (!str) return "N/A";
+    if (str.includes("@")) {
+      const [user, domain] = str.split("@");
+      return `${user.charAt(0)}***@${domain}`;
+    }
+    if (str.length > 6) {
+      return `${str.substring(0, 3)}***${str.substring(str.length - 3)}`;
+    }
+    return str;
   };
 
-  const getDaysRemaining = (expiryDateNumber) => {
-    const epochSeconds = Number(expiryDateNumber);
-    if (!epochSeconds || Number.isNaN(epochSeconds)) return 0;
-    const expiry = epochSeconds * 1000;
-    const now = Date.now();
-    const diff = expiry - now;
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  const getDaysRemaining = (expiryDate) => {
+    const today = new Date();
+    const expiry = new Date(expiryDate * 1000); 
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
   };
 
   const handleDownloadPDF = async () => {
     if (!certificateRef.current) return;
     setIsExporting(true);
-    toast.info("Đang chuẩn bị bản in PDF...");
-
+    setLoading(true);
     try {
-      // Đảm bảo trang ở đầu để tránh lỗi cắt ảnh
       window.scrollTo(0, 0);
-      
-      const element = certificateRef.current;
-      
-      // Chờ một chút để UI ổn định sau khi scroll
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const canvas = await html2canvas(element, {
-        scale: 2, // Scale 2 là đủ nét và dung lượng file vừa phải
+      const canvas = await html2canvas(certificateRef.current, {
+        scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: "#f8fafc",
-        // Ép width cố định khi chụp để đảm bảo layout grid không bị vỡ
-        windowWidth: 1400 
+        backgroundColor: "#ffffff",
+        windowWidth: 1600 
       });
-      
       const imgData = canvas.toDataURL("image/png");
-      
-      // Tính toán kích thước PDF (đơn vị mm)
-      const imgWidth = 210; 
+      const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // Tạo PDF với kích thước khớp hoàn toàn với nội dung (không ép A4 nếu nội dung ngắn)
       const pdf = new jsPDF({
         orientation: imgWidth > imgHeight ? "l" : "p",
         unit: "mm",
         format: [imgWidth, imgHeight]
       });
-      
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
-      pdf.save(`Warranty_Certificate_${result?.serialNumber}.pdf`);
+      pdf.save(`Warranty_${result?.serialNumber}.pdf`);
       toast.success("Tải xuống thành công!");
     } catch (err) {
-      console.error("PDF Export Error:", err);
-      toast.error("Lỗi khi tạo file PDF");
+      toast.error("Lỗi khi tạo PDF.");
     } finally {
       setIsExporting(false);
+      setLoading(false);
     }
   };
 
   const performSearch = useCallback(async (tokenId) => {
-    setError("");
+    if (!tokenId) return false;
     setLoading(true);
+    setError("");
     setResult(null);
     setRepairLogs([]);
 
     try {
-      if (!tokenId) {
-        setLoading(false);
-        return;
-      }
-
       const res = await warrantyService.verifyWarranty(tokenId);
-      
       if (res && res.success) {
         setResult(res.data);
-        
-        try {
-          const repairRes = await repairService.getRepairsBySerial(res.data.serialNumber);
-          if (repairRes && repairRes.success) {
-            setRepairLogs(repairRes.data || []);
-          }
-        } catch (repairErr) {
-          console.error("Failed to fetch repair logs:", repairErr);
-        }
+        const repairRes = await repairService.getRepairsBySerial(res.data.serialNumber);
+        if (repairRes && repairRes.success) setRepairLogs(repairRes.data);
+        return true;
       } else {
-        const msg = res?.message || "Không tìm thấy thông tin bảo hành.";
-        setError(msg);
-        toast.error(msg);
+        setError(res?.message || "Không tìm thấy thiết bị.");
+        return false;
       }
     } catch (e) {
-      const msg = e?.response?.data?.message || e?.message || "Tìm kiếm thất bại.";
-      setError(msg);
-      toast.error(msg);
+      setError(e?.response?.data?.message || "Tra cứu thất bại.");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -140,274 +108,257 @@ function GuestPage() {
   useEffect(() => {
     if (urlSerialNumber) {
       setSerialOrToken(urlSerialNumber);
-      performSearch(urlSerialNumber);
+      performSearch(urlSerialNumber).then((success) => {
+        if (!success) {
+          navigate("/search", { replace: true });
+        }
+      });
     }
-  }, [urlSerialNumber, performSearch]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("download") === "true" && result && !loading && !isExporting) {
-      // Đợi UI render xong rồi mới chụp
-      setTimeout(() => {
-        handleDownloadPDF();
-      }, 1000);
-    }
-  }, [location.search, result, loading]);
+  }, [urlSerialNumber, performSearch, navigate]);
 
   const handleSearchSubmit = () => {
-    const tokenId = String(serialOrToken || "").trim();
-    if (!tokenId) {
-      setError("Vui lòng nhập số Serial hoặc Token ID.");
-      return;
-    }
-    navigate(`/search/${tokenId}`);
+    const val = serialOrToken.trim();
+    if (!val) return toast.error("Vui lòng nhập số Serial.");
+    navigate(`/search/${val}`);
+  };
+
+  const getStatusLabel = (status) => {
+    const map = {
+      pending: "Đang xử lý",
+      waiting_parts: "Chờ linh kiện",
+      fixing: "Đang sửa",
+      completed: "Đã xong",
+      delivered: "Đã giao",
+      cancelled: "Đã hủy"
+    };
+    return map[status] || status;
   };
 
   return (
-    <>
-      <div className="view active">
-        <div className="guest-wrap">
-          {!urlSerialNumber && (
-            <>
-              <div className="guest-head">
-                <h1>Track Your Warranty</h1>
-                <p>Enter a device serial/token id to verify warranty status.</p>
+    <div className="view active">
+      <div className="guest-wrap">
+        <header className="guest-header-v3">
+          <h1 className="guest-title-v3">Tra cứu Bảo hành Công khai</h1>
+          <p className="guest-subtitle-v3">Mọi thông tin bảo hành được minh bạch trên Blockchain</p>
+        </header>
+
+        <section className="search-container-v3">
+          <div className="search-input-group-v3">
+            <span className="search-icon-v3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Nhập số Serial thiết bị (ví dụ: W01-APL-IP15PM-001)"
+              value={serialOrToken}
+              onChange={(e) => setSerialOrToken(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+            />
+            <button className="btn-search-v3" onClick={handleSearchSubmit} disabled={loading}>
+              {loading ? "Đang tra cứu..." : "Tra cứu Bảo hành"}
+            </button>
+          </div>
+          {loading && <div className="loader">Đang đồng bộ dữ liệu Blockchain...</div>}
+        </section>
+
+        {error && !loading && (
+          <div className="error-overlay-v4">
+            <div className="error-modal-v4">
+              <button className="error-close-v4" onClick={() => {
+                setError("");
+                setSerialOrToken("");
+              }}>
+                &times;
+              </button>
+              <div className="error-icon-v4">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
               </div>
-              
-              <div className="search-bar-wrap">
-                <div className="search-bar">
-                  <span className="search-input-icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="M21 21l-4.35-4.35" />
-                    </svg>
-                  </span>
-                  <input
-                    type="search"
-                    placeholder="Enter Device Serial Number / Token ID"
-                    value={serialOrToken}
-                    onChange={(e) => setSerialOrToken(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
-                    disabled={loading}
-                  />
-                  <div className="search-actions">
-                    <button type="button" className="search-submit" onClick={handleSearchSubmit} disabled={loading}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 8 }}>
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="M21 21l-4.35-4.35" />
-                      </svg>
-                      {loading ? "Searching..." : "Search Warranty"}
-                    </button>
-                  </div>
+              <h2 className="error-title-v4">Không tìm thấy thiết bị</h2>
+              <p className="error-desc-v4">
+                Mã số IMEI / Serial <strong>{serialOrToken}</strong> không tồn tại trong hệ thống hoặc chưa được đăng ký bảo hành trên Blockchain.
+              </p>
+              <button className="btn-retry-v4" onClick={() => {
+                setError("");
+                setSerialOrToken("");
+              }}>
+                Thử lại mã khác
+              </button>
+            </div>
+          </div>
+        )}
+
+        {result && (
+          <main className="dashboard-layout" ref={certificateRef}>
+            {/* Cột 1: Lịch sử */}
+            <article className="column-card guest-timeline-card">
+              <div className="card-header-v4">
+                <div className="icon-box-v4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
                 </div>
-                {error && <p className="guest-search-hint error-msg">{error}</p>}
+                <div className="header-text-v4">
+                  <h2 className="card-title-v4">Lịch sử bảo hành</h2>
+                  <p className="card-desc-v4">IMEI: {result.serialNumber}</p>
+                </div>
               </div>
-            </>
-          )}
 
-          {result ? (
-            <div className="dashboard-wrapper-v2" ref={certificateRef}>
-              <div className="dashboard-layout">
-                {/* Left Column: Repair Timeline */}
-                <aside className="timeline-sidebar">
-                  <div className="timeline-card">
-                    <div className="card-header">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 8v4l3 3" />
-                        <circle cx="12" cy="12" r="9" />
-                      </svg>
-                      <h3>Lịch sử sửa chữa</h3>
-                    </div>
-                    <div className="timeline-content">
-                      {repairLogs.length > 0 ? (
-                        <div className="timeline-list">
-                          {repairLogs.map((log, index) => (
-                            <div key={log.id || index} className="timeline-item">
-                              <div className="timeline-dot-wrap">
-                                <div className="timeline-dot"></div>
-                                {index !== repairLogs.length - 1 && <div className="timeline-line"></div>}
-                              </div>
-                              <div className="timeline-details">
-                                <div className="timeline-meta">
-                                  <span className="timeline-date">{formatDate(log.repairDate)}</span>
-                                  <span style={{
-                                    padding: "2px 8px",
-                                    borderRadius: "6px",
-                                    fontSize: "0.7rem",
-                                    fontWeight: 700,
-                                    background: getStatusConfig(log.status).background,
-                                    color: getStatusConfig(log.status).color,
-                                    border: `1px solid ${getStatusConfig(log.status).borderColor}`,
-                                    textTransform: "uppercase"
-                                  }}>
-                                    {getStatusConfig(log.status).label}
-                                  </span>
-                                </div>
-                                <p className="timeline-desc">{log.repairContent}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="empty-state">
-                          <p>Chưa có lịch sử sửa chữa cho thiết bị này.</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </aside>
-
-                {/* Middle Column: Product Information */}
-                <div className="info-main">
-                  <article className="info-card product-info-v2">
-                    <div className="card-header">
-                      <h3>Thông tin sản phẩm</h3>
-                    </div>
-                    <div className="card-body-v2">
-                      <div className="product-main-row">
-                        <div className="product-visual-large">
-                          <img 
-                            src={result.productInfo?.imageUrl?.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/") || "https://placehold.co/400x400?text=Product"} 
-                            alt={result.productInfo?.productName} 
-                          />
-                        </div>
-                        <div className="product-primary-details">
-                          <div className="info-item-box">
-                            <span className="label">Tên sản phẩm</span>
-                            <p className="value-important">{result.productInfo?.productName}</p>
+              <div className="card-content-v4">
+                <div className="timeline-v4">
+                  {repairLogs.length > 0 ? (
+                    repairLogs.map((log, idx) => (
+                      <div key={idx} className="timeline-item-v4">
+                        <div className="timeline-marker"></div>
+                        <div className="timeline-body-v4">
+                          <div className="item-meta">
+                            <span className="item-date">{new Date(log.createdAt).toLocaleDateString("vi-VN")}</span>
+                            <span className={`status-badge-v4 ${log.status}`}>{getStatusLabel(log.status)}</span>
                           </div>
-                          <div className="info-item-box">
-                            <span className="label">Mã sản phẩm</span>
-                            <p className="value-important">{result.productInfo?.productCode}</p>
-                          </div>
-                          <div className="info-item-box">
-                            <span className="label">Số Serial</span>
-                            <p className="value-important">{result.serialNumber}</p>
-                          </div>
-                          <div className="info-item-box">
-                            <span className="label">Hãng sản xuất</span>
-                            <p className="value-important">{result.productInfo?.brand || "N/A"}</p>
-                          </div>
+                          <p className="item-text">{log.description || "Bảo trì định kỳ"}</p>
+                          {log.cost > 0 && <p className="item-price">{log.cost.toLocaleString("vi-VN")} đ</p>}
                         </div>
                       </div>
-                      <div className="product-secondary-details">
-                        <div className="info-item-box">
-                          <span className="label">Cấu hình</span>
-                          <p className="value-important">{result.productInfo?.config || "Tiêu chuẩn"}</p>
-                        </div>
-                        <div className="info-item-box">
-                          <span className="label">Màu sắc</span>
-                          <p className="value-important">{result.productInfo?.color || "N/A"}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                  
-                  {/* Floating Action Button for Download (only visible in UI, not in PDF) */}
-                  {!isExporting && (
-                    <div className="floating-actions" style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                      <button className="btn-export-pdf" onClick={handleDownloadPDF} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '12px 32px',
-                        background: '#1e3a8a',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '100px',
-                        fontWeight: '700',
-                        fontSize: '15px',
-                        cursor: 'pointer',
-                        boxShadow: '0 10px 25px rgba(30, 58, 138, 0.2)'
-                      }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                          <polyline points="7 10 12 15 17 10" />
-                          <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                        Tải xuống bản sao bảo hành (PDF)
-                      </button>
-                    </div>
+                    ))
+                  ) : (
+                    <p className="empty-msg">Chưa có lịch sử sửa chữa.</p>
                   )}
                 </div>
-
-                {/* Right Column: Owner & Other Details */}
-                <aside className="owner-column">
-                  {/* Owner Information */}
-                  <article className="info-card owner-info">
-                    <div className="card-header">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
-                      <h3>Thông tin sở hữu</h3>
-                    </div>
-                    <div className="card-body">
-                      <div className="data-block">
-                        <span className="label">Chủ sở hữu</span>
-                        <p className="value-large">{result.ownerInfo?.fullName || "Chưa cập nhật"}</p>
-                      </div>
-                      <div className="data-block">
-                        <span className="label">Địa chỉ ví</span>
-                        <p className="value-mono" style={{ fontSize: '11px', wordBreak: 'break-all' }}>{result.ownerInfo?.walletAddress}</p>
-                      </div>
-                    </div>
-                  </article>
-
-                  {/* Warranty Details */}
-                  <article className="info-card warranty-details">
-                    <div className="card-header">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                      </svg>
-                      <h3>Chi tiết bảo hành</h3>
-                    </div>
-                    <div className="card-body">
-                      <div className="stats-grid">
-                        <div className="stat-box">
-                          <span className="label">Ngày mua</span>
-                          <p className="value-bold">{formatDate(result.purchaseDate)}</p>
-                        </div>
-                        <div className="stat-box">
-                          <span className="label">Thời hạn</span>
-                          <p className="value-bold">{result.productInfo?.warrantyMonths || 12}T</p>
-                        </div>
-                        <div className="stat-box">
-                          <span className="label">Ngày hết hạn</span>
-                          <p className="value-bold text-success">{formatExpiry(result.expiryDate)}</p>
-                        </div>
-                        <div className="stat-box">
-                          <span className="label">Còn lại (ngày)</span>
-                          <p className="value-bold text-success">{getDaysRemaining(result.expiryDate)}</p>
-                        </div>
-                      </div>
-                      {result.isMinted && (
-                        <div className="blockchain-proof" style={{ marginTop: '20px', padding: '15px', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
-                          <div className="proof-tag" style={{ color: '#166534', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Đã xác thực Blockchain</div>
-                          <p className="token-link" style={{ margin: 0, fontSize: '12px', color: '#15803d' }}>Token ID: {result.tokenId}</p>
-                        </div>
-                      )}
-                    </div>
-                  </article>
-                </aside>
               </div>
-            </div>
-          ) : (
-            <div className="empty-search-state">
-              {!loading && !error && (
-                <div className="welcome-msg">
-                  <div className="welcome-icon">🔍</div>
-                  <h2>Tìm kiếm thông tin thiết bị</h2>
-                  <p>Nhập số Serial hoặc Token ID để xem chi tiết sản phẩm và lịch sử bảo hành.</p>
+            </article>
+
+            {/* Cột 2: Sản phẩm */}
+            <article className="column-card guest-product-card">
+              <div className="card-header-v4">
+                <div className="icon-box-v4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
                 </div>
-              )}
-              {loading && <div className="loader">Đang tải dữ liệu...</div>}
-            </div>
-          )}
-        </div>
+                <div className="header-text-v4">
+                  <h2 className="card-title-v4">Thông tin thiết bị</h2>
+                  <p className="card-desc-v4">Chi tiết cấu hình sản phẩm</p>
+                </div>
+              </div>
+
+              <div className="card-content-v4">
+                <div className="product-grid-v4">
+                  <div className="img-container-v4">
+                    <img 
+                      src={result.productInfo?.imageUrl?.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/") || "https://placehold.co/600x400?text=Product"} 
+                      alt="Product" 
+                    />
+                  </div>
+                  
+                  <div className="spec-box">
+                    <span className="spec-label">Tên sản phẩm</span>
+                    <p className="spec-val">{result.productInfo?.productName}</p>
+                  </div>
+                  <div className="spec-box">
+                    <span className="spec-label">Màu sắc</span>
+                    <p className="spec-val">{result.productInfo?.color || "N/A"}</p>
+                  </div>
+                  <div className="spec-box">
+                    <span className="spec-label">Mã sản phẩm</span>
+                    <p className="spec-val">{result.productInfo?.productCode}</p>
+                  </div>
+                  <div className="spec-box">
+                    <span className="spec-label">Hãng sản xuất</span>
+                    <p className="spec-val">{result.productInfo?.brand}</p>
+                  </div>
+                  
+                  <div className="spec-box">
+                    <span className="spec-label">Cấu hình máy</span>
+                    <p className="spec-val-sm">{result.productInfo?.config}</p>
+                  </div>
+                  <div className="spec-box">
+                    <span className="spec-label">Thời hạn bảo hành</span>
+                    <p className="spec-val">{result.productInfo?.warrantyMonths} tháng</p>
+                  </div>
+                  <div className="spec-box">
+                    <span className="spec-label">Giá bán (VNĐ)</span>
+                    <p className="spec-val">{result.productInfo?.price?.toLocaleString("vi-VN")} đ</p>
+                  </div>
+                  <div className="spec-box">
+                    <span className="spec-label">Trạng thái</span>
+                    <p className="spec-val">
+                      <span className="status-badge-v4 active">Hoạt động</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            {/* Cột 3: Sở hữu */}
+            <article className="column-card guest-owner-card">
+              <div className="card-header-v4">
+                <div className="icon-box-v4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div className="header-text-v4">
+                  <h2 className="card-title-v4">Xác thực sở hữu</h2>
+                  <p className="card-desc-v4">Dữ liệu bảo mật chủ thẻ</p>
+                </div>
+              </div>
+
+              <div className="card-content-v4">
+                <div className="owner-list-v4">
+                  <div className="owner-item">
+                    <span className="item-label">Chủ sở hữu</span>
+                    <p className="item-val-bold">{result.ownerInfo?.fullName || "N/A"}</p>
+                  </div>
+                  <div className="owner-item">
+                    <span className="item-label">Địa chỉ ví Blockchain</span>
+                    <p className="item-val-code">{maskString(result.ownerInfo?.walletAddress)}</p>
+                  </div>
+                  <div className="owner-item">
+                    <span className="item-label">Liên hệ</span>
+                    <p className="item-val">{maskContact(result.ownerInfo?.phone || result.ownerInfo?.email)}</p>
+                  </div>
+                  <div className="days-remaining-v4">
+                    <span className="label">Bảo hành còn lại</span>
+                    <div className="days-box">
+                      <span className="days-num">{getDaysRemaining(result.expiryDate)}</span>
+                      <span className="days-text">ngày</span>
+                    </div>
+                  </div>
+                  
+                  {result.isMinted && (
+                    <div className="nft-badge-v4">
+                      <p className="nft-tag">Verified On-chain</p>
+                      <p className="nft-id">Token ID: {result.tokenId}</p>
+                    </div>
+                  )}
+
+                  {!isExporting && (
+                    <button className="btn-action-pdf" onClick={handleDownloadPDF}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      Xuất PDF
+                    </button>
+                  )}
+                </div>
+              </div>
+            </article>
+          </main>
+        )}
       </div>
-      <Footer />
-    </>
+    </div>
   );
 }
 

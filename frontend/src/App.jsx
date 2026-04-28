@@ -5,15 +5,22 @@ import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import HeaderTabs from "./components/HeaderTabs";
 import WalletModal from "./components/WalletModal";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Footer from "./components/Footer";
 import { Toaster } from "sonner";
 
 // Pages
 import HomePage from "./pages/HomePage";
 import GuestPage from "./pages/GuestPage";
-import AdminPage from "./pages/AdminPage";
-import SignInUpPage from "./pages/SignInUpPage";
+import AdminPage from "./pages/admin/workspace/AdminWorkspacePage";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import ProductList from "./pages/admin/dashboard/ProductList";
+import RepairHistory from "./pages/admin/dashboard/RepairHistory";
+import UserManagement from "./pages/admin/dashboard/UserManagement";
+import CreateWarranty from "./pages/admin/workspace/CreateWarranty";
+import LogRepairs from "./pages/admin/workspace/LogRepairs";
+import AuthPage from "./pages/AuthPage";
 import AccountPage from "./pages/AccountPage";
-import CreateNewProduct from "./pages/admin/CreateNewProduct";
+import CreateNewProduct from "./pages/admin/workspace/CreateNewProduct";
 
 // Utils & Styles
 import { clearAuthStorage, loadAuthFromStorage } from "./utils/auth";
@@ -31,16 +38,17 @@ function MainLayout({ auth, onLogout, adminActiveTab, onAdminAction }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="App">
+    <div className="App" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <HeaderTabs
         auth={auth}
         onLogout={onLogout}
         adminActiveTab={adminActiveTab}
         onAdminAction={onAdminAction}
       />
-      <main>
+      <main style={{ flex: 1 }}>
         <Outlet context={{ setModalOpen }} />
       </main>
+      <Footer />
       <WalletModal open={modalOpen} onClose={() => setModalOpen(false)} />
       <Toaster position="top-right" richColors />
     </div>
@@ -81,13 +89,15 @@ function App() {
 
   const handleLogout = () => {
     clearAuthStorage();
+    // Đảm bảo xóa cả token giả lập trong môi trường Dev
+    sessionStorage.removeItem("bw_dev_role_active");
     setAuth(null);
     navigate("/");
   };
 
   const handleAuthSuccess = (nextAuth) => {
     setAuth(nextAuth);
-    navigate(nextAuth?.role === "admin" ? "/admin/workspace" : "/user");
+    navigate(nextAuth?.role === "admin" ? "/admin/workspace" : "/account");
   };
 
   return (
@@ -130,37 +140,35 @@ function App() {
           }
         />
 
+        {/* Admin Routes */}
         <Route
-          path="/admin/workspace"
+          path="/admin"
           element={
             <ProtectedRoute
               isAuthenticated={isAuthenticated}
               userRole={auth?.role}
               requiredRole="admin"
             >
-              <AdminPage
-                adminActiveTab={adminTab}
-                onSetAdminTab={setAdminTab}
-              />
+              <Outlet />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          
+          <Route path="dashboard" element={<AdminDashboard />}>
+            <Route index element={<Navigate to="products" replace />} />
+            <Route path="products" element={<ProductList />} />
+            <Route path="repair-history" element={<RepairHistory />} />
+            <Route path="user-management" element={<UserManagement />} />
+          </Route>
 
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute
-              isAuthenticated={isAuthenticated}
-              userRole={auth?.role}
-              requiredRole="admin"
-            >
-              <AdminPage
-                adminActiveTab="dashboard"
-                onSetAdminTab={setAdminTab}
-              />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="workspace" element={<AdminPage />}>
+            <Route index element={<Navigate to="warranty" replace />} />
+            <Route path="warranty" element={<CreateWarranty />} />
+            <Route path="repair" element={<LogRepairs />} />
+            <Route path="product" element={<CreateNewProduct />} />
+          </Route>
+        </Route>
 
         <Route
           path="/account"
@@ -178,11 +186,11 @@ function App() {
         element={
           isAuthenticated ? (
             <Navigate
-              to={auth?.role === "admin" ? "/admin/workspace" : "/user"}
+              to={auth?.role === "admin" ? "/admin/dashboard" : "/user"}
               replace
             />
           ) : (
-            <SignInUpPage
+            <AuthPage
               onAuthSuccess={handleAuthSuccess}
               onCancel={() => navigate("/")}
             />
