@@ -39,6 +39,7 @@ function AccountPage({ auth, onLogout }) {
   const [selectedWarranty, setSelectedWarranty] = useState(null);
   const [recipientAddress, setRecipientAddress] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
+  const [showLockModal, setShowLockModal] = useState(false);
 
   const walletAddress = auth?.walletAddress || "";
   const initials = profile.fullName
@@ -146,11 +147,8 @@ function AccountPage({ auth, onLogout }) {
     setIsEditing(false);
   };
 
-  const handleLockAccount = async () => {
-    const confirm = window.confirm(
-      "BẠN CÓ CHẮC CHẮN MUỐN KHÓA TÀI KHOẢN? \n\nSau khi khóa, bạn sẽ bị đăng xuất và không thể đăng nhập lại cho đến khi được Admin mở khóa.",
-    );
-    if (!confirm) return;
+  const confirmLockAccount = async () => {
+    setShowLockModal(false);
 
     try {
       const res = await userService.updateUserStatus(walletAddress, false);
@@ -697,7 +695,7 @@ function AccountPage({ auth, onLogout }) {
                         </div>
                         <button
                           className="btn-lock-account"
-                          onClick={handleLockAccount}
+                          onClick={() => setShowLockModal(true)}
                         >
                           Khóa ngay
                         </button>
@@ -797,6 +795,48 @@ function AccountPage({ auth, onLogout }) {
                 disabled={isTransferring}
               >
                 {isTransferring ? "Đang xử lý..." : "Xác nhận chuyển nhượng"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {showLockModal && (
+        <div className="modal-overlay">
+          <div className="modal-content warning">
+            <div className="modal-header">
+              <div className="warning-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <h3>Cảnh báo quan trọng</h3>
+            </div>
+            <div className="modal-body">
+              <p>
+                <strong>BẠN CÓ CHẮC CHẮN MUỐN KHÓA TÀI KHOẢN?</strong>
+              </p>
+              <p>
+                Sau khi khóa, bạn sẽ bị đăng xuất và không thể đăng nhập lại cho đến khi được Admin mở khóa.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn-secondary"
+                onClick={() => setShowLockModal(false)}
+              >
+                Hủy bỏ
+              </button>
+              <button className="btn-danger" onClick={confirmLockAccount}>
+                Khóa tài khoản
               </button>
             </div>
           </div>
