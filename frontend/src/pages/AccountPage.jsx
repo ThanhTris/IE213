@@ -829,14 +829,14 @@ function AccountPage({ auth, onLogout }) {
               </p>
             </div>
             <div className="modal-footer">
+              <button className="btn-danger" onClick={confirmLockAccount}>
+                Khóa tài khoản
+              </button>
               <button
                 className="btn-secondary"
                 onClick={() => setShowLockModal(false)}
               >
                 Hủy bỏ
-              </button>
-              <button className="btn-danger" onClick={confirmLockAccount}>
-                Khóa tài khoản
               </button>
             </div>
           </div>
