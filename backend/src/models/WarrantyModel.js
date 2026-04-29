@@ -2,19 +2,6 @@ const mongoose = require("mongoose");
 
 const warrantySchema = new mongoose.Schema(
   {
-    tokenId: {
-      type: String,
-      default: null,
-      index: {
-        unique: true,
-        partialFilterExpression: { tokenId: { $type: "string" } },
-      },
-    },
-    tokenURI: {
-      type: String,
-      required: false,
-      default: null,
-    },
     serialNumber: {
       type: String,
       required: true,
@@ -32,14 +19,6 @@ const warrantySchema = new mongoose.Schema(
       index: true,
       match: /^0x[a-f0-9]{64}$/,
     },
-    ownerAddress: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-      index: true,
-      match: /^0x[a-f0-9]{40}$/,
-    },
     productCode: {
       type: String,
       required: true,
@@ -48,26 +27,41 @@ const warrantySchema = new mongoose.Schema(
       index: true,
       maxlength: 64,
     },
-    productInfo: {
-      type: {
-        productName: { type: String, trim: true, maxlength: 255 },
-        brand: { type: String, trim: true, maxlength: 100 },
-        color: { type: String, trim: true, maxlength: 100 },
-        configuration: { type: String, trim: true, maxlength: 255 },
-        _id: false,
-      },
+    // Đổi tên từ ownerAddress → ownerWallet (chuẩn Web3 camelCase mới)
+    ownerWallet: {
+      type: String,
       required: true,
+      trim: true,
+      lowercase: true,
+      index: true,
+      match: /^0x[a-f0-9]{40}$/,
+    },
+    tokenId: {
+      type: String,
+      default: null,
+      index: {
+        unique: true,
+        partialFilterExpression: { tokenId: { $type: "string" } },
+      },
+    },
+    // Đổi tên từ mintTxHash → txHash
+    txHash: {
+      type: String,
+      default: null,
+    },
+    tokenURI: {
+      type: String,
+      required: false,
+      default: null,
     },
     // Keep epoch-seconds to align with blockchain payload samples.
     expiryDate: { type: Number, required: true, min: 0, index: true },
     status: { type: Boolean, default: true, index: true },
-    mintTxHash: {
-      type: String,
-      default: null,
-    },
     mintedAt: { type: Date, default: null },
+    // Dùng để hủy bảo hành khi thiết bị bị vi phạm (ví dụ tháo máy tự ý)
     revokedAt: { type: Date },
     revokedReason: { type: String, trim: true, maxlength: 500 },
+    // isActive: false khi bảo hành hết hạn
     isActive: { type: Boolean, default: true, index: true },
   },
   {
@@ -93,7 +87,7 @@ warrantySchema.index(
   { unique: true, name: "uq_warranty_serial_hash" },
 );
 warrantySchema.index(
-  { ownerAddress: 1, status: 1, mintedAt: -1 },
+  { ownerWallet: 1, status: 1, mintedAt: -1 },
   { name: "idx_warranty_owner_status_minted" },
 );
 warrantySchema.index(

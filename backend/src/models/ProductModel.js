@@ -12,25 +12,21 @@ const productSchema = new mongoose.Schema(
     },
     productName: { type: String, required: true, trim: true, maxlength: 255 },
     brand: { type: String, required: true, trim: true, maxlength: 100 },
-    model: { type: String, trim: true, maxlength: 100 },
     color: { type: String, trim: true, maxlength: 100 },
-    configuration: { type: String, trim: true, maxlength: 255 },
-    specifications: {
-      ram: { type: String, trim: true, maxlength: 50 },
-      storage: { type: String, trim: true, maxlength: 50 },
-      processor: { type: String, trim: true, maxlength: 100 },
-      screenSize: { type: String, trim: true, maxlength: 50 },
-    },
+    // Đổi tên từ "configuration" thành "config" theo chuẩn camelCase schema mới
+    config: { type: String, trim: true, maxlength: 255 },
+    // imageUrl hỗ trợ cả http(s):// và ipfs:// (IPFS Pinata)
     imageUrl: {
       type: String,
       trim: true,
       validate: {
-        validator: (v) => !v || /^https?:\/\/.+/i.test(v),
-        message: "imageUrl must be a valid http(s) URL",
+        validator: (v) => !v || /^(https?:\/\/.+|ipfs:\/\/.+)/i.test(v),
+        message: "imageUrl must be a valid http(s) or ipfs URL",
       },
     },
-    price: { type: Number, default: 0, min: 0 },
     warrantyMonths: { type: Number, default: 12, min: 0, max: 120 },
+    price: { type: Number, default: 0, min: 0 },
+    description: { type: String, trim: true, maxlength: 2000 },
     isActive: { type: Boolean, default: true, index: true },
   },
   {
