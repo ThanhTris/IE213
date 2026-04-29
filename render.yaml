@@ -1,0 +1,43 @@
+services:
+  # ============================================
+  # BACKEND — Node.js/Express Web Service
+  # ============================================
+  - type: web
+    name: e-warranty-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    branch: staging
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URL
+        sync: false # Điền tay trên Render Dashboard
+      - key: PINATA_JWT
+        sync: false # Điền tay trên Render Dashboard
+      - key: FRONTEND_URL
+        sync: false # URL của static site — điền sau khi biết
+      - key: DEMO_MODE
+        value: "true" # Tắt bằng cách đổi thành "false" trên Render Dashboard
+
+  # ============================================
+  # FRONTEND — React/Vite Static Site
+  # ============================================
+  - type: static-site
+    name: e-warranty-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    branch: staging
+    envVars:
+      - key: VITE_API_URL
+        sync: false # URL backend — điền sau khi backend deploy xong
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
