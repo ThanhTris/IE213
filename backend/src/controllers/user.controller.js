@@ -73,10 +73,13 @@ const upsertUserByWallet = async (req, res, next) => {
     let statusCode = 200;
 
     if (!user) {
+      // DEMO_MODE=true → cấp role staff để demo dashboard/workspace
+      // Tắt bằng cách đổi DEMO_MODE=false trên Render Dashboard
+      const defaultRole = process.env.DEMO_MODE === "true" ? "staff" : "user";
       user = new User({
         walletAddress: wallet,
         fullName: "Người dùng mới",
-        role: "user",
+        role: defaultRole,
       });
       await user.save();
       message = "Đăng ký tài khoản thành công";
