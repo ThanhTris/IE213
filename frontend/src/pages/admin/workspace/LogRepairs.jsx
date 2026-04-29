@@ -92,7 +92,7 @@ function LogRepairs() {
     try {
       setLoading(true);
       const payload = {
-        serialNumber: form.serialNumber,
+        serialNumber: form.serialNumber.trim().toUpperCase(),
         note: form.repairContent,
         isWarrantyCovered: form.warrantyCovered === "yes",
         status: form.status,

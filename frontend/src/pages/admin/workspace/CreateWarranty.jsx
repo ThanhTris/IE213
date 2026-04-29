@@ -140,7 +140,11 @@ function CreateWarranty() {
     setErrors({});
 
     try {
-      await warrantyService.processWarrantyMinting(form, imageFile, calculatedExpiryDate, (stepMsg) => {
+      const normalizedForm = {
+        ...form,
+        serialNumber: form.serialNumber.trim().toUpperCase(),
+      };
+      await warrantyService.processWarrantyMinting(normalizedForm, imageFile, calculatedExpiryDate, (stepMsg) => {
         setCurrentStep(stepMsg);
       });
 

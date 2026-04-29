@@ -117,7 +117,7 @@ function GuestPage() {
   }, [urlSerialNumber, performSearch, navigate]);
 
   const handleSearchSubmit = () => {
-    const val = serialOrToken.trim();
+    const val = serialOrToken.trim().toUpperCase();
     if (!val) return toast.error("Vui lòng nhập số Serial.");
     navigate(`/search/${val}`);
   };
