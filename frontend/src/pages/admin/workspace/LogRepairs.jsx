@@ -12,13 +12,13 @@ const WrenchIcon = () => (
 
 const ShieldCheckIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" />
   </svg>
 );
 
 const SearchIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
 );
 
@@ -26,7 +26,7 @@ function LogRepairs() {
   const [loading, setLoading] = useState(false);
   const [warranties, setWarranties] = useState([]);
   const [isFetchingWarranties, setIsFetchingWarranties] = useState(true);
-  
+
   const [form, setForm] = useState({
     serialNumber: "",
     repairContent: "",
@@ -62,8 +62,8 @@ function LogRepairs() {
   const filteredWarranties = useMemo(() => {
     if (!searchTerm) return warranties;
     const lower = searchTerm.toLowerCase();
-    return warranties.filter(w => 
-      w.serialNumber.toLowerCase().includes(lower) || 
+    return warranties.filter(w =>
+      w.serialNumber.toLowerCase().includes(lower) ||
       w.productCode.toLowerCase().includes(lower)
     );
   }, [warranties, searchTerm]);
@@ -88,11 +88,11 @@ function LogRepairs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    
+
     try {
       setLoading(true);
       const payload = {
-        serialNumber: form.serialNumber,
+        serialNumber: form.serialNumber.trim().toUpperCase(),
         note: form.repairContent,
         isWarrantyCovered: form.warrantyCovered === "yes",
         status: form.status,
@@ -122,7 +122,7 @@ function LogRepairs() {
   return (
     <div className="lr-container">
       <div className="lr-grid">
-        
+
         {/* Left: Form Card */}
         <div className="lr-card lr-form-card">
           <div className="lr-card-header">
@@ -142,9 +142,9 @@ function LogRepairs() {
               <label className="lr-label">
                 Số Serial thiết bị <span className="lr-required">*</span>
               </label>
-              
+
               <div className="lr-custom-select-container">
-                <div 
+                <div
                   className={`lr-dropdown-trigger ${errors.serialNumber ? "lr-dropdown-trigger--error" : ""}`}
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
@@ -167,8 +167,8 @@ function LogRepairs() {
                   <div className="lr-dropdown-panel">
                     <div className="lr-dropdown-search-wrap">
                       <SearchIcon />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         className="lr-dropdown-search-input"
                         placeholder="Nhập để lọc..."
                         autoFocus
@@ -182,8 +182,8 @@ function LogRepairs() {
                         <div className="lr-dropdown-loading">Đang tải...</div>
                       ) : filteredWarranties.length > 0 ? (
                         filteredWarranties.map((w) => (
-                          <div 
-                            key={w._id} 
+                          <div
+                            key={w._id}
                             className="lr-dropdown-item"
                             onClick={() => {
                               setForm(prev => ({ ...prev, serialNumber: w.serialNumber }));
@@ -293,21 +293,21 @@ function LogRepairs() {
                 </div>
               </div>
 
-            {/* Cost */}
-            <div className="lr-field">
-              <label className="lr-label">Chi phí sửa chữa (VND)</label>
-              <div className="lr-input-wrap">
-                <span className="lr-input-currency">₫</span>
-                <input
-                  type="number"
-                  className="lr-input"
-                  value={form.cost}
-                  onChange={updateField("cost")}
-                  placeholder="0"
-                />
+              {/* Cost */}
+              <div className="lr-field">
+                <label className="lr-label">Chi phí sửa chữa (VND)</label>
+                <div className="lr-input-wrap">
+                  <span className="lr-input-currency">₫</span>
+                  <input
+                    type="number"
+                    className="lr-input"
+                    value={form.cost}
+                    onChange={updateField("cost")}
+                    placeholder="0"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
             {/* Submit Button */}
             <button
@@ -744,15 +744,6 @@ function LogRepairs() {
           font-size: var(--text-sm);
           color: var(--navy-primary-dark);
           line-height: 1.6;
-        }
-
-        @media (max-width: 1024px) {
-          .lr-grid {
-            grid-template-columns: 1fr;
-          }
-          .lr-info-col {
-            order: -1;
-          }
         }
       `}</style>
     </div>

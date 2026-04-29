@@ -13,7 +13,6 @@
 
 .settings-layout {
   max-width: 100%;
-  margin: 0 10rem;
   display: grid;
   grid-template-columns: 350px 1fr;
   gap: 32px;
@@ -53,7 +52,8 @@
 }
 
 .profile-name {
-  font-size: var(--text-2xl); /* was 22px */
+  font-size: var(--text-2xl);
+  /* was 22px */
   font-weight: 800;
   color: #1e3a8a;
   margin: 0 0 2px 0;
@@ -61,7 +61,8 @@
 }
 
 .profile-email {
-  font-size: var(--text-md); /* was 14px */
+  font-size: var(--text-md);
+  /* was 14px */
   color: #64748b;
   margin: 0 0 12px 0;
   text-align: center;
@@ -76,7 +77,8 @@
   border-radius: 100px;
   color: #ea580c;
   font-weight: 700;
-  font-size: var(--text-base); /* was 13px */
+  font-size: var(--text-base);
+  /* was 13px */
   margin-bottom: 24px;
   border: 1px solid #ffedd5;
 }
@@ -103,7 +105,8 @@
 }
 
 .info-header label {
-  font-size: var(--text-base); /* was 12px */
+  font-size: var(--text-base);
+  /* was 12px */
   font-weight: 600;
   color: #64748b;
 }
@@ -119,7 +122,8 @@
 }
 
 .info-value {
-  font-size: var(--text-base); /* was 13px */
+  font-size: var(--text-base);
+  /* was 13px */
   font-weight: 600;
   color: #1e3a8a;
   margin: 0;
@@ -130,7 +134,8 @@
 
 .wallet-value {
   font-family: "JetBrains Mono", monospace;
-  font-size: var(--text-base); /* was 11px */
+  font-size: var(--text-base);
+  /* was 11px */
 }
 
 .stats-row {
@@ -151,7 +156,8 @@
 
 .stat-label {
   display: block;
-  font-size: var(--text-base); /* was 10px */
+  font-size: var(--text-base);
+  /* was 10px */
   font-weight: 800;
   color: #94a3b8;
   text-transform: uppercase;
@@ -160,7 +166,8 @@
 }
 
 .stat-value {
-  font-size: var(--text-xl); /* was 20px */
+  font-size: var(--text-xl);
+  /* was 20px */
   font-weight: 800;
   color: #1e293b;
 }
@@ -191,7 +198,8 @@
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  font-size: var(--text-md); /* was 15px */
+  font-size: var(--text-md);
+  /* was 15px */
   font-weight: 700;
   color: #64748b;
   cursor: pointer;
@@ -216,7 +224,7 @@
 }
 
 .tab-content {
-  padding: 40px;
+  padding: 2rem;
 }
 
 /* --- Form Styles --- */
@@ -233,7 +241,8 @@
 }
 
 .form-field label {
-  font-size: var(--text-base); /* was 13px */
+  font-size: var(--text-base);
+  /* was 13px */
   font-weight: 700;
   color: #475569;
 }
@@ -258,7 +267,8 @@
   border-radius: 14px;
   border: 1.5px solid #e2e8f0;
   background: #f8fafc;
-  font-size: var(--text-md); /* was 15px */
+  font-size: var(--text-md);
+  /* was 15px */
   color: #1e293b;
   transition: all 0.2s;
 }
@@ -295,7 +305,8 @@
   padding: 12px 24px;
   border-radius: 12px;
   font-weight: 700;
-  font-size: var(--text-md); /* was 14px */
+  font-size: var(--text-md);
+  /* was 14px */
   cursor: pointer;
   transition: all 0.2s;
   border: none;
@@ -368,7 +379,8 @@
 }
 
 .device-status {
-  font-size: var(--text-base); /* was 11px */
+  font-size: var(--text-base);
+  /* was 11px */
   font-weight: 800;
   padding: 4px 12px;
   border-radius: 100px;
@@ -388,13 +400,15 @@
 
 .device-info h4 {
   margin: 0 0 4px 0;
-  font-size: var(--text-lg); /* was 18px */
+  font-size: var(--text-lg);
+  /* was 18px */
   font-weight: 700;
   color: #1e293b;
 }
 
 .device-serial {
-  font-size: var(--text-base); /* was 13px */
+  font-size: var(--text-base);
+  /* was 13px */
   color: #64748b;
   font-family: "JetBrains Mono", monospace;
   margin-bottom: 16px;
@@ -408,14 +422,16 @@
 
 .device-meta label {
   display: block;
-  font-size: var(--text-base); /* was 11px */
+  font-size: var(--text-base);
+  /* was 11px */
   color: #94a3b8;
   font-weight: 600;
   margin-bottom: 2px;
 }
 
 .device-meta span {
-  font-size: var(--text-base); /* was 13px */
+  font-size: var(--text-base);
+  /* was 13px */
   font-weight: 700;
   color: #334155;
 }
@@ -440,10 +456,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px;
+  gap: .4rem;
+  padding: 1rem .4rem;
   border-radius: 12px;
-  font-size: var(--text-base); /* was 13px */
+  font-size: var(--text-base);
+  /* was 13px */
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
@@ -511,6 +528,7 @@
     opacity: 0;
     transform: scale(0.9) translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -528,7 +546,8 @@
 
 .modal-header h3 {
   margin: 16px 0 0;
-  font-size: var(--text-2xl); /* was 24px */
+  font-size: var(--text-2xl);
+  /* was 24px */
   font-weight: 800;
   color: #1e293b;
 }
@@ -609,12 +628,14 @@
 }
 
 .preview-info strong {
-  font-size: var(--text-lg); /* was 16px */
+  font-size: var(--text-lg);
+  /* was 16px */
   color: #1e293b;
 }
 
 .preview-info span {
-  font-size: var(--text-base); /* was 12px */
+  font-size: var(--text-base);
+  /* was 12px */
   color: #64748b;
 }
 
@@ -624,7 +645,8 @@
 }
 
 .field-hint {
-  font-size: var(--text-base); /* was 11px */
+  font-size: var(--text-base);
+  /* was 11px */
   color: #94a3b8;
   margin-top: 6px;
   text-align: left;
@@ -639,25 +661,6 @@
   font-size: 28px;
   color: #94a3b8;
   cursor: pointer;
-}
-
-/* --- Responsive --- */
-@media (max-width: 1024px) {
-  .settings-layout {
-    grid-template-columns: 1fr;
-  }
-  .profile-card {
-    position: static;
-  }
-}
-
-@media (max-width: 768px) {
-  .devices-grid {
-    grid-template-columns: 1fr;
-  }
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ========================================
@@ -712,4 +715,138 @@
 .btn-lock-account:hover {
   background: #dc2626;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* ==========================================
+   RESPONSIVE OVERRIDES (1024px - 1280px)
+   ========================================== */
+@media (max-width: 1280px) {
+  .settings-page {
+    padding: 24px;
+  }
+
+  .settings-layout {
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+  }
+
+  .profile-card {
+    padding: 24px 16px;
+    border-radius: 24px;
+  }
+
+  .avatar-circle {
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+  }
+
+  .profile-name {
+    font-size: 2rem;
+  }
+
+  .tab-nav {
+    padding: 0 20px;
+  }
+
+  .tab-btn {
+    padding: 16px 12px;
+    font-size: 1.4rem;
+    gap: 8px;
+  }
+
+  .tab-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .tab-content {
+    padding: 20px;
+  }
+
+  .form-grid {
+    gap: 16px;
+  }
+
+  .input-wrapper input {
+    padding: 10px 12px 10px 40px;
+    font-size: 1.4rem;
+  }
+
+  .input-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn-edit,
+  .btn-save-profile {
+    padding: 10px 20px;
+    font-size: 1.4rem;
+  }
+
+  .devices-grid {
+    gap: 16px;
+  }
+
+  .device-card {
+    padding: 16px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+
+  .device-type-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .device-type-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .device-status {
+    padding: 3px 10px;
+    font-size: 1.1rem;
+  }
+
+  .device-info h4 {
+    font-size: 1.6rem;
+  }
+
+  .device-serial {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+
+  .device-meta {
+    gap: 8px;
+  }
+
+  .device-meta label {
+    font-size: 1.1rem;
+  }
+
+  .device-meta span {
+    font-size: 1.25rem;
+  }
+
+  .btn-group {
+    gap: 8px;
+  }
+
+  .btn-download,
+  .btn-transfer {
+    padding: 8px 4px;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    gap: 4px;
+  }
+
+  .btn-download svg,
+  .btn-transfer svg {
+    width: 14px;
+    height: 14px;
+  }
 }

@@ -697,11 +697,6 @@ function CreateNewProduct() {
         .cp-preview-notice svg {
           margin-top: 0.3rem;
         }
-
-        @media (max-width: 1024px) {
-          .cp-grid { grid-template-columns: 1fr; }
-          .cp-preview-col { order: -1; }
-        }
       `}</style>
     </div>
   );

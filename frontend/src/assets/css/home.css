@@ -1,12 +1,10 @@
 @import "./main.css";
 
 .bw-hero {
-  background: linear-gradient(
-    135deg,
-    #1e40af 0%,
-    var(--navy-primary) 50%,
-    #1e40af 100%
-  );
+  background: linear-gradient(135deg,
+      #1e40af 0%,
+      var(--navy-primary) 50%,
+      #1e40af 100%);
   padding: 6rem;
   text-align: center;
   color: var(--white);
@@ -37,11 +35,9 @@
 }
 
 .bw-hero-title {
-  font-size: clamp(
-    calc(var(--text-2xl) * 1.5),
-    8vw,
-    calc(var(--text-2xl) * 2.5)
-  );
+  font-size: clamp(calc(var(--text-2xl) * 1.5),
+      8vw,
+      calc(var(--text-2xl) * 2.5));
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 3rem;
@@ -590,16 +586,4 @@
 .bw-location-map iframe {
   border-radius: 3rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-  .bw-feature-row,
-  .bw-steps,
-  .bw-testimonials,
-  .bw-grid-6,
-  .bw-trust,
-  .location-container,
-  .bw-footer-grid {
-    grid-template-columns: 1fr;
-  }
 }

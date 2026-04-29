@@ -6,7 +6,7 @@ import { warrantyService } from "../services/warrantyService";
 import { ethers } from "ethers";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import WarrantyNFT from "../contracts/WarrantyNFT.json";
+import WarrantyNFT from "../../../contracts/WarrantyNFT.json";
 import apiClient from "../services/apiClient";
 import "../assets/css/AccountPage.css";
 

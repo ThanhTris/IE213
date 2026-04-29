@@ -33,75 +33,85 @@ function FilterModal({ isOpen, onClose, brands, filterBrand, setFilterBrand, pri
   ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)", zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
-      <div style={{ background: "white", borderRadius: 24, width: "100%", maxWidth: 500, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)", overflow: "hidden" }} onClick={e => e.stopPropagation()}>
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Bộ lọc nâng cao</h3>
-          <button onClick={onClose} style={{ border: "none", background: "#f1f5f9", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", color: "#64748b" }}>×</button>
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-content" style={{ maxWidth: "50rem" }} onClick={(e) => e.stopPropagation()}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">Bộ lọc nâng cao</h3>
+          <button onClick={onClose} className="admin-modal-close-btn">×</button>
         </div>
 
-        <div style={{ padding: 24, maxHeight: "70vh", overflowY: "auto" }}>
-          <div style={{ marginBottom: 24 }}>
-            <h4 style={{ fontSize: 13, textTransform: "uppercase", color: "#94a3b8", letterSpacing: "0.05em", marginBottom: 12, fontWeight: 700 }}>Chọn Hãng</h4>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="admin-modal-body hide-scrollbar" style={{ maxHeight: "70vh" }}>
+          <div className="filter-section">
+            <h4 className="detail-section-title filter-section-header">Chọn Hãng</h4>
+            <div className="filter-button-group">
               <button
-                className={`filter-btn${filterBrand === "all" ? " active" : ""}`}
+                className={`filter-btn ${filterBrand === "all" ? "active" : ""}`}
                 onClick={() => setFilterBrand("all")}
-              >Tất cả Hãng</button>
-              {brands.map(b => (
+              >
+                Tất cả Hãng
+              </button>
+              {brands.map((b) => (
                 <button
                   key={b}
-                  className={`filter-btn${filterBrand === b ? " active" : ""}`}
+                  className={`filter-btn ${filterBrand === b ? "active" : ""}`}
                   onClick={() => setFilterBrand(b)}
-                >{b}</button>
+                >
+                  {b}
+                </button>
               ))}
             </div>
           </div>
 
           <div>
-            <h4 style={{ fontSize: 13, textTransform: "uppercase", color: "#94a3b8", letterSpacing: "0.05em", marginBottom: 12, fontWeight: 700 }}>Khoảng giá (VND)</h4>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-              {pricePresets.map(p => (
+            <h4 className="detail-section-title filter-section-header">Khoảng giá (VND)</h4>
+            <div className="filter-button-group" style={{ marginBottom: "1.6rem" }}>
+              {pricePresets.map((p) => (
                 <button
                   key={p.label}
-                  className={`filter-btn${priceRange.label === p.label ? " active" : ""}`}
+                  className={`filter-btn ${priceRange.label === p.label ? "active" : ""}`}
                   onClick={() => setPriceRange(p)}
-                >{p.label}</button>
+                >
+                  {p.label}
+                </button>
               ))}
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#f8fafc", padding: "12px 16px", borderRadius: 16, border: "1.5px solid #e2e8f0" }}>
+            <div className="filter-range-container">
               <input
                 type="number"
                 placeholder="Giá tối thiểu"
                 value={priceRange.min === 0 && priceRange.label !== "" ? "" : priceRange.min}
                 onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value), label: "Tùy chọn" })}
-                style={{ background: "transparent", border: "none", width: "100%", fontSize: 14, outline: "none" }}
+                className="filter-range-input"
               />
-              <div style={{ width: 12, height: 2, background: "#cbd5e1" }} />
+              <div className="filter-range-separator" />
               <input
                 type="number"
                 placeholder="Giá tối đa"
                 value={priceRange.max === Infinity ? "" : priceRange.max}
                 onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value), label: "Tùy chọn" })}
-                style={{ background: "transparent", border: "none", width: "100%", fontSize: 14, outline: "none" }}
+                className="filter-range-input"
               />
             </div>
           </div>
         </div>
 
-        <div style={{ padding: "16px 24px", background: "#f8fafc", display: "flex", justifyContent: "flex-end", gap: 12 }}>
+        <div className="admin-modal-footer light-bg">
           <button
             onClick={() => {
               setFilterBrand("all");
               setPriceRange({ min: 0, max: Infinity, label: "Tất cả mức giá" });
             }}
-            style={{ padding: "10px 20px", borderRadius: 999, border: "1.5px solid #cbd5e1", background: "white", color: "#475569", fontWeight: 700, cursor: "pointer", fontSize: 14 }}
-          >Làm mới</button>
+            className="admin-secondary-btn"
+          >
+            Làm mới
+          </button>
           <button
             onClick={onClose}
-            style={{ padding: "10px 24px", borderRadius: 999, border: "none", background: "#1e40af", color: "white", fontWeight: 700, cursor: "pointer", fontSize: 14 }}
-          >Áp dụng</button>
+            className="admin-primary-btn"
+          >
+            Áp dụng
+          </button>
         </div>
       </div>
     </div>
@@ -195,127 +205,119 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(6px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
-      <div style={{ background: "white", borderRadius: 32, width: "100%", maxWidth: 650, maxHeight: "90vh", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)", overflow: "hidden", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
-        <div style={{ padding: "16px 32px", borderBottom: "1.5px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">
             {isAdd ? "Thêm sản phẩm mới" : "Chỉnh sửa sản phẩm"}
           </h3>
-          <button onClick={onClose} style={{ border: "none", background: "#f1f5f9", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", color: "#64748b", fontSize: 20 }}>×</button>
+          <button onClick={onClose} className="admin-modal-close-btn">×</button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ padding: 32, overflowY: "auto", flex: 1 }} className="hide-scrollbar">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+        <form onSubmit={handleSubmit} className="admin-modal-body hide-scrollbar">
+          <div className="admin-modal-form-grid">
             {/* Image Upload Area */}
-            <div style={{ gridColumn: "span 2", display: "flex", alignItems: "center", gap: 24, background: "#f8fafc", padding: "24px 32px", borderRadius: 24, border: "2px dashed #e2e8f0" }}>
-              <div style={{ width: 160, height: 160, borderRadius: 20, background: "white", border: "1.5px solid #e2e8f0", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 8px 20px rgba(0,0,0,0.05)" }}>
-                {previewUrl ? <img src={previewUrl} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : <div style={{ color: "#cbd5e1" }}>No img</div>}
+            <div className="admin-modal-image-upload">
+              <div className="admin-modal-image-preview">
+                {previewUrl ? (
+                  <img src={previewUrl} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                ) : (
+                  <div style={{ color: "var(--grey-300)", fontSize: "var(--text-sm)" }}>No img</div>
+                )}
               </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 10, display: "block" }}>Hình ảnh sản phẩm</label>
-                <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: 13, color: "#64748b" }} />
-                <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 8 }}>Hỗ trợ định dạng JPG, PNG. Dung lượng tối đa 5MB.</p>
+              <div className="admin-modal-image-info">
+                <label className="admin-modal-label">Hình ảnh sản phẩm</label>
+                <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: "var(--text-xs)", color: "var(--grey-500)" }} />
+                <p>Hỗ trợ định dạng JPG, PNG. Dung lượng tối đa 5MB.</p>
               </div>
             </div>
 
-            <div style={{ gridColumn: isAdd ? "span 1" : "span 2" }}>
-              <label style={fieldLabel}>Tên sản phẩm <span style={{ color: "#ef4444" }}>*</span></label>
+            <div className="admin-modal-form-group" style={{ gridColumn: isAdd ? "span 1" : "span 2" }}>
+              <label className="admin-modal-label">Tên sản phẩm <span style={{ color: "var(--color-danger)" }}>*</span></label>
               <input
                 type="text"
                 placeholder="VD: iPhone 15 Pro Max"
                 value={formData.productName}
-                onChange={e => setFormData({ ...formData, productName: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
                 required
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                className="admin-modal-input"
               />
             </div>
 
             {isAdd && (
-              <div>
-                <label style={fieldLabel}>Mã sản phẩm <span style={{ color: "#ef4444" }}>*</span></label>
+              <div className="admin-modal-form-group">
+                <label className="admin-modal-label">Mã sản phẩm <span style={{ color: "var(--color-danger)" }}>*</span></label>
                 <input
                   type="text"
                   placeholder="VD: APL-IP15PM"
                   value={formData.productCode}
-                  onChange={e => setFormData({ ...formData, productCode: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, productCode: e.target.value })}
                   required
-                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                  className="admin-modal-input"
                 />
               </div>
             )}
 
-            <div>
-              <label style={fieldLabel}>Hãng sản xuất <span style={{ color: "#ef4444" }}>*</span></label>
+            <div className="admin-modal-form-group">
+              <label className="admin-modal-label">Hãng sản xuất <span style={{ color: "var(--color-danger)" }}>*</span></label>
               <input
                 type="text"
                 placeholder="VD: Apple"
                 value={formData.brand}
-                onChange={e => setFormData({ ...formData, brand: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                 required
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                className="admin-modal-input"
               />
             </div>
 
-            <div>
-              <label style={fieldLabel}>Màu sắc</label>
+            <div className="admin-modal-form-group">
+              <label className="admin-modal-label">Màu sắc</label>
               <input
                 type="text"
                 placeholder="VD: Titan xanh"
                 value={formData.color}
-                onChange={e => setFormData({ ...formData, color: e.target.value })}
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                className="admin-modal-input"
               />
             </div>
 
-            <div>
-              <label style={fieldLabel}>Giá tiền (VND) <span style={{ color: "#ef4444" }}>*</span></label>
+            <div className="admin-modal-form-group">
+              <label className="admin-modal-label">Giá tiền (VND) <span style={{ color: "var(--color-danger)" }}>*</span></label>
               <input
                 type="number"
                 value={formData.price}
-                onChange={e => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                className="admin-modal-input"
               />
             </div>
 
-            <div>
-              <label style={fieldLabel}>Bảo hành (Tháng) <span style={{ color: "#ef4444" }}>*</span></label>
+            <div className="admin-modal-form-group">
+              <label className="admin-modal-label">Bảo hành (Tháng) <span style={{ color: "var(--color-danger)" }}>*</span></label>
               <input
                 type="number"
                 value={formData.warrantyMonths}
-                onChange={e => setFormData({ ...formData, warrantyMonths: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, warrantyMonths: e.target.value })}
                 required
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                className="admin-modal-input"
               />
             </div>
 
             {!isAdd && (
-              <div>
-                <label style={fieldLabel}>Trạng thái sản phẩm</label>
-                <div style={{ display: "flex", gap: 4, background: "#f1f5f9", padding: 4, borderRadius: 100 }}>
+              <div className="admin-modal-form-group">
+                <label className="admin-modal-label">Trạng thái sản phẩm</label>
+                <div className="admin-status-switch">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, isActive: true })}
-                    style={{
-                      flex: 1, padding: "10px 16px", borderRadius: 100, border: "none", cursor: "pointer",
-                      fontSize: 12, fontWeight: 700, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                      background: formData.isActive ? "#10b981" : "transparent",
-                      color: formData.isActive ? "white" : "#64748b",
-                      boxShadow: formData.isActive ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none"
-                    }}
+                    className={`status-switch-btn ${formData.isActive ? "active success" : ""}`}
                   >
                     Hoạt động
                   </button>
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, isActive: false })}
-                    style={{
-                      flex: 1, padding: "10px 16px", borderRadius: 100, border: "none", cursor: "pointer",
-                      fontSize: 12, fontWeight: 700, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                      background: !formData.isActive ? "#ef4444" : "transparent",
-                      color: !formData.isActive ? "white" : "#64748b",
-                      boxShadow: !formData.isActive ? "0 4px 12px rgba(239, 68, 68, 0.3)" : "none"
-                    }}
+                    className={`status-switch-btn ${!formData.isActive ? "active danger" : ""}`}
                   >
                     Tạm khóa
                   </button>
@@ -323,39 +325,43 @@ function ProductFormModal({ product, onClose, onSave, mode = "edit" }) {
               </div>
             )}
 
-            <div style={{ gridColumn: "span 2" }}>
-              <label style={fieldLabel}>Cấu hình chi tiết</label>
+            <div className="admin-modal-form-group full-width">
+              <label className="admin-modal-label">Cấu hình chi tiết</label>
               <input
                 type="text"
                 value={formData.config}
-                onChange={e => setFormData({ ...formData, config: e.target.value })}
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", background: "white" }}
+                onChange={(e) => setFormData({ ...formData, config: e.target.value })}
+                className="admin-modal-input"
               />
             </div>
 
-            <div style={{ gridColumn: "span 2" }}>
-              <label style={fieldLabel}>Mô tả sản phẩm</label>
+            <div className="admin-modal-form-group full-width">
+              <label className="admin-modal-label">Mô tả sản phẩm</label>
               <textarea
                 rows="3"
                 value={formData.description}
-                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #e2e8f0", fontSize: "0.9rem", outline: "none", resize: "none", background: "white" }}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="admin-modal-textarea"
+                style={{ resize: "none" }}
               />
             </div>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 8 }}>
+          <div className="admin-modal-footer">
             <button
               type="button"
               onClick={onClose}
-              style={{ padding: "12px 24px", borderRadius: 14, border: "1.5px solid #e2e8f0", background: "white", color: "#475569", fontWeight: 700, cursor: "pointer" }}
-            >Hủy</button>
+              className="admin-secondary-btn"
+            >
+              Hủy
+            </button>
             <button
               type="submit"
               disabled={saving}
-              style={{ padding: "12px 32px", borderRadius: 14, border: "none", background: "#1e40af", color: "white", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.7 : 1 }}
+              className="admin-primary-btn"
+              style={{ opacity: saving ? 0.7 : 1 }}
             >
-              {saving ? "Đang xử lý..." : (isAdd ? "Tạo sản phẩm" : "Lưu thay đổi")}
+              {saving ? "Đang xử lý..." : isAdd ? "Tạo sản phẩm" : "Lưu thay đổi"}
             </button>
           </div>
         </form>
@@ -414,84 +420,61 @@ function ProductDetailModal({ product, onClose }) {
   ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)", zIndex: 4000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
-      {/* Container expanded to 1100px */}
-      <div
-        style={{
-          background: "white",
-          borderRadius: 24,
-          width: "100%",
-          maxWidth: 1100,
-          maxHeight: "90vh",
-          display: "flex",
-          flexDirection: "column",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.25)",
-          overflow: "hidden"
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* CSS to hide scrollbar */}
-        <style>{`
-          .hide-scrollbar::-webkit-scrollbar { display: none; }
-          .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        `}</style>
-
+    <div className="admin-modal-overlay" onClick={onClose} style={{ backdropFilter: "blur(8px)" }}>
+      <div className="admin-modal-content modal-large" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
-        <div style={{ padding: "16px 28px", borderBottom: "1.5px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="admin-modal-header">
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ background: "#eff6ff", width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#2563eb" }}>
+            <div className="admin-list-title-icon-box" style={{ background: "var(--grey-50)", color: "var(--navy-primary)" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: "#0f172a" }}>Chi tiết & Lịch sử dòng máy</h2>
-              <span style={{ fontSize: 12, color: "#64748b", fontWeight: 500 }}>{product.productName}</span>
+              <h2 className="admin-modal-title" style={{ fontSize: "var(--text-md)" }}>Chi tiết & Lịch sử dòng máy</h2>
+              <span style={{ fontSize: "var(--text-xs)", color: "var(--grey-500)", fontWeight: 500 }}>{product.productName}</span>
             </div>
           </div>
-          <button onClick={onClose} style={{ border: "none", background: "#f1f5f9", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", color: "#64748b", fontSize: 20 }}>×</button>
+          <button onClick={onClose} className="admin-modal-close-btn">×</button>
         </div>
 
         {/* Dual Panel Body */}
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <div className="detail-panels">
 
           {/* LEFT PANEL: REPAIR HISTORY (40%) */}
-          <div className="hide-scrollbar" style={{ width: "40%", borderRight: "1.5px solid #f1f5f9", overflowY: "auto", background: "white", padding: 24 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 800, color: "#1e293b", marginBottom: 16, display: "flex", alignItems: "center", gap: 8, letterSpacing: "0.01em" }}>
-              <span style={{ width: 8, height: 8, background: "#2563eb", borderRadius: "50%" }}></span>
+          <div className="detail-panel-sidebar hide-scrollbar">
+            <h3 className="detail-section-title">
               Lịch sử sửa chữa dòng máy
             </h3>
 
             {loadingRepairs ? (
-              <div style={{ padding: "40px 0", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>Đang tải lịch sử...</div>
+              <div style={{ padding: "4rem 0", textAlign: "center", color: "var(--grey-400)" }}>Đang tải lịch sử...</div>
             ) : Object.keys(repairsByDevice).length === 0 ? (
-              <div style={{ padding: "60px 20px", textAlign: "center", background: "white", borderRadius: 16, border: "1px dashed #e2e8f0" }}>
-                <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>Dòng máy này chưa có ghi nhận sửa chữa nào.</p>
+              <div style={{ padding: "6rem 2rem", textAlign: "center", background: "var(--white)", borderRadius: "1.6rem", border: "1.5px dashed var(--grey-100)" }}>
+                <p style={{ margin: 0, color: "var(--grey-500)" }}>Dòng máy này chưa có ghi nhận sửa chữa nào.</p>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
                 {Object.entries(repairsByDevice).map(([wid, repairs]) => (
-                  <div key={wid} style={{ background: "#f8fafc", borderRadius: 16, padding: 16, border: "1.5px solid #f1f5f9", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.02)" }}>
-                    <div style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: 10, marginBottom: 12 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8" }}>Thiết bị (IMEI)</span>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#1e40af" }}>{repairs[0].serialNumber}</div>
+                  <div key={wid} className="repair-history-card">
+                    <div className="repair-history-device">
+                      <span className="detail-info-label">Thiết bị (IMEI)</span>
+                      <div style={{ fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--navy-primary)" }}>{repairs[0].serialNumber}</div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                      {repairs.map((r, idx) => (
-                        <div key={r.id} style={{ position: "relative", paddingLeft: 20, borderLeft: "2px solid #d1fae5" }}>
-                          <div style={{ position: "absolute", left: -5, top: 4, width: 8, height: 8, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.1)" }}></div>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                            <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>{new Date(r.repairDate).toLocaleDateString("vi-VN")}</div>
-                            <div style={{
-                              fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 12,
+                    <div className="repair-timeline-mini">
+                      {repairs.map((r) => (
+                        <div key={r.id} className="repair-timeline-item">
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.2rem" }}>
+                            <div style={{ fontSize: "var(--text-xs)", color: "var(--grey-400)", fontWeight: 600 }}>{new Date(r.repairDate).toLocaleDateString("vi-VN")}</div>
+                            <div className="status-badge" style={{
+                              fontSize: "1rem",
                               background: getStatusConfig(r.status).background,
                               color: getStatusConfig(r.status).color,
-                              border: `1px solid ${getStatusConfig(r.status).borderColor}`,
+                              borderColor: getStatusConfig(r.status).borderColor,
                             }}>
                               {getStatusConfig(r.status).label}
-
                             </div>
                           </div>
-                          <div style={{ fontSize: 13, color: "#1e293b", fontWeight: 700, lineHeight: 1.4 }}>{r.repairContent}</div>
-                          {r.cost > 0 && <div style={{ fontSize: 11, color: "#ef4444", fontWeight: 700, marginTop: 4 }}>Chi phí: {r.cost.toLocaleString()} ₫</div>}
+                          <div style={{ fontSize: "var(--text-sm)", color: "var(--navy-900)", fontWeight: 700, lineHeight: 1.4 }}>{r.repairContent}</div>
+                          {r.cost > 0 && <div style={{ fontSize: "var(--text-xs)", color: "var(--color-danger)", fontWeight: 700, marginTop: "0.4rem" }}>Chi phí: {r.cost.toLocaleString()} ₫</div>}
                         </div>
                       ))}
                     </div>
@@ -502,50 +485,47 @@ function ProductDetailModal({ product, onClose }) {
           </div>
 
           {/* RIGHT PANEL: PRODUCT INFO (60%) */}
-          <div className="hide-scrollbar" style={{ width: "60%", overflowY: "auto", padding: 32 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div className="detail-panel-main hide-scrollbar">
+            <div className="detail-info-grid">
 
               {/* IMAGE: Span 4 Rows on Left Side */}
-              <div style={{ gridRow: "span 4", background: "#f8fafc", borderRadius: 16, border: "1.5px solid #f1f5f9", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ gridRow: "span 4", background: "var(--grey-50)", borderRadius: "1.6rem", border: "1.5px solid var(--grey-100)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {product.imageUrl ? (
                   <img
                     src={product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")}
                     alt={product.productName}
-                    style={{ width: "100%", height: "100%", objectFit: "contain", padding: 12 }}
+                    style={{ width: "100%", height: "100%", objectFit: "contain", padding: "1.2rem" }}
                   />
-                ) : <div style={{ color: "#cbd5e1", fontSize: 13 }}>Không có ảnh</div>}
+                ) : <div style={{ color: "var(--grey-300)" }}>Không có ảnh</div>}
               </div>
 
-              {/* FIRST FOUR FIELDS: Flowing next to the image (sequentially) */}
+              {/* FIRST FOUR FIELDS: Flowing next to the image */}
               {allFields.slice(0, 4).map((field, idx) => (
-                <div key={idx} style={infoBoxStyle}>
-                  <span style={fieldLabel}>{field.label}</span>
-                  <span style={fieldValue}>{field.value}</span>
+                <div key={idx} className="detail-info-item">
+                  <span className="detail-info-label">{field.label}</span>
+                  <span className="detail-info-value">{field.value}</span>
                 </div>
               ))}
 
-              {/* REMAINING FIELDS: Below Image (in 2-column grid) */}
+              {/* REMAINING FIELDS: Below Image */}
               {allFields.slice(4).map((field, idx) => (
-                <div key={idx} style={infoBoxStyle}>
-                  <span style={fieldLabel}>{field.label}</span>
-                  <span style={{
-                    ...fieldValue,
-                    ...(field.label === "Trạng thái" ? {
-                      display: "inline-flex", alignItems: "center", gap: 4,
-                      background: (product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "#10b981" : "#ef4444",
-                      color: "white", borderRadius: 20, padding: "2px 10px", fontSize: 11
-                    } : {})
-                  }}>
+                <div key={idx} className="detail-info-item">
+                  <span className="detail-info-label">{field.label}</span>
+                  <span className={`detail-info-value ${field.label === "Trạng thái" ? "status-badge-inline" : ""}`}
+                    style={field.label === "Trạng thái" ? {
+                      background: (product.isActive === true || product.isActive === "active") ? "var(--color-success)" : "var(--color-danger)",
+                      color: "white", borderRadius: "2rem", padding: "0.2rem 1rem", fontSize: "1.1rem", display: "inline-block", width: "fit-content"
+                    } : {}}>
                     {field.value}
                   </span>
                 </div>
               ))}
 
               {/* DESCRIPTION: Full Width */}
-              <div style={{ ...infoBoxStyle, gridColumn: "span 2", marginTop: 8 }}>
-                <span style={fieldLabel}>Mô tả sản phẩm</span>
-                <p style={{ ...fieldValue, margin: 0, lineHeight: 1.6, color: "#475569", fontWeight: 500 }}>
-                  {product.description || <span style={{ color: "#d1d5db" }}>Không có mô tả</span>}
+              <div className="detail-info-item" style={{ gridColumn: "span 2", marginTop: "0.8rem" }}>
+                <span className="detail-info-label">Mô tả sản phẩm</span>
+                <p style={{ margin: 0, lineHeight: 1.6, color: "var(--grey-600)", fontWeight: 500, fontSize: "var(--text-sm)" }}>
+                  {product.description || <span style={{ color: "var(--grey-300)" }}>Không có mô tả</span>}
                 </p>
               </div>
             </div>
@@ -677,7 +657,7 @@ function ProductList() {
   };
 
   return (
-    <div ref={listTopRef} className="product-list-container">
+    <div ref={listTopRef} className="admin-list-container">
       {/* Detail Modal */}
       <ProductDetailModal
         product={selectedProduct}
@@ -722,87 +702,53 @@ function ProductList() {
       />
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ background: "#eff6ff", width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#1e40af" }}>
+      <div className="admin-list-header">
+        <div className="admin-list-title-group">
+          <div className="admin-list-title-icon-box" style={{ background: "#eff6ff", width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#1e40af" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
               <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
             </svg>
           </div>
-          <span style={{ fontWeight: 800, fontSize: "1.5rem", color: "#0f172a", letterSpacing: "-0.02em" }}>Danh sách sản phẩm</span>
+          <h2 className="admin-list-title">Danh sách sản phẩm</h2>
+          <span className="admin-list-count-badge">
+            {filteredProducts.length} sản phẩm
+          </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div className="admin-list-actions">
           <button
             onClick={() => setIsAddingProduct(true)}
-            style={{
-              display: "flex", alignItems: "center", gap: 8, padding: "0 20px",
-              height: 40, borderRadius: 999, border: "none", background: "#1e40af", color: "white",
-              fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease",
-              boxShadow: "0 4px 10px rgba(30, 64, 175, 0.2)"
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 6px 12px rgba(30, 64, 175, 0.25)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 10px rgba(30, 64, 175, 0.2)";
-            }}
+            className="admin-primary-btn"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             Thêm sản phẩm
           </button>
-          <span style={{
-            background: "#f1f5f9", border: "1.25px solid #e2e8f0", borderRadius: 999,
-            height: 40, padding: "0 16px", display: "flex", alignItems: "center",
-            fontSize: 12, color: "#64748b", fontWeight: 600
-          }}>
-            {filteredProducts.length} sản phẩm
-          </span>
         </div>
       </div>
 
       {/* Search + Filter row */}
-      <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
-        <div className="search-input-wrapper" style={{ flex: 1 }}>
+      <div className="admin-list-toolbar">
+        <div className="admin-list-search">
           <input
             type="text"
             placeholder="Tìm kiếm theo mã, tên sản phẩm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-            style={{ height: 44, paddingLeft: 48, fontSize: 14 }}
           />
-          <span className="search-icon" style={{ left: 18 }}>
+          <span className="search-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </span>
         </div>
         <button
-          className="action-btn"
+          className={`admin-secondary-btn ${ (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "active-filter" : "" }`}
           onClick={() => setIsFilterModalOpen(true)}
-          style={{
-            width: "auto",
-            padding: "0 24px",
-            height: 44,
-            gap: 8,
-            display: "flex",
-            alignItems: "center",
-            fontSize: 14,
-            fontWeight: 700,
-            borderRadius: 999,
-            background: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "#1e40af" : "white",
-            borderColor: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "#1e40af" : "#cbd5e1",
-            color: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "white" : "#475569",
-            transition: "all 0.3s ease",
-            boxShadow: (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? "0 4px 10px rgba(30, 64, 175, 0.2)" : "none"
-          }}
+          style={ (filterBrand !== "all" || priceRange.label !== "Tất cả mức giá") ? { background: "var(--navy-primary)", color: "white", borderColor: "var(--navy-primary)" } : {} }
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
           Bộ lọc
@@ -810,52 +756,28 @@ function ProductList() {
       </div>
 
       {/* Status + Category filter pills */}
-      <div style={{
-        display: "flex",
-        gap: 8,
-        marginBottom: 24,
-        overflowX: "auto",
-        paddingBottom: "8px"
-      }}>
-        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-          {["all", "active", "expired"].map((s) => (
-            <button
-              key={s}
-              className={`filter-btn${filterStatus === s ? " active" : ""}`}
-              onClick={() => setFilterStatus(s)}
-              style={
-                filterStatus === s
-                  ? {
-                    background: s === "active" ? "#10b981" : s === "expired" ? "#ef4444" : "#1e40af",
-                    color: "white",
-                    borderColor: s === "active" ? "#10b981" : s === "expired" ? "#ef4444" : "#1e40af",
-                    boxShadow: `0 4px 12px ${s === "active" ? "rgba(16,185,129,0.3)" : s === "expired" ? "rgba(239,68,68,0.25)" : "rgba(30,64,175,0.25)"}`
-                  }
-                  : s === "active"
-                    ? { borderColor: "#10b981", color: "#10b981", background: "rgba(16, 185, 129, 0.05)" }
-                    : s === "expired"
-                      ? { borderColor: "#ef4444", color: "#ef4444", background: "rgba(239, 68, 68, 0.05)" }
-                      : {}
-              }
-            >
-              {s === "all" ? "Tất cả" : s === "active" ? "Đang hoạt động" : "Tạm khóa"}
-            </button>
-          ))}
-        </div>
+      <div className="admin-list-filters-row product-list-filters">
+        {["all", "active", "expired"].map((s) => (
+          <button
+            key={s}
+            className={`filter-btn ${filterStatus === s ? "active" : ""} ${s === "active" ? "success" : s === "expired" ? "danger" : ""}`}
+            onClick={() => setFilterStatus(s)}
+          >
+            {s === "all" ? "Tất cả" : s === "active" ? "Đang hoạt động" : "Tạm khóa"}
+          </button>
+        ))}
 
-        <div style={{ width: 1, height: 24, background: "#e2e8f0", margin: "0 8px", flexShrink: 0, alignSelf: "center" }} />
+        <div className="admin-list-filters-divider" />
 
-        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-          {UI_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              className={`filter-btn${filterType === cat ? " active" : ""}`}
-              onClick={() => setFilterType(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {UI_CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            className={`filter-btn${filterType === cat ? " active" : ""}`}
+            onClick={() => setFilterType(cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {/* Table */}
@@ -863,13 +785,13 @@ function ProductList() {
         <table className="product-table" style={{ tableLayout: "fixed", width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ width: "260px", fontSize: "0.85rem", textTransform: "none" }}>Sản phẩm</th>
-              <th style={{ width: "90px", fontSize: "0.85rem", textTransform: "none" }}>Hãng</th>
-              <th style={{ width: "135px", fontSize: "0.85rem", textTransform: "none" }}>Giá tiền</th>
-              <th style={{ width: "105px", fontSize: "0.85rem", textTransform: "none" }}>Bảo hành</th>
-              <th style={{ width: "170px", fontSize: "0.85rem", textTransform: "none" }}>Cấu hình</th>
-              <th style={{ width: "auto", fontSize: "0.85rem", textTransform: "none" }}>Nội dung sửa chữa</th>
-              <th style={{ width: "120px", fontSize: "0.85rem", textTransform: "none", textAlign: "center" }}>Thao tác</th>
+              <th style={{ width: "25%" }}>Sản phẩm</th>
+              <th style={{ width: "10%" }}>Hãng</th>
+              <th style={{ width: "12%" }}>Giá tiền</th>
+              <th style={{ width: "10%" }}>Bảo hành</th>
+              <th style={{ width: "15%" }}>Cấu hình</th>
+              <th style={{ width: "18%" }}>Nội dung sửa chữa</th>
+              <th style={{ width: "10%", textAlign: "center" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -881,22 +803,13 @@ function ProductList() {
                 onMouseOver={(e) => e.currentTarget.style.background = "#f8fafc"}
                 onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
               >
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", paddingLeft: 0, overflow: "hidden" }}>
-                    {/* Image with Status Halo */}
-                    <div style={{
-                      width: 44, height: 44, borderRadius: 10, overflow: "hidden",
-                      background: "#f8fafc",
-                      border: `2px solid ${(product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "#10b981" : "#ef4444"}`,
-                      boxShadow: `0 0 10px ${(product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.1)"}`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0, marginRight: 12, transition: "all 0.3s ease"
-                    }}>
+                <td onClick={() => setSelectedProduct(product)} style={{ cursor: "pointer" }}>
+                  <div className="product-cell-box">
+                    <div className="product-cell-img-wrapper" style={{ border: `2px solid ${(product.isActive === true || product.isActive === "active") ? "var(--color-success)" : "var(--color-danger)"}` }}>
                       {product.imageUrl ? (
                         <img
                           src={product.imageUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")}
                           alt={product.productName}
-                          style={{ width: "100%", height: "100%", objectFit: "contain" }}
                         />
                       ) : (
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2">
@@ -904,22 +817,14 @@ function ProductList() {
                         </svg>
                       )}
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 1, overflow: "hidden" }}>
-                      <div style={{
-                        color: "#1e40af", fontWeight: 700, fontSize: "0.9rem", lineHeight: 1.2,
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
-                      }} title={product.productName}>
+                    <div className="product-cell-info">
+                      <div className="product-cell-title" title={product.productName}>
                         {product.productName}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, overflow: "hidden" }}>
-                        <span style={{ fontSize: "0.8rem", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {product.productCode}
-                        </span>
-                        <span style={{
-                          fontSize: "0.75rem", fontWeight: 700, textTransform: "lowercase", flexShrink: 0,
-                          color: (product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "#10b981" : "#ef4444",
-                        }}>
-                          • {(product.isActive === true || product.isActive === "active" || product.isActive === "Active") ? "hoạt động" : "tạm khóa"}
+                      <div className="product-cell-subtitle">
+                        <span>{product.productCode}</span>
+                        <span className="product-cell-status-dot" style={{ color: (product.isActive === true || product.isActive === "active") ? "var(--color-success)" : "var(--color-danger)" }}>
+                          • {(product.isActive === true || product.isActive === "active") ? "hoạt động" : "tạm khóa"}
                         </span>
                       </div>
                     </div>
@@ -929,74 +834,56 @@ function ProductList() {
                   <span className="category-badge">{product.brand || "N/A"}</span>
                 </td>
                 <td>
-                  <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9rem" }}>
+                  <div className="product-cell-price">
                     {product.price ? Number(product.price).toLocaleString("vi-VN") + " ₫" : "N/A"}
                   </div>
                 </td>
                 <td>
-                  <div style={{ fontSize: "0.85rem", color: "#475569", textAlign: "left" }}>{product.warrantyMonths} tháng</div>
+                  <div className="product-cell-text">{product.warrantyMonths} tháng</div>
                 </td>
                 <td>
-                  <div style={{
-                    fontSize: "0.85rem", color: "#475569", maxWidth: 170,
-                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
-                  }} title={product.config}>
+                  <div className="product-cell-text product-cell-truncate" title={product.config}>
                     {product.config || "Tiêu chuẩn"}
                   </div>
                 </td>
                 <td>
                   {product.latestRepair ? (
-                    <div style={{ overflow: "hidden" }}>
-                      <div style={{
-                        fontWeight: 700, color: "#1e40af", fontSize: "0.85rem", lineHeight: 1.3,
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
-                      }} title={product.latestRepair.repairContent}>
+                    <div className="product-cell-info">
+                      <div className="product-cell-title product-cell-truncate" title={product.latestRepair.repairContent}>
                         {product.latestRepair.repairContent}
                       </div>
-                      <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: 2 }}>
+                      <div className="product-cell-meta">
                         {new Date(product.latestRepair.repairDate).toLocaleDateString()}
                       </div>
                     </div>
                   ) : (
-                    <div style={{ fontSize: "0.85rem", color: "#cbd5e1" }}>Chưa sửa chữa</div>
+                    <div className="product-cell-meta">Chưa sửa chữa</div>
                   )}
                 </td>
-                <td style={{ textAlign: "center" }}>
-                  <div className="action-buttons" style={{ justifyContent: "center", display: "flex", gap: "8px" }}>
-                    {/* Nút Sửa */}
+                <td>
+                  <div className="action-buttons">
                     <button
-                      className="action-btn view-btn"
-                      title="Chỉnh sửa"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingProduct(product);
-                      }}
-                      style={{
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #1e40af",
-                        color: "#1e40af", background: "white", display: "flex", alignItems: "center",
-                        justifyContent: "center", cursor: "pointer"
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                      </svg>
-                    </button>
-                    {/* Nút Xóa */}
-                    <button
-                      className="action-btn download-btn"
+                      className="table-action-btn danger"
                       title="Xóa sản phẩm"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeletingProduct(product);
                       }}
-                      style={{
-                        width: "32px", height: "32px", borderRadius: "8px", border: "1.5px solid #ef4444",
-                        color: "#ef4444", background: "white", display: "flex", alignItems: "center",
-                        justifyContent: "center", cursor: "pointer"
-                      }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
+                    <button
+                      className="table-action-btn primary"
+                      title="Chỉnh sửa"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingProduct(product);
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                     </button>
                   </div>
@@ -1011,54 +898,37 @@ function ProductList() {
       </div>
 
       {/* Pagination Controls */}
-      {totalPages > 0 && (
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center",
-          marginTop: 24, padding: "0 8px"
-        }}>
-          {/* Left Spacer */}
+      {totalPages > 1 && (
+        <div className="admin-pagination">
+          {/* Left: Spacer */}
           <div></div>
 
-          {/* Center: Pagination Buttons */}
-          <div style={{ display: "flex", gap: 6 }}>
+          {/* Center: Controls */}
+          <div className="pagination-controls">
             <button
+              className="pagination-btn"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              style={{
-                width: 36, height: 36, borderRadius: 10, border: "1.5px solid #e2e8f0", background: "white",
-                display: "flex", alignItems: "center", justifyContent: "center", cursor: currentPage === 1 ? "not-allowed" : "pointer",
-                color: currentPage === 1 ? "#cbd5e1" : "#475569", transition: "all 0.2s"
-              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                style={{
-                  width: 36, height: 36, borderRadius: 10, border: "1.5px solid",
-                  borderColor: currentPage === page ? "#1e40af" : "#e2e8f0",
-                  background: currentPage === page ? "#1e40af" : "white",
-                  color: currentPage === page ? "white" : "#475569",
-                  fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s"
-                }}
+                className={`pagination-btn ${currentPage === page ? "active" : ""}`}
               >
                 {page}
               </button>
             ))}
 
             <button
+              className="pagination-btn"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              style={{
-                width: 36, height: 36, borderRadius: 10, border: "1.5px solid #e2e8f0", background: "white",
-                display: "flex", alignItems: "center", justifyContent: "center", cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-                color: currentPage === totalPages ? "#cbd5e1" : "#475569", transition: "all 0.2s"
-              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6" />
@@ -1066,9 +936,9 @@ function ProductList() {
             </button>
           </div>
 
-          {/* Right: Display Info */}
-          <div style={{ fontSize: 13, color: "#64748b", fontWeight: 600, textAlign: "right" }}>
-            Hiển thị <span style={{ color: "#0f172a" }}>{startIndex + 1}</span> - <span style={{ color: "#0f172a" }}>{Math.min(startIndex + ITEMS_PER_PAGE, filteredProducts.length)}</span> trên <span style={{ color: "#1e40af" }}>{filteredProducts.length}</span> sản phẩm
+          {/* Right: Info */}
+          <div className="pagination-info">
+            Hiển thị <strong>{startIndex + 1}</strong> - <strong>{Math.min(startIndex + ITEMS_PER_PAGE, filteredProducts.length)}</strong> trên <strong>{filteredProducts.length}</strong> sản phẩm
           </div>
         </div>
       )}

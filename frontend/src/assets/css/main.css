@@ -41,7 +41,50 @@
   --text-lg: 1.8rem;
   --text-xl: 2rem;
   --text-2xl: 2.4rem;
+
+  /* Repair Status Colors */
+  --status-pending: #2563eb;
+  --status-pending-bg: #eff6ff;
+  --status-pending-border: #bfdbfe;
+
+  --status-waiting: #d97706;
+  --status-waiting-bg: #fffbeb;
+  --status-waiting-border: #fde68a;
+
+  --status-fixing: #7c3aed;
+  --status-fixing-bg: #f5f3ff;
+  --status-fixing-border: #ddd6fe;
+
+  --status-completed: #059669;
+  --status-completed-bg: #ecfdf5;
+  --status-completed-border: #a7f3d0;
+
+  --status-delivered: #0d9488;
+  --status-delivered-bg: #f0fdfa;
+  --status-delivered-border: #99f6e4;
+
+  --status-cancelled: #dc2626;
+  --status-cancelled-bg: #fef2f2;
+  --status-cancelled-border: #fecaca;
+
+  /* User Role Colors */
+  --role-admin: #f59e0b;
+  --role-admin-bg: #fffbeb;
+  --role-admin-border: #fde68a;
+
+  --role-staff: #3b82f6;
+  --role-staff-bg: #eff6ff;
+  --role-staff-border: #bfdbfe;
+
+  --role-technician: #8b5cf6;
+  --role-technician-bg: #f5f3ff;
+  --role-technician-border: #ddd6fe;
+
+  --role-user: #10b981;
+  --role-user-bg: #ecfdf5;
+  --role-user-border: #a7f3d0;
 }
+
 
 *,
 *::before,
@@ -99,32 +142,11 @@ body {
   margin: 0 auto;
   padding: 1.2rem 3.2rem;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 2.4rem;
 }
 
-@media (max-width: 768px) {
-  .header-inner {
-    padding: 1.6rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
-  }
-
-  .nav-tabs {
-    width: 100%;
-    justify-content: center;
-    overflow-x: auto;
-    padding: 0.4rem;
-  }
-
-  .nav-tabs a {
-    padding: 0.8rem 1.6rem;
-    font-size: 1.4rem;
-    white-space: nowrap;
-  }
-}
 
 .brand {
   display: flex;
@@ -372,17 +394,6 @@ body {
   margin-bottom: 4rem;
 }
 
-@media (max-width: 768px) {
-  .bw-footer-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .bw-footer-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .bw-footer-brand strong {
   font-size: var(--text-2xl);
@@ -479,5 +490,37 @@ body {
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 1280px) {
+  .header-inner {
+    padding: 1rem 2rem;
+    gap: 1.6rem;
+  }
+
+  .brand-text {
+    font-size: 2rem;
+  }
+
+  .nav-tabs {
+    gap: 0.4rem;
+    padding: 0.4rem;
+  }
+
+  .nav-tabs a {
+    padding: 0.8rem 1.4rem;
+    font-size: 1.4rem;
+    white-space: nowrap;
+  }
+
+  .header-user {
+    gap: .6rem;
+  }
+
+  .btn-login,
+  .header-user-address {
+    padding: 0.8rem 1.4rem;
+    font-size: 1.3rem;
   }
 }

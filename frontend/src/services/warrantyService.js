@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import apiClient from "./apiClient";
 import { pinataHelper, pinFileToPinata } from "../utils/pinata";
-import WarrantyNFT from "../contracts/WarrantyNFT.json";
+import WarrantyNFT from "../../../contracts/WarrantyNFT.json";
 
 export const warrantyService = {
   /**

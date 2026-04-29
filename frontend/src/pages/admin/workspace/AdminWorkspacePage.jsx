@@ -5,10 +5,6 @@ import "../../../assets/css/adminWorkspace.css";
 function AdminPage() {
   const navigate = useNavigate();
 
-  const handleReturnToPortal = () => {
-    navigate("/admin/dashboard");
-  };
-
   const tabs = [
     {
       id: "warranty",
@@ -78,7 +74,9 @@ function AdminPage() {
                 <NavLink
                   key={tab.id}
                   to={tab.id}
-                  className={({ isActive }) => `admin-tab ${isActive ? "active" : ""}`}
+                  className={({ isActive }) =>
+                    `admin-tab ${isActive ? "active" : ""}`
+                  }
                 >
                   <span className="tab-icon">{tab.icon}</span>
                   <span className="tab-label">{tab.label}</span>
@@ -93,9 +91,7 @@ function AdminPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }
-
 export default AdminPage;

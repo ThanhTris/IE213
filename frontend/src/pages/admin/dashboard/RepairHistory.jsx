@@ -1,12 +1,160 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { repairService } from "../../../services/repairService";
-import { getStatusConfig } from "../../../utils/statusStyles";
+import { getStatusConfig, REPAIR_STATUS_CONFIG } from "../../../utils/statusStyles";
+
+
+const ITEMS_PER_PAGE = 10;
+
+
+function FilterModal({ isOpen, onClose, filterStatus, setFilterStatus, filterType, setFilterType, technicianWallet, setTechnicianWallet, priceRange, setPriceRange, uniqueTechnicians }) {
+  if (!isOpen) return null;
+
+  const costPresets = [
+    { label: "Tất cả mức giá", min: 0, max: Infinity },
+    { label: "Dưới 500k", min: 0, max: 500000 },
+    { label: "500k - 2tr", min: 500000, max: 2000000 },
+    { label: "Trên 2 triệu", min: 2000000, max: Infinity },
+  ];
+
+  const allStatuses = [
+    { id: "all", label: "Tất cả trạng thái" },
+    { id: "pending", label: "Tiếp nhận" },
+    { id: "waiting_parts", label: "Chờ linh kiện" },
+    { id: "fixing", label: "Đang sửa" },
+    { id: "completed", label: "Sửa xong" },
+    { id: "delivered", label: "Đã giao" },
+    { id: "cancelled", label: "Đã hủy" }
+  ];
+
+  const allTypes = [
+    { id: "all", label: "Tất cả loại hình" },
+    { id: "Màn hình", label: "Màn hình" },
+    { id: "Pin/Nguồn", label: "Pin/Nguồn" },
+    { id: "Phần cứng", label: "Phần cứng" },
+    { id: "Phần mềm", label: "Phần mềm" },
+    { id: "Khác", label: "Khác" }
+  ];
+
+  const getRepairTypeLabel = (type) => {
+    const map = {
+      "Màn hình": "Màn hình",
+      "Pin/Nguồn": "Pin/Nguồn",
+      "Phần cứng": "Phần cứng",
+      "Phần mềm": "Phần mềm",
+      "Khác": "Khác",
+      "other": "Khác",
+      "hardware": "Phần cứng",
+      "software": "Phần mềm",
+      "screen": "Màn hình",
+      "battery": "Pin/Nguồn"
+    };
+    return map[type] || map[type?.toLowerCase()] || type || "Khác";
+  };
+
+  return (
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-content" style={{ maxWidth: "55rem" }} onClick={(e) => e.stopPropagation()}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">Bộ lọc nâng cao</h3>
+          <button onClick={onClose} className="admin-modal-close-btn">×</button>
+        </div>
+
+        <div className="admin-modal-body hide-scrollbar" style={{ maxHeight: "75vh", padding: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            {/* Status Filter */}
+            <div>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 8, display: "block", textTransform: "uppercase" }}>Trạng thái</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14 }}
+              >
+                {allStatuses.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
+            </div>
+
+            {/* Type Filter */}
+            <div>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 8, display: "block", textTransform: "uppercase" }}>Loại hình</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14 }}
+              >
+                {allTypes.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+              </select>
+            </div>
+
+            {/* Technician Filter */}
+            <div style={{ gridColumn: "span 2" }}>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 8, display: "block", textTransform: "uppercase" }}>Kỹ thuật viên thực hiện</label>
+              <select
+                value={technicianWallet}
+                onChange={(e) => setTechnicianWallet(e.target.value)}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 14, fontFamily: "monospace" }}
+              >
+                <option value="all">Tất cả kỹ thuật viên</option>
+                {uniqueTechnicians.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Cost Range */}
+            <div style={{ gridColumn: "span 2" }}>
+              <label style={{ fontWeight: 700, fontSize: 12, color: "#64748b", marginBottom: 12, display: "block", textTransform: "uppercase" }}>Khoảng chi phí (VND)</label>
+              <div className="filter-button-group" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: "1.2rem" }}>
+                {costPresets.map((p) => (
+                  <button
+                    key={p.label}
+                    className={`filter-btn ${priceRange.label === p.label ? "active" : ""}`}
+                    onClick={() => setPriceRange(p)}
+                    style={{
+                      borderColor: priceRange.label === p.label ? "var(--navy-primary)" : "var(--grey-200)",
+                      background: priceRange.label === p.label ? "var(--navy-primary)" : "transparent",
+                      color: priceRange.label === p.label ? "var(--white)" : "var(--grey-600)"
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-modal-footer light-bg" style={{ padding: "20px 24px", display: "flex", gap: 12, borderTop: "1px solid #f1f5f9", justifyContent: "center" }}>
+          <button
+            onClick={() => {
+              setFilterStatus("all");
+              setFilterType("all");
+              setTechnicianWallet("all");
+              setPriceRange({ min: 0, max: Infinity, label: "Tất cả mức giá" });
+            }}
+            className="admin-secondary-btn"
+            style={{ padding: "12px 24px", minWidth: "140px", textAlign: "center" }}
+          >
+            Làm mới bộ lọc
+          </button>
+          <button
+            onClick={onClose}
+            className="admin-primary-btn"
+            style={{ padding: "12px 32px", minWidth: "140px", textAlign: "center" }}
+          >
+            Áp dụng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 function RepairHistory() {
   const [repairs, setRepairs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAddingRepair, setIsAddingRepair] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Modal states
@@ -22,13 +170,28 @@ function RepairHistory() {
   });
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Filter states
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterType, setFilterType] = useState("all");
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [technicianWallet, setTechnicianWallet] = useState("all");
+  const [priceRange, setPriceRange] = useState({ label: "Tất cả mức giá", min: 0, max: Infinity });
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const uniqueTechnicians = useMemo(() => {
+    const wallets = repairs.map(r => r.technicianWallet).filter(Boolean);
+    return Array.from(new Set(wallets));
+  }, [repairs]);
+
   const fetchRepairs = async () => {
     try {
       setLoading(true);
       const res = await repairService.getAllRepairs();
       setRepairs(res.data || []);
     } catch (err) {
-      toast.error("Lỗi khi tải lịch sử sửa chữa: " + (err.response?.data?.message || err.message));
+      toast.error("Lỗi khi tải lịch sử sửa chữa.");
     } finally {
       setLoading(false);
     }
@@ -38,15 +201,66 @@ function RepairHistory() {
     fetchRepairs();
   }, []);
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus, filterType, technicianWallet, priceRange]);
+
+  const getRepairTypeLabel = (type) => {
+    const map = {
+      "Màn hình": "Màn hình",
+      "Pin/Nguồn": "Pin/Nguồn",
+      "Phần cứng": "Phần cứng",
+      "Phần mềm": "Phần mềm",
+      "Khác": "Khác",
+      "other": "Khác",
+      "hardware": "Phần cứng",
+      "software": "Phần mềm",
+      "screen": "Màn hình",
+      "battery": "Pin/Nguồn"
+    };
+    return map[type] || map[type?.toLowerCase()] || type || "Khác";
+  };
+
   const filteredRecords = useMemo(() => {
-    if (!searchTerm) return repairs;
-    return repairs.filter(
-      (r) =>
-        r.serialNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.repairContent?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.technicianWallet?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [repairs, searchTerm]);
+    return repairs.filter((r) => {
+      // 1. Tìm kiếm theo text
+      const q = searchTerm.toLowerCase();
+      const matchSearch =
+        !q ||
+        (r.serialNumber || "").toLowerCase().includes(q) ||
+        (r.repairContent || "").toLowerCase().includes(q) ||
+        (r.technicianWallet || "").toLowerCase().includes(q);
+
+      // 2. Lọc theo trạng thái
+      const matchStatus = filterStatus === "all" || r.status === filterStatus;
+
+      // 3. Lọc theo thể loại
+      const matchType = filterType === "all" || getRepairTypeLabel(r.type) === getRepairTypeLabel(filterType);
+
+      // 4. Lọc theo kỹ thuật viên
+      const matchTechnician = technicianWallet === "all" || r.technicianWallet === technicianWallet;
+
+      // 5. Lọc theo giá
+      const matchPrice = r.cost >= priceRange.min && r.cost <= priceRange.max;
+
+      return matchSearch && matchStatus && matchType && matchTechnician && matchPrice;
+    });
+  }, [repairs, searchTerm, filterStatus, filterType, technicianWallet, priceRange]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredRecords.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedRecords = filteredRecords.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top of table
+    const tableElement = document.querySelector(".table-wrapper");
+    if (tableElement) {
+      tableElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const openDetail = (repair, mode = "view") => {
     setSelectedRepair(repair);
@@ -124,50 +338,114 @@ function RepairHistory() {
   };
 
   return (
-    <div className="repair-history-container">
+    <div className="admin-list-container">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <div className="admin-list-header">
+        <div className="admin-list-title-group">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>
-          <span style={{ fontWeight: 700, fontSize: 18, color: "#0f172a" }}>Lịch Sử Sửa Chữa Hệ Thống</span>
+          <h2 className="admin-list-title">Lịch Sử Sửa Chữa Hệ Thống</h2>
+          <span className="admin-list-count-badge">
+            {repairs.length} lượt sửa chữa
+          </span>
         </div>
-        <span style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#64748b", fontWeight: 600 }}>
-          {repairs.length} lượt sửa chữa
-        </span>
+        <div className="admin-list-actions">
+          <button
+            onClick={() => setIsAddingRepair(true)}
+            className="admin-primary-btn"
+            style={{ boxShadow: "0 4px 10px rgba(16, 185, 129, 0.2)" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Thêm phiếu sửa chữa
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
       <div className="repair-stats-v4" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 24 }}>
         <div className="stat-card-v4" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: "20px", display: "flex", flexDirection: "column", gap: 4, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>Tổng lượt sửa chữa</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>Tổng lượt sửa chữa</span>
           <span style={{ fontSize: 24, fontWeight: 800, color: "#0f172a" }}>{repairs.length}</span>
         </div>
         <div className="stat-card-v4" style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 16, padding: "20px", display: "flex", flexDirection: "column", gap: 4, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#16a34a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Trong bảo hành</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "#16a34a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Trong bảo hành</span>
           <span style={{ fontSize: 24, fontWeight: 800, color: "#16a34a" }}>{coveredCount}</span>
         </div>
         <div className="stat-card-v4" style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 16, padding: "20px", display: "flex", flexDirection: "column", gap: 4, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em" }}>Ngoài bảo hành</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em" }}>Ngoài bảo hành</span>
           <span style={{ fontSize: 24, fontWeight: 800, color: "#dc2626" }}>{notCoveredCount}</span>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="search-input-wrapper" style={{ marginBottom: 24 }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo sản phẩm, serial, khách hàng hoặc nội dung..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <span className="search-icon">
+      {/* Search + Filter row */}
+      <div className="admin-list-toolbar" style={{ marginBottom: 24 }}>
+        <div className="admin-list-search">
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo serial, nội dung, kỹ thuật viên..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <span className="search-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+        </div>
+        <button
+          className={`admin-secondary-btn ${(filterStatus !== "all" || filterType !== "all" || technicianWallet !== "all" || priceRange.label !== "Tất cả mức giá") ? "active-filter" : ""}`}
+          onClick={() => setIsFilterModalOpen(true)}
+          style={(filterStatus !== "all" || filterType !== "all" || technicianWallet !== "all" || priceRange.label !== "Tất cả mức giá") ? { background: "var(--navy-primary)", color: "white", borderColor: "var(--navy-primary)" } : {}}
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
-        </span>
+          Bộ lọc
+        </button>
+      </div>
+
+      {/* Status + Type filter pills */}
+      <div className="admin-list-filters-row repair-history-filters">
+        {[
+          { id: "all", label: "Tất cả", colorVar: "var(--navy-primary)" },
+          { id: "pending", label: "Tiếp nhận", colorVar: "var(--status-pending)" },
+          { id: "fixing", label: "Đang sửa", colorVar: "var(--status-fixing)" },
+          { id: "completed", label: "Sửa xong", colorVar: "var(--status-completed)" },
+          { id: "cancelled", label: "Đã hủy", colorVar: "var(--status-cancelled)" }
+        ].map((s) => (
+          <button
+            key={s.id}
+            className={`filter-btn ${filterStatus === s.id ? "active" : ""}`}
+            onClick={() => setFilterStatus(s.id)}
+            style={{
+              borderColor: s.colorVar,
+              color: filterStatus === s.id ? "var(--white)" : s.colorVar,
+              background: filterStatus === s.id ? s.colorVar : "transparent"
+            }}
+          >
+            {s.label}
+          </button>
+        ))}
+
+        <div className="admin-list-filters-divider" />
+
+        {[
+          { id: "all", label: "Tất cả" },
+          { id: "Màn hình", label: "Màn hình" },
+          { id: "Pin/Nguồn", label: "Pin/Nguồn" },
+          { id: "Khác", label: "Khác" }
+        ].map((cat) => (
+          <button
+            key={cat.id}
+            className={`filter-btn${filterType === cat.id ? " active" : ""}`}
+            onClick={() => setFilterType(cat.id)}
+          >
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       {/* Table */}
@@ -175,63 +453,58 @@ function RepairHistory() {
         <table className="repair-table">
           <thead>
             <tr>
-              <th>Số Serial</th>
-              <th>Loại hình</th>
-              <th>Nội dung chính</th>
-              <th>Chi phí</th>
-              <th>Kỹ thuật viên</th>
-              <th>Ngày thực hiện</th>
-              <th>Bảo hành</th>
-              <th>Trạng thái</th>
+              <th style={{ width: "14%" }}>Số Serial</th>
+              <th style={{ width: "8%" }}>Loại hình</th>
+              <th style={{ width: "20%" }}>Nội dung chính</th>
+              <th style={{ width: "14%" }}>Chi phí</th>
+              <th style={{ width: "10%" }}>Kỹ thuật viên</th>
+              <th style={{ width: "12%" }}>Ngày thực hiện</th>
+              <th style={{ width: "10%" }}>Bảo hành</th>
+              <th style={{ width: "12%" }}>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
-            {filteredRecords.map((record) => (
+            {paginatedRecords.map((record) => (
               <tr
-                key={record.id}
+                key={record._id}
                 onClick={() => openDetail(record, "view")}
                 style={{ cursor: "pointer" }}
                 className="hoverable-row"
               >
-                <td>
-                  <div style={{ fontWeight: 600, color: "#1e40af", fontSize: 13 }}>{record.serialNumber}</div>
+                <td className="product-cell-text product-cell-title">{record.serialNumber}</td>
+                <td className="product-cell-text" style={{ fontWeight: 700, color: "var(--grey-600)" }}>
+                  {getRepairTypeLabel(record.type)}
                 </td>
-                <td>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{record.type || "Khác"}</div>
+                <td style={{ maxWidth: "180px" }}>
+                  <div className="product-cell-text product-cell-truncate" title={record.repairContent}>
+                    {record.repairContent}
+                  </div>
                 </td>
-                <td>
-                  <div style={{ color: "#475569", fontSize: 13, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{record.repairContent}</div>
-                </td>
-                <td style={{ fontWeight: 700, color: "#0f172a", fontSize: 13 }}>
+                <td className="product-cell-price">
                   {record.cost > 0 ? Number(record.cost).toLocaleString("vi-VN") + " ₫" : "Miễn phí"}
                 </td>
                 <td>
-                  <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace", maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis" }} title={record.technicianWallet}>
-                    {record.technicianWallet ? `${record.technicianWallet.slice(0, 6)}...` : "N/A"}
+                  <div className="product-cell-meta" style={{ fontFamily: "monospace" }} title={record.technicianWallet}>
+                    {record.technicianWallet ? `${record.technicianWallet.slice(0, 8)}...` : "N/A"}
                   </div>
                 </td>
-                <td style={{ fontSize: 12, color: "#475569" }}>
+                <td className="product-cell-text">
                   {record.repairDate ? new Date(record.repairDate).toLocaleDateString("vi-VN") : "-"}
                 </td>
                 <td>
-                  <span style={{
-                    display: "inline-block",
-                    background: record.isWarrantyCovered ? "#10b981" : "#ef4444",
-                    color: "white",
-                    borderRadius: 20, padding: "2px 10px",
-                    fontSize: 11, fontWeight: 700,
-                  }}>
+                  <span className={`filter-btn active ${record.isWarrantyCovered ? "success" : "danger"}`} style={{ padding: "0.6rem 1.4rem", fontSize: "1.4rem", height: "auto", minHeight: "unset" }}>
                     {record.isWarrantyCovered ? "Có" : "Không"}
                   </span>
                 </td>
                 <td>
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 4,
-                    borderRadius: 20, padding: "4px 12px",
-                    fontSize: 12, fontWeight: 700,
+                  <span className="filter-btn active" style={{
+                    padding: "0.8rem 1.4rem",
+                    fontSize: "1.4rem",
+                    height: "auto",
+                    minHeight: "unset",
                     background: getStatusConfig(record.status).background,
                     color: getStatusConfig(record.status).color,
-                    border: `1px solid ${getStatusConfig(record.status).borderColor}`,
+                    borderColor: getStatusConfig(record.status).borderColor
                   }}>
                     {getStatusConfig(record.status).label}
                   </span>
@@ -240,14 +513,74 @@ function RepairHistory() {
             ))}
           </tbody>
         </table>
-        {filteredRecords.length === 0 && (
+        {paginatedRecords.length === 0 && (
           <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>Không tìm thấy ghi nhận sửa chữa nào.</div>
         )}
       </div>
 
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="admin-pagination">
+          {/* Left: Spacer */}
+          <div></div>
+
+          {/* Center: Controls */}
+          <div className="pagination-controls">
+            <button
+              className="pagination-btn"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`pagination-btn ${currentPage === page ? "active" : ""}`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              className="pagination-btn"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Right: Info */}
+          <div className="pagination-info">
+            Hiển thị <strong>{startIndex + 1}</strong> - <strong>{Math.min(startIndex + ITEMS_PER_PAGE, filteredRecords.length)}</strong> trên <strong>{filteredRecords.length}</strong> lượt sửa
+          </div>
+        </div>
+      )}
+
       {/* Table */}
 
       {/* Detail & Update Modal */}
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        technicianWallet={technicianWallet}
+        setTechnicianWallet={setTechnicianWallet}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        uniqueTechnicians={uniqueTechnicians}
+      />
+
       {isModalOpen && selectedRepair && (
         <div className="modal-overlay" onClick={closeDetail}>
           <div className="modal-content modal-large" onClick={e => e.stopPropagation()} style={{ padding: 0, overflow: "hidden" }}>
@@ -469,11 +802,180 @@ function RepairHistory() {
           from { opacity: 0; transform: translateY(20px) scale(0.98); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         .action-btn { transition: all 0.2s; }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .hoverable-row:hover { background-color: #f8fafc !important; }
       `}</style>
+      {/* Add Repair Modal */}
+      {isAddingRepair && (
+        <AddRepairModal
+          isOpen={isAddingRepair}
+          onClose={() => setIsAddingRepair(false)}
+          onSuccess={() => {
+            setIsAddingRepair(false);
+            fetchRepairs();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function AddRepairModal({ isOpen, onClose, onSuccess }) {
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    serialNumber: "",
+    repairContent: "",
+    warrantyCovered: "yes",
+    status: "pending",
+    type: "Khác",
+    cost: 0,
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const updateField = (field) => (e) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!form.serialNumber.trim()) errs.serialNumber = "Vui lòng nhập Số Serial thiết bị";
+    if (!form.repairContent.trim()) errs.repairContent = "Vui lòng nhập nội dung sửa chữa";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      setLoading(true);
+      const payload = {
+        serialNumber: form.serialNumber.trim(),
+        note: form.repairContent,
+        isWarrantyCovered: form.warrantyCovered === "yes",
+        status: form.status,
+        type: form.type,
+        cost: Number(form.cost) || 0,
+      };
+      await repairService.createRepair(payload);
+      toast.success("Đã thêm phiếu sửa chữa thành công!");
+      onSuccess();
+    } catch (err) {
+      toast.error("Lỗi khi thêm phiếu sửa chữa: " + (err.message || "Không xác định"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: "600px" }}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">Tạo Phiếu Sửa Chữa Mới</h3>
+          <button className="admin-modal-close" onClick={onClose}>&times;</button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Serial Number Input */}
+          <div className="form-group-v2">
+            <label className="lr-label" style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginBottom: "8px", display: "block" }}>
+              Số Serial thiết bị <span className="lr-required" style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <input
+              type="text"
+              className={`lr-input ${errors.serialNumber ? "error" : ""}`}
+              placeholder="Nhập số Serial thiết bị (VD: W01-X...)"
+              value={form.serialNumber}
+              onChange={updateField("serialNumber")}
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                border: errors.serialNumber ? "1.5px solid #ef4444" : "1.5px solid #e2e8f0",
+                borderRadius: "10px",
+                outline: "none",
+                fontSize: "14px"
+              }}
+            />
+            {errors.serialNumber && <div style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>{errors.serialNumber}</div>}
+          </div>
+
+          {/* Repair Content */}
+          <div className="form-group-v2">
+            <label className="lr-label" style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginBottom: "8px", display: "block" }}>
+              Nội dung sửa chữa <span className="lr-required" style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <textarea
+              className={`lr-textarea ${errors.repairContent ? "error" : ""}`}
+              value={form.repairContent}
+              onChange={updateField("repairContent")}
+              placeholder="VD: Thay màn hình do vỡ, thay pin..."
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: errors.repairContent ? "1.5px solid #ef4444" : "1.5px solid #e2e8f0",
+                borderRadius: "10px",
+                outline: "none",
+                fontSize: "14px",
+                resize: "none"
+              }}
+            />
+            {errors.repairContent && <div style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>{errors.repairContent}</div>}
+          </div>
+
+          {/* Row 1: Coverage & Status */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div>
+              <label className="lr-label" style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginBottom: "8px", display: "block" }}>Bảo hành chi trả</label>
+              <select className="lr-select" value={form.warrantyCovered} onChange={updateField("warrantyCovered")} style={{ width: "100%", padding: "10px", border: "1.5px solid #e2e8f0", borderRadius: "10px", outline: "none", fontSize: "14px" }}>
+                <option value="yes">Có (Trong bảo hành)</option>
+                <option value="no">Không (Ngoài bảo hành)</option>
+              </select>
+            </div>
+            <div>
+              <label className="lr-label" style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginBottom: "8px", display: "block" }}>Trạng thái</label>
+              <select className="lr-select" value={form.status} onChange={updateField("status")} style={{ width: "100%", padding: "10px", border: "1.5px solid #e2e8f0", borderRadius: "10px", outline: "none", fontSize: "14px" }}>
+                <option value="pending">Tiếp nhận</option>
+                <option value="waiting_parts">Chờ linh kiện</option>
+                <option value="fixing">Đang sửa</option>
+                <option value="completed">Sửa xong</option>
+                <option value="delivered">Đã giao</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Row 2: Type & Cost */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div>
+              <label className="lr-label" style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginBottom: "8px", display: "block" }}>Loại hình</label>
+              <select className="lr-select" value={form.type} onChange={updateField("type")} style={{ width: "100%", padding: "10px", border: "1.5px solid #e2e8f0", borderRadius: "10px", outline: "none", fontSize: "14px" }}>
+                <option value="Màn hình">Màn hình</option>
+                <option value="Pin/Nguồn">Pin/Nguồn</option>
+                <option value="Phần cứng">Phần cứng</option>
+                <option value="Phần mềm">Phần mềm</option>
+                <option value="Khác">Khác</option>
+              </select>
+            </div>
+            <div>
+              <label className="lr-label" style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginBottom: "8px", display: "block" }}>Chi phí (VND)</label>
+              <input type="number" className="lr-input" value={form.cost} onChange={updateField("cost")} style={{ width: "100%", padding: "10px", border: "1.5px solid #e2e8f0", borderRadius: "10px", outline: "none", fontSize: "14px" }} />
+            </div>
+          </div>
+
+          <div className="admin-modal-footer" style={{ marginTop: "10px", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <button type="button" className="admin-secondary-btn" onClick={onClose} style={{ padding: "10px 20px" }}>Hủy</button>
+            <button type="submit" className="admin-primary-btn" disabled={loading} style={{ padding: "10px 24px", border: "none", color: "white", borderRadius: "10px", fontWeight: 700, cursor: "pointer" }}>
+              {loading ? "Đang xử lý..." : "Tạo Phiếu"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
