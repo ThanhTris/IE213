@@ -101,27 +101,8 @@ Mở 2 terminal riêng:
 cd backend && npm run dev
 
 # Terminal 2
-cd frontend && npm run dev
+cd frontend && npm start
 ```
-
-## 🧪 Hướng Dẫn Test Tính Năng Blockchain (Web3)
-
-Vì dự án sử dụng Blockchain, quyền sở hữu bảo hành gắn liền với **Private Key (Khóa riêng tư)** trên MetaMask. Do cơ chế bảo mật của Smart Contract, **chỉ có Admin (người triển khai hợp đồng) mới được quyền Tạo (Mint) phiếu bảo hành**.
-
-Để người dùng (hoặc giáo viên chấm bài) có thể test tính năng **Chuyển nhượng bảo hành**, cần thực hiện 1 trong 2 cách sau:
-
-### Cách 1: Sử dụng Ví Test dùng chung (Khuyên dùng cho Demo)
-Admin có thể chuẩn bị sẵn các ví chứa NFT và cung cấp Private Key để người test tự đăng nhập:
-1. Mở MetaMask, chọn **Import Account** (Nhập tài khoản).
-2. Dán Private Key của Ví Test: *(Admin cập nhật Private Key vào đây trước khi public)*
-3. Đảm bảo MetaMask đang ở mạng **Sepolia Testnet**.
-4. Đăng nhập vào hệ thống bằng ví vừa nhập. Lúc này bạn sẽ thấy các phiếu bảo hành đã được đúc sẵn và có thể chuyển nhượng chúng.
-
-### Cách 2: Yêu cầu Admin phát (Airdrop) phiếu bảo hành
-1. Người test tạo ví MetaMask mới và chuyển sang mạng **Sepolia**.
-2. Gửi địa chỉ ví (Address) cho Admin.
-3. Admin sẽ đăng nhập bằng ví Admin, vào mục **Tạo phiếu bảo hành**, điền thông tin và paste địa chỉ ví của người test vào ô "Địa chỉ ví khách hàng".
-4. Sau khi Admin tạo xong, người test đăng nhập vào web sẽ thấy phiếu bảo hành của mình và có thể toàn quyền sử dụng/chuyển nhượng.
 
 ## Kiểm Thử
 
