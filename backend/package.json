@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "NODE_PATH=./node_modules vitest run --config ./vitest.config.js"
+    "test": "NODE_PATH=./node_modules vitest run --config ./vitest.config.js",
+    "reset-demo": "node reset-demo.js"
   },
   "dependencies": {
     "axios": "^1.15.0",
