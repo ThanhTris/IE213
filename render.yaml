@@ -36,7 +36,7 @@ services:
     staticPublishPath: dist
     branch: staging
     envVars:
-      - key: VITE_API_URL
+      - key: VITE_API_BASE_URL
         sync: false # URL backend — điền sau khi backend deploy xong
     routes:
       - type: rewrite
