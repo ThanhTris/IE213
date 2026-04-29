@@ -1,133 +1,117 @@
-# IE213
+# IE213 - Hệ thống Quản lý Bảo hành Điện tử (E-Warranty)
 
-Dự án E-Warranty theo mô hình Hybrid Blockchain, sử dụng React.js (Frontend), Node.js + Express (Backend) và smart contract ERC-721 trên Sepolia.
+Dự án môn học Phát triển ứng dụng Web hiện đại (IE213) - Trường Đại học Công nghệ Thông tin, ĐHQG-HCM.
 
-## Cấu Trúc Dự Án
+---
 
-```
-IE213/
-├── .devcontainer/      # Cấu hình môi trường phát triển (VS Code Dev Container)
-├── backend/            # API Node.js + Express
-│   ├── src/
-│   │   ├── routes/     # Định nghĩa các route
-│   │   ├── controllers/# Xử lý logic nghiệp vụ
-│   │   ├── models/     # Mô hình dữ liệu
-│   │   └── middleware/ # Middleware
-│   ├── .env.example
-│   └── package.json
-├── frontend/           # Giao diện React.js
-│   ├── public/
-│   ├── src/
-│   │   ├── components/ # Các component tái sử dụng
-│   │   ├── pages/      # Các trang
-│   │   └── assets/     # Hình ảnh, CSS, ...
-│   └── package.json
-├── docs/               # Tài liệu báo cáo, hướng dẫn sử dụng
-├── tests/              # Các bài kiểm thử tự động
-├── .gitignore
-└── README.md
-```
+## 🏛 Thông tin chung
+- **Trường**: Đại học Công nghệ Thông tin, ĐHQG-HCM
+- **Khoa**: Khoa học và Kỹ thuật Thông tin (KH&KTTT)
+- **Giảng viên hướng dẫn**: ThS. Võ Tấn Khoa
+- **Nhóm sinh viên thực hiện**:
+  1. 23521645 Nguyễn Thanh Trí
+  2. 23521627 Lê Thị Thùy Trang
+  3. 21522033 Lê Trung Hải
+  4. 21522484 Đoàn Thị Tuyết Phương
 
-## Yêu Cầu Hệ Thống
+---
 
-- [Node.js](https://nodejs.org/) >= 18.x
-- [npm](https://www.npmjs.com/) >= 9.x
+## 🚀 Demo & Tra cứu
+- **Link Website (Render)**: [https://e-warranty-frontend.onrender.com/](https://e-warranty-frontend.onrender.com/)
+- **Video Demo (YouTube)**: [https://youtu.be/kVsBl7AasHs](https://youtu.be/kVsBl7AasHs)
 
-## Quy Ước Quản Lý Dependency
+### 🔍 Dữ liệu mẫu để tra cứu (Serial Number):
+Bạn có thể sử dụng các mã Serial sau để trải nghiệm tính năng tra cứu công khai:
+- `W01-APL-IP15PM-001`
+- `W02-APL-IP15-002`
+- `W03-APL-IP14P-003`
+- `W07-OPP-R10P-007`
 
-- Mỗi phần chạy độc lập tại thư mục riêng:
-  - `backend/` có `package.json`, `package-lock.json`, `node_modules` riêng.
-  - `frontend/` có `package.json`, `package-lock.json`, `node_modules` riêng.
-- Không cài dependency tại thư mục root.
+### ⚠️ Lưu ý về tính năng Web3:
+- **Quyền tạo bảo hành (Mint)**: Do Smart Contract đã được deploy trên mạng Sepolia có cấu hình bảo mật, quyền `mintWarranty` chỉ dành riêng cho địa chỉ **Admin**. Vì vậy, người dùng thông thường sẽ không thể tạo mới phiếu bảo hành trên giao diện web.
+- **Thử nghiệm chuyển nhượng**: Nếu bạn muốn trải nghiệm tính năng chuyển nhượng NFT bảo hành giữa các ví, vui lòng liên hệ với chúng tôi qua email **23521645@gm.uit.edu.vn** để được cấp phát phiếu thử nghiệm.
+- Các quy trình đúc NFT và chuyển nhượng đã được thực hiện và kiểm chứng thành công trong video demo.
 
-## Hướng Dẫn Cài Đặt
+---
 
-### 1. Clone repository
+## 🛠 Công nghệ sử dụng
+- **Backend**: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/)
+- **Frontend**: [React.js](https://reactjs.org/) (Vite), [Tailwind CSS](https://tailwindcss.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/)
+- **Blockchain**: [Solidity](https://soliditylang.org/), [Sepolia Testnet](https://sepolia.etherscan.io/), [MetaMask](https://metamask.io/)
+- **Storage (IPFS)**: [Pinata](https://www.pinata.cloud/)
 
+---
+
+## 🏗 Kiến trúc hệ thống
+Hệ thống bao gồm các vai trò chính:
+1. **Admin**: Quản lý sản phẩm, nhân viên và cấu hình hệ thống.
+2. **Staff (Nhân viên)**: Tạo phiếu bảo hành (Mint NFT), kiểm tra thông tin khách hàng.
+3. **Technician (Kỹ thuật viên)**: Cập nhật nhật ký sửa chữa (Repair Log) cho các thiết bị đang bảo hành.
+4. **User (Khách hàng)**: Tra cứu bảo hành, quản lý danh sách thiết bị sở hữu, thực hiện chuyển nhượng bảo hành (Transfer NFT).
+
+---
+
+## 💻 Hướng dẫn cài đặt
+
+### Yêu cầu hệ thống
+- Node.js (v18 trở lên)
+- MongoDB
+- MetaMask Extension
+
+### Các bước cài đặt
+
+1. **Clone repository**
 ```bash
 git clone https://github.com/ThanhTris/IE213.git
 cd IE213
 ```
 
-### 2. Cài đặt Backend
-
+2. **Cài đặt Backend**
 ```bash
 cd backend
 npm install
 ```
+Tạo file `.env` trong thư mục `backend`:
+```env
+PORT=10000
+MONGODB_URL=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PINATA_JWT=your_pinata_jwt
+FRONTEND_URL=http://localhost:5173
+```
 
-### 3. Cài đặt Frontend
-
+3. **Cài đặt Frontend**
 ```bash
 cd ../frontend
 npm install
 ```
-
-### 4. Cấu hình biến môi trường
-
-```bash
-cd /workspaces/IE213
-cp backend/.env.example backend/.env
+Tạo file `.env` trong thư mục `frontend`:
+```env
+VITE_API_BASE_URL=http://localhost:10000
+VITE_CONTRACT_ADDRESS=0xF79Fb7022B5AfB635FC0BD65682271db766bab14
+VITE_NETWORK_ID=11155111
+VITE_PINATA_JWT=your_pinata_jwt
 ```
 
-Chỉnh sửa `backend/.env` theo nhu cầu.
+4. **Khởi chạy ứng dụng**
+- **Backend**: `npm run dev` (tại thư mục `/backend`)
+- **Frontend**: `npm run dev` (tại thư mục `/frontend`)
 
-## Hướng Dẫn Sử Dụng
+---
 
-### Chạy Backend (API Server)
-
+## 🧪 Kiểm thử
+Dự án sử dụng **Vitest** để thực hiện Unit Test và Integration Test cho Backend.
 ```bash
 cd backend
-npm run dev
-```
-
-Server sẽ chạy tại: http://localhost:5000
-
-### Chạy Frontend (React App)
-
-```bash
-cd frontend
-npm start
-```
-
-Ứng dụng sẽ mở tại: http://localhost:3000
-
-### Chạy cả Backend và Frontend cùng lúc
-
-Mở 2 terminal riêng:
-
-```bash
-# Terminal 1
-cd backend && npm run dev
-
-# Terminal 2
-cd frontend && npm start
-```
-
-## Kiểm Thử
-
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-cd ../frontend
 npm test
 ```
 
-## Tài Liệu
+---
 
-Xem thêm tài liệu chi tiết trong thư mục `docs/`, đặc biệt `docs/dev-setup.md`, `docs/project-progress.md`, `docs/api-status.md`, `docs/web3-status.md`.
+## 🛡 Bảo mật & Quy trình
+- **Xác thực**: Sử dụng JWT cho các phiên đăng nhập.
+- **Blockchain**: Đảm bảo tính minh bạch và không thể giả mạo của phiếu bảo hành thông qua Smart Contract trên mạng Sepolia.
+- **Dữ liệu**: Ảnh sản phẩm và metadata được lưu trữ phi tập trung trên IPFS thông qua Pinata.
 
-## Đóng Góp
 
-1. Fork dự án
-2. Tạo branch mới (`git checkout -b feature/ten-tinh-nang`)
-3. Commit thay đổi (`git commit -m 'Thêm tính năng mới'`)
-4. Push lên branch (`git push origin feature/ten-tinh-nang`)
-5. Tạo Pull Request
-
-## Giấy Phép
-
-MIT License

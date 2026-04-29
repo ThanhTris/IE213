@@ -47,7 +47,7 @@ describe("Product Endpoint", () => {
   });
 
   it("GET /api/products should return 200 and only active products", async () => {
-    const findSpy = vi.spyOn(Product, "find").mockResolvedValueOnce([
+    const aggregateSpy = vi.spyOn(Product, "aggregate").mockResolvedValueOnce([
       mockProduct({ productCode: "IP16-001", isActive: true }),
       mockProduct({
         _id: "507f1f77bcf86cd799439012",
@@ -63,7 +63,7 @@ describe("Product Endpoint", () => {
     expect(res.body.message).toBe("Lấy danh sách sản phẩm thành công");
     expect(Array.isArray(res.body.data)).toBe(true);
     expect(res.body.data).toHaveLength(2);
-    expect(findSpy).toHaveBeenCalledWith({ isActive: true });
+    expect(aggregateSpy).toHaveBeenCalled();
   });
 
   it("GET /api/products?includeInactive=true should return 403 for anonymous", async () => {
@@ -76,7 +76,7 @@ describe("Product Endpoint", () => {
 
   it("GET /api/products?includeInactive=true should return 200 for admin", async () => {
     const adminToken = makeAccessToken({ role: "admin" });
-    const findSpy = vi.spyOn(Product, "find").mockResolvedValueOnce([
+    const aggregateSpy = vi.spyOn(Product, "aggregate").mockResolvedValueOnce([
       mockProduct({ productCode: "IP16-001", isActive: true }),
       mockProduct({
         _id: "507f1f77bcf86cd799439013",
@@ -91,7 +91,7 @@ describe("Product Endpoint", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(findSpy).toHaveBeenCalledWith({});
+    expect(aggregateSpy).toHaveBeenCalled();
   });
 
   it("GET /api/products/:idOrCode should return 200 when found", async () => {

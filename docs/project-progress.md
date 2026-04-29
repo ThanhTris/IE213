@@ -1,13 +1,15 @@
 # Báo cáo tiến độ dự án E-Warranty (Hybrid Blockchain)
 
-Ngày cập nhật: 2026-04-05
+Ngày cập nhật: 2026-04-29
 
 ## 1) Tóm tắt trạng thái tổng quan (thực tế)
 
 - [x] Smart Contract (On-chain): hoàn thành 100% (đã viết ERC-721, deploy Sepolia, có Contract Address và ABI).
-- [x] Database (Off-chain): đã có 5 model chính trong code (User/Product/Warranty/RepairLog/TransferHistory), cần tiếp tục đồng bộ naming field theo API contract mới.
-- [x] Backend API: User/Product/Warranty/RepairLog/TransferHistory đã chạy được và có test theo từng module.
-- [ ] Frontend UI: vẫn đang trong giai đoạn tích hợp API thật cho toàn bộ màn hình nghiệp vụ.
+- [x] Database (Off-chain): đã có 5 model chính trong code (User/Product/Warranty/RepairLog/TransferHistory).
+- [x] Backend API: User/Product/Warranty/RepairLog/TransferHistory đã hoàn thiện và vượt qua tất cả unit tests.
+- [x] Frontend UI: Tích hợp API thật 100%, đã deploy lên Render.
+- [x] Deployment: Đã deploy thành công lên Render (Backend & Frontend).
+- [x] Demo: Đã có video demo và link website hoạt động.
 
 ## 2) Tiến độ theo mảng kỹ thuật
 

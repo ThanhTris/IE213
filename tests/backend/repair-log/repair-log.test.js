@@ -107,9 +107,8 @@ describe("Repair Log Endpoints", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({
         serialNumber: "SN-001",
-        repairContent: "Thay pin và vệ sinh máy",
+        note: "Thay pin và vệ sinh máy",
         isWarrantyCovered: true,
-        status: "in_progress",
         cost: 0,
       });
 
@@ -118,7 +117,7 @@ describe("Repair Log Endpoints", () => {
     expect(res.body.data.serialNumber).toBe("SN-001");
     expect(res.body.data.technicianWallet).toBe(walletAddress);
     expect(res.body.data.repairContent).toBe("Thay pin và vệ sinh máy");
-    expect(res.body.data.status).toBe("in_progress");
+    expect(res.body.data.status).toBe("pending");
   });
 
   it("GET /api/repair-logs/device/:serialNumber should be public", async () => {
@@ -133,8 +132,8 @@ describe("Repair Log Endpoints", () => {
           {
             _id: "507f1f77bcf86cd799439111",
             serialNumber: "SN-001",
-            repairContent: "Thay pin",
-            status: "done",
+            currentStatus: "completed",
+            timeline: [{ status: "pending", note: "Thay pin" }]
           },
         ]),
       }),
@@ -156,28 +155,29 @@ describe("Repair Log Endpoints", () => {
       lean: vi.fn().mockResolvedValueOnce({
         _id: "507f1f77bcf86cd799439011",
         technicianWallet: walletAddress,
+        currentStatus: "fixing"
       }),
     });
 
     vi.spyOn(RepairLog, "findByIdAndUpdate").mockResolvedValueOnce({
       _id: "507f1f77bcf86cd799439011",
       technicianWallet: walletAddress,
-      repairContent: "Đã sửa xong",
-      status: "done",
-      cost: 0,
+      currentStatus: "completed",
+      timeline: [{ status: "completed", note: "Đã sửa xong" }],
+      toObject: function() { return this; }
     });
 
     const res = await request(app)
       .patch("/api/repair-logs/507f1f77bcf86cd799439011")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        repairContent: "Đã sửa xong",
-        status: "done",
+        note: "Đã sửa xong",
+        status: "completed",
       });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.status).toBe("done");
+    expect(res.body.data.status).toBe("completed");
   });
 });
 
