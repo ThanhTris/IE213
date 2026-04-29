@@ -1291,6 +1291,7 @@
   }
 
   /* Product List: Hide Tablet and Headphone filters */
+  .product-cell-status-dot,
   .product-list-filters .filter-btn:nth-child(8),
   .product-list-filters .filter-btn:nth-child(9) {
     display: none;
