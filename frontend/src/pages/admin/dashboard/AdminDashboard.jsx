@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { productService } from "../../../services/productService";
-import { warrantyService } from "../../../services/warrantyService";
-import { repairService } from "../../../services/repairService";
+import { useProducts, useWarrantiesAdmin, useRepairs } from "../../../hooks/useAdminData";
 import { Package, ShieldCheck, Wrench, CheckCircle, TrendingUp, TrendingDown, Activity, Check } from "lucide-react";
 import "../../../assets/css/adminDashboard.css";
 
@@ -251,159 +249,126 @@ const tabs = [
 // To use real API data, pass the following props:
 //   metrics, lineData, pieData, barData
 function AdminDashboard() {
-  const [metrics, setMetrics] = useState([]);
-  const [lineData, setLineData] = useState([]);
-  const [pieData, setPieData] = useState([]);
-  const [barData, setBarData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { products, isLoading: loadingProducts } = useProducts();
+  const { warranties, isLoading: loadingWarranties } = useWarrantiesAdmin();
+  const { repairs, isLoading: loadingRepairs } = useRepairs();
 
-  useEffect(() => {
-    async function fetchDashboardData() {
-      try {
-        setLoading(true);
-        const [productsRes, warrantiesRes, repairsRes] = await Promise.all([
-          productService.getAllProducts(),
-          warrantyService.getAllWarranties(),
-          repairService.getAllRepairs()
-        ]);
+  const loading = loadingProducts || loadingWarranties || loadingRepairs;
 
-        const products = productsRes.data || [];
-        const warranties = warrantiesRes.data || [];
-        const repairs = repairsRes.data || [];
+  // Derived state directly from SWR data
+  const activeWarranties = warranties.filter(w => w.status === true).length;
+  const completedRepairs = repairs.filter(r => r.status === "completed" || r.status === "delivered" || r.status === "done").length;
 
-        const activeWarranties = warranties.filter(w => w.status === true).length;
-        const completedRepairs = repairs.filter(r => r.status === "completed" || r.status === "delivered" || r.status === "done").length;
+  // 1. Logic for LineChart (Dynamic Last 6 Months)
+  const monthNames = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
+  const today = new Date();
+  const last6Months = [];
 
-        // 1. Logic for LineChart (Dynamic Last 6 Months)
-        const monthNames = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
-        const today = new Date();
-        const last6Months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    last6Months.push({
+      month: monthNames[d.getMonth()],
+      year: d.getFullYear(),
+      monthIdx: d.getMonth(),
+      value: 0
+    });
+  }
 
-        for (let i = 5; i >= 0; i--) {
-          const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-          last6Months.push({
-            month: monthNames[d.getMonth()],
-            year: d.getFullYear(),
-            monthIdx: d.getMonth(),
-            value: 0
-          });
-        }
+  repairs.forEach(r => {
+    const rDate = new Date(r.repairDate || r.createdAt);
+    const rMonth = rDate.getMonth();
+    const rYear = rDate.getFullYear();
 
-        repairs.forEach(r => {
-          const rDate = new Date(r.repairDate || r.createdAt);
-          const rMonth = rDate.getMonth();
-          const rYear = rDate.getFullYear();
+    const match = last6Months.find(m => m.monthIdx === rMonth && m.year === rYear);
+    if (match) match.value++;
+  });
 
-          const match = last6Months.find(m => m.monthIdx === rMonth && m.year === rYear);
-          if (match) match.value++;
-        });
+  const lineData = last6Months.map(m => ({ month: m.month, value: m.value }));
 
-        setLineData(last6Months.map(m => ({ month: m.month, value: m.value })));
+  // 2. Logic for PieChart (Product Categories by Brand - Top 5 + Other)
+  const brandsCount = products.reduce((acc, p) => {
+    acc[p.brand] = (acc[p.brand] || 0) + 1;
+    return acc;
+  }, {});
 
-        // 2. Logic for PieChart (Product Categories by Brand - Top 5 + Other)
-        const brandsCount = products.reduce((acc, p) => {
-          acc[p.brand] = (acc[p.brand] || 0) + 1;
-          return acc;
-        }, {});
+  const sortedBrands = Object.entries(brandsCount).sort((a, b) => b[1] - a[1]);
+  const top5 = sortedBrands.slice(0, 5);
+  const others = sortedBrands.slice(5);
+  const othersCount = others.reduce((sum, item) => sum + item[1], 0);
 
-        // Sort brands by count descending
-        const sortedBrands = Object.entries(brandsCount)
-          .sort((a, b) => b[1] - a[1]);
+  const totalProds = products.length || 1;
+  const COLORS = ["#1e3a8a", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#64748b"];
 
-        const top5 = sortedBrands.slice(0, 5);
-        const others = sortedBrands.slice(5);
-        const othersCount = others.reduce((sum, item) => sum + item[1], 0);
+  const pieData = top5.map(([brand, count], idx) => ({
+    label: brand,
+    pct: Math.round((count / totalProds) * 100),
+    color: COLORS[idx]
+  }));
 
-        const totalProds = products.length || 1;
-        const COLORS = ["#1e3a8a", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#64748b"]; // Added grey for Other
+  if (othersCount > 0) {
+    pieData.push({
+      label: "Khác",
+      pct: Math.round((othersCount / totalProds) * 100),
+      color: COLORS[5]
+    });
+  }
 
-        const newPieData = top5.map(([brand, count], idx) => ({
-          label: brand,
-          pct: Math.round((count / totalProds) * 100),
-          color: COLORS[idx]
-        }));
+  // 3. BarChart Logic
+  const repairTypeCounts = repairs.reduce((acc, r) => {
+    const type = r.type || "Khác";
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
 
-        if (othersCount > 0) {
-          newPieData.push({
-            label: "Khác",
-            pct: Math.round((othersCount / totalProds) * 100),
-            color: COLORS[5]
-          });
-        }
-        setPieData(newPieData);
+  const typeTranslations = {
+    "screen": "Màn hình",
+    "battery": "Pin/Nguồn",
+    "hardware": "Phần cứng",
+    "software": "Phần mềm",
+    "camera": "Camera",
+    "other": "Khác",
+    "Khác": "Khác"
+  };
 
-        const repairTypeCounts = repairs.reduce((acc, r) => {
-          const type = r.type || "Khác";
-          acc[type] = (acc[type] || 0) + 1;
-          return acc;
-        }, {});
+  const barData = Object.entries(repairTypeCounts).map(([cat, count]) => ({
+    label: typeTranslations[cat] || cat,
+    value: count
+  }));
 
-        const typeTranslations = {
-          "screen": "Màn hình",
-          "battery": "Pin/Nguồn",
-          "hardware": "Phần cứng",
-          "software": "Phần mềm",
-          "camera": "Camera",
-          "other": "Khác",
-          "Khác": "Khác"
-        };
-
-        const newBarData = Object.entries(repairTypeCounts).map(([cat, count]) => ({
-          label: typeTranslations[cat] || cat,
-          value: count
-        }));
-        setBarData(newBarData);
-
-        const warrantyRate = products.length > 0
-          ? Math.round((activeWarranties / products.length) * 100)
-          : 0;
-
-        const repairRate = repairs.length > 0
-          ? Math.round((completedRepairs / repairs.length) * 100)
-          : 0;
-
-        setMetrics([
-          {
-            label: "Tổng Sản Phẩm",
-            value: products.length,
-            trend: "+0%",
-            up: true,
-            icon: <Package size={24} />,
-            variant: "blue",
-          },
-          {
-            label: "Bảo Hành Hiệu Lực",
-            value: activeWarranties,
-            trend: "Thời gian thực",
-            up: true,
-            icon: <ShieldCheck size={24} />,
-            variant: "green",
-          },
-          {
-            label: "Tổng Lượt Sửa Chữa",
-            value: repairs.length,
-            trend: "Tất cả",
-            up: true,
-            icon: <Wrench size={24} />,
-            variant: "indigo",
-          },
-          {
-            label: "Sửa Chữa Hoàn Tất",
-            value: completedRepairs,
-            trend: "Đã xong",
-            up: true,
-            icon: <CheckCircle size={24} />,
-            variant: "teal",
-          },
-        ]);
-      } catch (err) {
-        console.error("Lỗi khi tải dữ liệu dashboard:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchDashboardData();
-  }, []);
+  const metrics = [
+    {
+      label: "Tổng Sản Phẩm",
+      value: products.length,
+      trend: "+0%",
+      up: true,
+      icon: <Package size={24} />,
+      variant: "blue",
+    },
+    {
+      label: "Bảo Hành Hiệu Lực",
+      value: activeWarranties,
+      trend: "Thời gian thực",
+      up: true,
+      icon: <ShieldCheck size={24} />,
+      variant: "green",
+    },
+    {
+      label: "Tổng Lượt Sửa Chữa",
+      value: repairs.length,
+      trend: "Tất cả",
+      up: true,
+      icon: <Wrench size={24} />,
+      variant: "indigo",
+    },
+    {
+      label: "Sửa Chữa Hoàn Tất",
+      value: completedRepairs,
+      trend: "Đã xong",
+      up: true,
+      icon: <CheckCircle size={24} />,
+      variant: "teal",
+    },
+  ];
 
 
   return (

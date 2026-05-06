@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { SWRConfig } from "swr";
 
 // Components
 import HeaderTabs from "./components/HeaderTabs";
@@ -135,9 +136,15 @@ function App() {
   useWalletEvents(isAuthenticated, handleLogout);
 
   return (
-    <Routes>
-      <Route
-        element={
+    <SWRConfig 
+      value={{ 
+        revalidateOnFocus: false, // Tắt tự động gọi lại API khi chuyển tab trình duyệt
+        dedupingInterval: 15000,  // Mặc định cache 15 giây
+      }}
+    >
+      <Routes>
+        <Route
+          element={
           <MainLayout
             auth={auth}
             onLogout={handleLogout}
@@ -161,20 +168,7 @@ function App() {
           element={<GuestPage isAuthenticated={isAuthenticated} />}
         />
 
-        {/* Protected Routes */}
-        <Route
-          path="/user"
-          element={
-            <ProtectedRoute
-              isAuthenticated={isAuthenticated}
-              userRole={auth?.role}
-            >
-              <AccountPage auth={auth} onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Admin Routes — bọc trong Suspense để lazy load hoạt động */}
+        {/* Protected Routes */}        {/* Admin Routes — bọc trong Suspense để lazy load hoạt động */}
         <Route
           path="/admin"
           element={
@@ -222,7 +216,7 @@ function App() {
         element={
           isAuthenticated ? (
             <Navigate
-              to={auth?.role === "admin" ? "/admin/dashboard" : "/user"}
+              to={auth?.role === "admin" ? "/admin/dashboard" : "/account"}
               replace
             />
           ) : (
@@ -234,9 +228,10 @@ function App() {
         }
       />
 
-      {/* Catch-all redirect */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Catch-all redirect */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </SWRConfig>
   );
 }
 

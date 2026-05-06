@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import { productService } from "../../../services/productService";
+import { mutate } from "swr";
 
 const BoxIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -106,6 +107,8 @@ function CreateNewProduct() {
         setSubmitted(true);
         setForm(initialForm);
         setImagePreview("");
+        // Ép SWR tải lại danh sách sản phẩm trên toàn bộ app
+        mutate("/api/products");
         setTimeout(() => setSubmitted(false), 3500);
       } else {
         toast.error(res.message || "Không thể tạo sản phẩm.");

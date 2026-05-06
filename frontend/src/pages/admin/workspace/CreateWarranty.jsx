@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { warrantyService } from "../../../services/warrantyService";
 import apiClient from "../../../services/apiClient";
 import BlockingOverlay from "../../../components/BlockingOverlay";
-
+import { mutate } from "swr";
+import { useProducts, useUsers } from "../../../hooks/useAdminData";
 function CreateWarranty() {
   const navigate = useNavigate();
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -18,8 +19,6 @@ function CreateWarranty() {
   };
 
   const [form, setForm] = useState(initialForm);
-  const [deviceModels, setDeviceModels] = useState([]);
-  const [isFetchingModels, setIsFetchingModels] = useState(true);
   const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -32,49 +31,21 @@ function CreateWarranty() {
   const [productSearch, setProductSearch] = useState("");
 
   // Customer Wallet States
-  const [users, setUsers] = useState([]);
-  const [isFetchingUsers, setIsFetchingUsers] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
 
   // Image Preview State
   const [imagePreview, setImagePreview] = useState(null);
 
+  const { products: deviceModels, isLoading: isFetchingModels } = useProducts();
+  const { users, isLoading: isFetchingUsers } = useUsers();
+
+  // Đặt giá trị mặc định cho form khi danh sách sản phẩm đã được tải xong
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await apiClient.get("/products");
-        if (data.success && Array.isArray(data.data)) {
-          setDeviceModels(data.data);
-          if (data.data.length > 0) {
-            setForm((prev) => ({ ...prev, deviceModel: data.data[0].productCode }));
-          }
-        }
-      } catch (err) {
-        toast.error(err.message || "Lỗi tải danh sách sản phẩm");
-        setErrors((prev) => ({ ...prev, fetchError: err.message || "Lỗi tải sản phẩm" }));
-      } finally {
-        setIsFetchingModels(false);
-      }
-    };
-
-    const fetchUsers = async () => {
-      setIsFetchingUsers(true);
-      try {
-        const data = await apiClient.get("/users");
-        if (data.success && Array.isArray(data.data)) {
-          setUsers(data.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
-      } finally {
-        setIsFetchingUsers(false);
-      }
-    };
-
-    fetchProducts();
-    fetchUsers();
-  }, []);
+    if (deviceModels.length > 0 && !form.deviceModel) {
+      setForm((prev) => ({ ...prev, deviceModel: deviceModels[0].productCode }));
+    }
+  }, [deviceModels, form.deviceModel]);
 
   const selectedProduct = useMemo(() => {
     return deviceModels.find((p) => p.productCode === form.deviceModel);
@@ -144,6 +115,9 @@ function CreateWarranty() {
 
       toast.success("Warranty NFT đã được cấp thành công trên blockchain!");
       setSubmitted(true);
+
+      // Báo SWR tải lại danh sách bảo hành
+      mutate("/api/warranties");
 
       // Tự động redirect sang trang chi tiết sau 1.5s
       const serial = result?.serialNumber || normalizedForm.serialNumber;

@@ -31,7 +31,7 @@ function AccountPage({ auth, onLogout }) {
     warranties: myWarranties,
     isLoading: loadingWarranties,
     mutate: mutateWarranties,
-  } = useWarranties(activeTab === "devices" && Boolean(auth?.token));
+  } = useWarranties(Boolean(auth?.token));
 
   // Edit profile state
   const [editProfile, setEditProfile] = useState({ fullName: "", email: "", phone: "" });
@@ -178,7 +178,8 @@ function AccountPage({ auth, onLogout }) {
       toast.success("Chuyển nhượng thành công!");
       setShowTransferModal(false);
       setRecipientAddress("");
-      mutateWarranties(); // SWR revalidate thay vì gọi lại thủ công
+      mutateWarranties(); // Cập nhật lại danh sách NFT
+      mutateProfile(); // Cập nhật lại thống kê số lượng bên cột trái
     } catch (err) {
       console.error(err);
       toast.error(parseMetaMaskError(err));
@@ -298,7 +299,6 @@ function AccountPage({ auth, onLogout }) {
               className={`tab-btn ${activeTab === "devices" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("devices");
-                mutateWarranties();
               }}
             >
               <svg

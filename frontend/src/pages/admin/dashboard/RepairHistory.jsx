@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { repairService } from "../../../services/repairService";
+import { useRepairs } from "../../../hooks/useAdminData";
 import { getStatusConfig, REPAIR_STATUS_CONFIG } from "../../../utils/statusStyles";
 
 
@@ -152,8 +153,7 @@ function FilterModal({ isOpen, onClose, filterStatus, setFilterStatus, filterTyp
 
 
 function RepairHistory() {
-  const [repairs, setRepairs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { repairs, isLoading: loading, mutateRepairs } = useRepairs();
   const [isAddingRepair, setIsAddingRepair] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -185,21 +185,6 @@ function RepairHistory() {
     return Array.from(new Set(wallets));
   }, [repairs]);
 
-  const fetchRepairs = async () => {
-    try {
-      setLoading(true);
-      const res = await repairService.getAllRepairs();
-      setRepairs(res.data || []);
-    } catch (err) {
-      toast.error("Lỗi khi tải lịch sử sửa chữa.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRepairs();
-  }, []);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -298,7 +283,7 @@ function RepairHistory() {
       await repairService.updateRepairStatus(selectedRepair.id, payload);
       toast.success("Đã cập nhật thông tin sửa chữa.");
       closeDetail();
-      fetchRepairs();
+      mutateRepairs();
     } catch (err) {
       toast.error("Lỗi khi cập nhật: " + (err.response?.data?.message || err.message));
     } finally {
@@ -316,7 +301,7 @@ function RepairHistory() {
         note: "Hủy phiếu sửa chữa bởi Admin"
       }).then(() => {
         toast.success("Đã hủy phiếu sửa chữa.");
-        fetchRepairs();
+        mutateRepairs();
       });
     } catch (err) {
       toast.error("Lỗi khi hủy: " + (err.response?.data?.message || err.message));
