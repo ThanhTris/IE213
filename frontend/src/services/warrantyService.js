@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import apiClient from "./apiClient";
 import { pinataHelper, pinFileToPinata } from "../utils/pinata";
+import { parseMetaMaskError } from "../utils/web3";
 import WarrantyNFT from "../../../contracts/WarrantyNFT.json";
 
 export const warrantyService = {
@@ -62,27 +63,30 @@ export const warrantyService = {
 
   /**
    * Handles the 4-step Hybrid Web3 Minting Process for Warranty NFTs.
+   *
+   * @returns {{ success: true, serialNumber: string }} — dùng để redirect
+   * @throws Error với message tiếng Việt thân thiện (đã parse MetaMask errors)
    */
   processWarrantyMinting: async (formData, imageFile, calculatedExpiryDate, onProgress) => {
     let currentWarrantyId = null;
+    const normalizedSerial = formData.serialNumber.trim().toUpperCase();
 
     try {
-      onProgress("1/4 Đang lưu nháp...");
+      // ── BƯỚC 1: Lưu nháp vào DB ─────────────────────────────────────────
+      onProgress("1/4 Đang lưu nháp bảo hành vào hệ thống...");
       const res1 = await apiClient.post("/warranties", {
-        serialNumber: formData.serialNumber,
+        serialNumber: normalizedSerial,
         productCode: formData.deviceModel,
-        ownerWallet: formData.walletAddress, // Cập nhật từ ownerAddress sang ownerWallet để khớp backend mới
+        ownerWallet: formData.walletAddress,
         warrantyMonths: parseInt(formData.warrantyMonths, 10),
       });
 
-      // apiClient đã trả về data (response.data) nhờ interceptor
       currentWarrantyId = res1.data?.id || res1.data?._id;
-
       if (!currentWarrantyId) {
-        throw new Error("Không lấy được ID bản nháp bảo hành");
+        throw new Error("Không lấy được ID bản nháp bảo hành từ hệ thống.");
       }
 
-      // 2. UPLOAD IPFS (Pinata)
+      // ── BƯỚC 2: Upload IPFS (Pinata) ────────────────────────────────────
       onProgress("2/4 Đang tải lên IPFS...");
       let imageHashUrl = "ipfs://Qmauto-generated-dummy-link";
       if (imageFile) {
@@ -96,30 +100,44 @@ export const warrantyService = {
         description: "Official E-Warranty NFT",
         image: imageHashUrl,
         attributes: [
-          { trait_type: "Serial Number", value: formData.serialNumber },
+          { trait_type: "Serial Number", value: normalizedSerial },
           { trait_type: "Expiry Date", value: calculatedExpiryDate },
         ],
       };
       const tokenURI = await pinataHelper(metadata);
 
-      // 3. GIAO DỊCH BLOCKCHAIN (MetaMask)
-      onProgress("3/4 Đang đúc NFT...");
-      if (!window.ethereum) throw new Error("MetaMask không được tìm thấy. Vui lòng cài đặt!");
+      // ── BƯỚC 3: Giao dịch Blockchain (MetaMask) ─────────────────────────
+      onProgress("3/4 Đang đúc NFT trên blockchain — chờ xác nhận MetaMask...");
+      if (!window.ethereum) {
+        throw new Error("MetaMask chưa được cài đặt. Vui lòng cài đặt để tiếp tục!");
+      }
 
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS || "0x0000000000000000000000000000000000000000";
+      const contractAddress =
+        import.meta.env.VITE_CONTRACT_ADDRESS ||
+        "0x0000000000000000000000000000000000000000";
       const contract = new ethers.Contract(contractAddress, WarrantyNFT, signer);
 
-      const serialHash = ethers.id(formData.serialNumber);
-      const expiryTimestamp = Math.floor(new Date(calculatedExpiryDate).getTime() / 1000);
+      const serialHash = ethers.id(normalizedSerial);
+      const expiryTimestamp = Math.floor(
+        new Date(calculatedExpiryDate).getTime() / 1000
+      );
 
-      const tx = await contract.mintWarranty(formData.walletAddress, tokenURI, serialHash, expiryTimestamp);
+      const tx = await contract.mintWarranty(
+        formData.walletAddress,
+        tokenURI,
+        serialHash,
+        expiryTimestamp
+      );
+
+      onProgress("3/4 Giao dịch đã gửi — đang chờ xác nhận từ mạng...");
       const receipt = await tx.wait();
       const txHash = receipt.hash;
 
-      let tokenId = "1"; // Fallback
+      // Lấy tokenId từ event Transfer
+      let tokenId = "1";
       if (receipt.logs) {
         for (const log of receipt.logs) {
           try {
@@ -127,25 +145,28 @@ export const warrantyService = {
             if (parsed && parsed.name === "Transfer") {
               tokenId = parsed.args.tokenId.toString();
             }
-          } catch (_e) { }
+          } catch (_e) {
+            // log không phải Transfer event — bỏ qua
+          }
         }
       }
 
-      // 4. GỌI API BƯỚC 2 (PATCH /api/warranties/:id)
-      onProgress("4/4 Đang hoàn tất...");
+      // ── BƯỚC 4: Cập nhật DB với kết quả blockchain ──────────────────────
+      onProgress("4/4 Đang hoàn tất và lưu kết quả vào hệ thống...");
       await apiClient.patch(`/warranties/${currentWarrantyId}`, {
         txHash,
         tokenId,
         tokenURI,
-        status: true, // Boolean theo DB mới
+        status: true,
       });
 
-      return true;
+      // Trả về serialNumber để FE redirect
+      return { success: true, serialNumber: normalizedSerial };
+
     } catch (err) {
-      if (err.message && err.message.includes("user rejected")) {
-        throw new Error("Người dùng đã từ chối giao dịch MetaMask.");
-      }
-      throw err;
+      // Parse lỗi MetaMask → thông báo tiếng Việt thân thiện
+      const friendlyMessage = parseMetaMaskError(err);
+      throw new Error(friendlyMessage);
     }
-  }
+  },
 };
