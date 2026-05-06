@@ -1,4 +1,5 @@
 const User = require("../models/UserModel");
+const Warranty = require("../models/WarrantyModel");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 const { generateToken } = require("../middleware/auth");
 
@@ -123,10 +124,20 @@ const getUserByWallet = async (req, res, next) => {
       });
     }
 
+    // Gộp luôn stats vào đây để giảm request
+    const total = await Warranty.countDocuments({ ownerWallet: walletAddress });
+    const active = await Warranty.countDocuments({ 
+      ownerWallet: walletAddress,
+      status: true 
+    });
+
     return sendSuccess(res, {
       statusCode: 200,
       message: "Lấy thông tin người dùng thành công",
-      data: toUserResponse(user),
+      data: {
+        ...toUserResponse(user),
+        stats: { total, active }
+      },
     });
   } catch (error) {
     return next(error);
