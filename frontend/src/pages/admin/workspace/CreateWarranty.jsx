@@ -1,10 +1,13 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
-import { API_ROOT } from "../../../utils/api";
+import { useNavigate } from "react-router-dom";
 import { buildFakeHash } from "../../../utils/hashPreview";
 import { toast } from "sonner";
 import { warrantyService } from "../../../services/warrantyService";
+import apiClient from "../../../services/apiClient";
+import BlockingOverlay from "../../../components/BlockingOverlay";
 
 function CreateWarranty() {
+  const navigate = useNavigate();
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const initialForm = {
@@ -21,6 +24,7 @@ function CreateWarranty() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMinting, setIsMinting] = useState(false); // BlockingOverlay
   const [currentStep, setCurrentStep] = useState("");
 
   // Custom Dropdown States
@@ -39,17 +43,7 @@ function CreateWarranty() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const token = localStorage.getItem("bw_auth_token");
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch(`${API_ROOT}/products`, { headers });
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok || data.success === false) {
-          throw new Error(data.error?.message || data.message || "Lỗi tải danh sách sản phẩm");
-        }
-
+        const data = await apiClient.get("/products");
         if (data.success && Array.isArray(data.data)) {
           setDeviceModels(data.data);
           if (data.data.length > 0) {
@@ -57,8 +51,8 @@ function CreateWarranty() {
           }
         }
       } catch (err) {
-        toast.error(err.message);
-        setErrors((prev) => ({ ...prev, fetchError: err.message }));
+        toast.error(err.message || "Lỗi tải danh sách sản phẩm");
+        setErrors((prev) => ({ ...prev, fetchError: err.message || "Lỗi tải sản phẩm" }));
       } finally {
         setIsFetchingModels(false);
       }
@@ -67,13 +61,7 @@ function CreateWarranty() {
     const fetchUsers = async () => {
       setIsFetchingUsers(true);
       try {
-        const token = localStorage.getItem("bw_auth_token");
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch(`${API_ROOT}/users`, { headers });
-        const data = await res.json().catch(() => ({}));
-
+        const data = await apiClient.get("/users");
         if (data.success && Array.isArray(data.data)) {
           setUsers(data.data);
         }
@@ -137,6 +125,7 @@ function CreateWarranty() {
     e.preventDefault();
     if (!validateForm()) return;
     setIsLoading(true);
+    setIsMinting(true);
     setErrors({});
 
     try {
@@ -144,13 +133,23 @@ function CreateWarranty() {
         ...form,
         serialNumber: form.serialNumber.trim().toUpperCase(),
       };
-      await warrantyService.processWarrantyMinting(normalizedForm, imageFile, calculatedExpiryDate, (stepMsg) => {
-        setCurrentStep(stepMsg);
-      });
+      const result = await warrantyService.processWarrantyMinting(
+        normalizedForm,
+        imageFile,
+        calculatedExpiryDate,
+        (stepMsg) => {
+          setCurrentStep(stepMsg);
+        }
+      );
 
-      toast.success("Warranty NFT issued successfully on blockchain!");
+      toast.success("Warranty NFT đã được cấp thành công trên blockchain!");
       setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 3500);
+
+      // Tự động redirect sang trang chi tiết sau 1.5s
+      const serial = result?.serialNumber || normalizedForm.serialNumber;
+      setTimeout(() => {
+        navigate(`/search/${serial}`);
+      }, 1500);
 
     } catch (err) {
       const msg = err.message || "Gặp lỗi khi tạo thẻ bảo hành NFT. Vui lòng thử lại.";
@@ -158,12 +157,20 @@ function CreateWarranty() {
       toast.error(msg);
     } finally {
       setIsLoading(false);
+      setIsMinting(false);
       setCurrentStep("");
     }
   };
 
   return (
-    <div className="cw-wrapper">
+    <>
+      {/* Blocking overlay khi đang giao dịch blockchain */}
+      <BlockingOverlay
+        isVisible={isMinting}
+        step={currentStep}
+        title="Đang xử lý giao dịch blockchain"
+      />
+      <div className="cw-wrapper">
       <div className="cw-layout">
 
         {/* ─── LEFT: Form ─── */}
@@ -1342,6 +1349,7 @@ function CreateWarranty() {
         }
       `}</style>
     </div>
+    </>
   );
 }
 
