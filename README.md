@@ -4,6 +4,16 @@ Dự án E-Warranty được thiết kế theo mô hình **Hybrid Web3**, kết 
 
 ---
 
+## ✨ Tính năng nổi bật
+
+- 🛡️ **Bảo mật Hybrid**: Kết hợp JWT (Web2) và Chữ ký số MetaMask (Web3).
+- 🖼️ **NFT Warranty**: Mỗi phiếu bảo hành là một token ERC-721 duy nhất, không thể làm giả.
+- 📂 **IPFS Storage**: Metadata và ảnh sản phẩm được lưu trữ phi tập trung trên Pinata.
+- 🚀 **Hiệu năng cao**: Sử dụng SWR Caching để tải dữ liệu tức thì, giảm tải cho Blockchain.
+- 📱 **Giao diện hiện đại**: Thiết kế Responsive, tối ưu cho quản trị viên và người dùng cuối.
+
+---
+
 ## 🗺️ Kiến Trúc Hệ Thống (System Overview)
 
 Dự án áp dụng mô hình **Hybrid Web3 Architecture** nhằm tối ưu hóa giữa tính minh bạch của Blockchain và hiệu năng của Web2.
