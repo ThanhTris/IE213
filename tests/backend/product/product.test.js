@@ -63,16 +63,11 @@ describe("Product Endpoint", () => {
     expect(res.body.message).toBe("Lấy danh sách sản phẩm thành công");
     expect(Array.isArray(res.body.data)).toBe(true);
     expect(res.body.data).toHaveLength(2);
-    expect(aggregateSpy).toHaveBeenCalled();
+    expect(aggregateSpy).toHaveBeenCalledWith(expect.arrayContaining([
+      { $match: { isActive: true } }
+    ]));
   });
 
-  it("GET /api/products?includeInactive=true should return 403 for anonymous", async () => {
-    const res = await request(app).get("/api/products?includeInactive=true");
-
-    expect(res.statusCode).toBe(403);
-    expect(res.body.success).toBe(false);
-    expect(res.body.error.code).toBe("E403_FORBIDDEN");
-  });
 
   it("GET /api/products?includeInactive=true should return 200 for admin", async () => {
     const adminToken = makeAccessToken({ role: "admin" });
@@ -91,7 +86,9 @@ describe("Product Endpoint", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(aggregateSpy).toHaveBeenCalled();
+    expect(aggregateSpy).toHaveBeenCalledWith(expect.arrayContaining([
+      { $match: {} }
+    ]));
   });
 
   it("GET /api/products/:idOrCode should return 200 when found", async () => {

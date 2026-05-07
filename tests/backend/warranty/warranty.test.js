@@ -5,9 +5,6 @@ const Product = require("../../../backend/src/models/ProductModel");
 const User = require("../../../backend/src/models/UserModel");
 const app = require("../../../backend/src/app");
 
-vi.mock("../../../backend/src/models/ProductModel");
-vi.mock("../../../backend/src/models/UserModel");
-
 process.env.JWT_SECRET = "test-jwt-secret";
 process.env.PINATA_JWT = "mock-jwt";
 
@@ -30,7 +27,7 @@ describe("Warranty Public Verify Endpoint", () => {
   it("GET /api/warranties/verify/:serialNumber should return masked ownerWallet", async () => {
     const rawOwnerWallet = "0x1234567890abcdef1234567890abcdef1234abcd";
 
-    mockFindOneLean({
+    const findOneSpy = mockFindOneLean({
       serialNumber: "SN-001",
       serialHash: "0xaaaa...",
       ownerWallet: rawOwnerWallet,
@@ -43,11 +40,11 @@ describe("Warranty Public Verify Endpoint", () => {
       mintedAt: "2026-03-30T07:00:00.000Z",
     });
 
-    vi.spyOn(Product, "findOne").mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce({ productCode: "IP16-001", productName: "iPhone 16" }),
+    vi.spyOn(Product, "findOne").mockReturnValue({
+      lean: vi.fn().mockResolvedValueOnce({ productName: "iPhone 16" }),
     });
-    vi.spyOn(User, "findOne").mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce({ walletAddress: rawOwnerWallet, fullName: "Test User" }),
+    vi.spyOn(User, "findOne").mockReturnValue({
+      lean: vi.fn().mockResolvedValueOnce({ fullName: "User A" }),
     });
 
     const res = await request(app).get("/api/warranties/verify/SN-001");

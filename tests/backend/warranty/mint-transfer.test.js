@@ -47,9 +47,7 @@ describe("Mint & Transfer Flows", () => {
         warrantyMonths: 12,
       }),
     });
-    vi.spyOn(Warranty, "findOne").mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce(null),
-    });
+    vi.spyOn(Warranty, "findOne").mockResolvedValueOnce(null);
 
     const savedWarranty = {
       serialNumber: "SN-TEST-001",
@@ -113,8 +111,8 @@ describe("Mint & Transfer Flows", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
     expect(TransferHistory.create).toHaveBeenCalledWith(
-      expect.objectContaining({ 
-        tokenId, 
+      expect.objectContaining({
+        tokenId,
         txHash,
         transferType: "mint",
         fromAddress: "0x0000000000000000000000000000000000000000"
@@ -157,8 +155,8 @@ describe("Mint & Transfer Flows", () => {
     expect(res.statusCode).toBe(201);
     expect(res.body.success).toBe(true);
     expect(TransferHistory.create).toHaveBeenCalledWith(
-      expect.objectContaining({ 
-        tokenId, 
+      expect.objectContaining({
+        tokenId,
         txHash,
         fromAddress: sender.toLowerCase(),
         toAddress: receiver.toLowerCase()

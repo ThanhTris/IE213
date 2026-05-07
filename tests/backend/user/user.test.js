@@ -19,6 +19,7 @@ const newWallet =
   "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
 const User = require("../../../backend/src/models/UserModel");
+const Warranty = require("../../../backend/src/models/WarrantyModel");
 const app = require("../../../backend/src/app");
 
 const makeAccessToken = ({ walletAddress, role = "user" }) => {
@@ -36,6 +37,7 @@ const makeAccessToken = ({ walletAddress, role = "user" }) => {
 describe("User Endpoint", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(Warranty, "countDocuments").mockResolvedValue(0);
   });
 
   const sampleUser = {

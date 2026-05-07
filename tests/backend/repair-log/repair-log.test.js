@@ -155,7 +155,7 @@ describe("Repair Log Endpoints", () => {
       lean: vi.fn().mockResolvedValueOnce({
         _id: "507f1f77bcf86cd799439011",
         technicianWallet: walletAddress,
-        currentStatus: "fixing"
+        currentStatus: "fixing",
       }),
     });
 
@@ -163,7 +163,11 @@ describe("Repair Log Endpoints", () => {
       _id: "507f1f77bcf86cd799439011",
       technicianWallet: walletAddress,
       currentStatus: "completed",
-      timeline: [{ status: "completed", note: "Đã sửa xong" }],
+      cost: 0,
+      timeline: [
+        { status: "pending", note: "Bắt đầu" },
+        { status: "completed", note: "Đã sửa xong" }
+      ],
       toObject: function() { return this; }
     });
 
@@ -175,9 +179,11 @@ describe("Repair Log Endpoints", () => {
         status: "completed",
       });
 
+    console.log("DEBUG REPAIR PATCH: ", res.body);
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.status).toBe("completed");
   });
 });
+
 
