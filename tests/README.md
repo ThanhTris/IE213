@@ -10,6 +10,8 @@ tests/
 │   ├── product/       # Test luồng quản lý Sản phẩm
 │   ├── repair-log/    # Test luồng Ghi nhận bảo hành
 │   └── warranty/      # Test luồng Đúc NFT và Chuyển nhượng
+├── contracts/   # Kịch bản kiểm thử Smart Contract (Hardhat/Ethers)
+│   └── EWarranty.test.js  # ⭐ Test logic đúc NFT & phân quyền (onlyOwner)
 └── frontend/    # Kịch bản kiểm thử giao diện Frontend (nếu có)
 ```
 
@@ -27,6 +29,16 @@ npm run test
 ```bash
 cd frontend
 npm run test
+```
+
+### 3. Kiểm Thử Smart Contract (Web3 Logic)
+Kiểm thử tính đúng đắn của logic On-chain trên môi trường giả lập Hardhat Network.
+```bash
+# Cài đặt Hardhat (nếu chưa có)
+npm install --save-dev hardhat @nomicfoundation/hardhat-toolbox
+
+# Chạy test contract
+npx hardhat test tests/contracts/EWarranty.test.js
 ```
 
 ## 🛡️ Tiêu chuẩn viết Test
