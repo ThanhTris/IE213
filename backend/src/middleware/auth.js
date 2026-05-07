@@ -1,7 +1,12 @@
 const jwt = require("jsonwebtoken");
 const { sendError } = require("../utils/apiResponse");
 
-const getJwtSecret = () => process.env.JWT_SECRET || "dev-jwt-secret";
+const getJwtSecret = () => {
+  if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+    throw new Error("FATAL ERROR: JWT_SECRET is not defined in production environment.");
+  }
+  return process.env.JWT_SECRET || "dev-jwt-secret";
+};
 const getJwtExpiresIn = () => process.env.JWT_EXPIRES_IN || "1d";
 
 const extractBearerToken = (authorizationHeader = "") => {

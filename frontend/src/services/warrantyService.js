@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
 import apiClient from "./apiClient";
-import { pinataHelper, pinFileToPinata } from "../utils/pinata";
 import { parseMetaMaskError } from "../utils/web3";
 import WarrantyNFT from "../../../contracts/WarrantyNFT.json";
 
@@ -62,7 +61,7 @@ export const warrantyService = {
   },
 
   /**
-   * Handles the 4-step Hybrid Web3 Minting Process for Warranty NFTs.
+   * Handles the 3-step Hybrid Web3 Minting Process for Warranty NFTs.
    *
    * @returns {{ success: true, serialNumber: string }} — dùng để redirect
    * @throws Error với message tiếng Việt thân thiện (đã parse MetaMask errors)
@@ -72,13 +71,20 @@ export const warrantyService = {
     const normalizedSerial = formData.serialNumber.trim().toUpperCase();
 
     try {
-      // ── BƯỚC 1: Lưu nháp vào DB ─────────────────────────────────────────
-      onProgress("1/4 Đang lưu nháp bảo hành vào hệ thống...");
-      const res1 = await apiClient.post("/warranties", {
-        serialNumber: normalizedSerial,
-        productCode: formData.deviceModel,
-        ownerWallet: formData.walletAddress,
-        warrantyMonths: parseInt(formData.warrantyMonths, 10),
+      // ── BƯỚC 1: Lưu nháp và Upload IPFS (Backend tự xử lý) ─────────────────────────────────────────
+      onProgress("1/3 Đang lưu nháp bảo hành và tải dữ liệu lên IPFS...");
+      
+      const payload = new FormData();
+      payload.append("serialNumber", normalizedSerial);
+      payload.append("productCode", formData.deviceModel);
+      payload.append("ownerWallet", formData.walletAddress);
+      payload.append("warrantyMonths", parseInt(formData.warrantyMonths, 10));
+      if (imageFile) {
+        payload.append("image", imageFile);
+      }
+
+      const res1 = await apiClient.post("/warranties", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       currentWarrantyId = res1.data?.id || res1.data?._id;
@@ -86,28 +92,13 @@ export const warrantyService = {
         throw new Error("Không lấy được ID bản nháp bảo hành từ hệ thống.");
       }
 
-      // ── BƯỚC 2: Upload IPFS (Pinata) ────────────────────────────────────
-      onProgress("2/4 Đang tải lên IPFS...");
-      let imageHashUrl = "ipfs://Qmauto-generated-dummy-link";
-      if (imageFile) {
-        onProgress("2/4 Đang tải ảnh thiết bị lên IPFS...");
-        imageHashUrl = await pinFileToPinata(imageFile);
+      const tokenURI = res1.data?.tokenURI;
+      if (!tokenURI) {
+        throw new Error("Hệ thống không trả về tokenURI. Vui lòng kiểm tra lại cấu hình IPFS ở backend.");
       }
 
-      onProgress("2/4 Đang tải siêu dữ liệu (Metadata) lên IPFS...");
-      const metadata = {
-        name: `Warranty NFT - ${formData.deviceModel}`,
-        description: "Official E-Warranty NFT",
-        image: imageHashUrl,
-        attributes: [
-          { trait_type: "Serial Number", value: normalizedSerial },
-          { trait_type: "Expiry Date", value: calculatedExpiryDate },
-        ],
-      };
-      const tokenURI = await pinataHelper(metadata);
-
-      // ── BƯỚC 3: Giao dịch Blockchain (MetaMask) ─────────────────────────
-      onProgress("3/4 Đang đúc NFT trên blockchain — chờ xác nhận MetaMask...");
+      // ── BƯỚC 2: Giao dịch Blockchain (MetaMask) ─────────────────────────
+      onProgress("2/3 Đang đúc NFT trên blockchain — chờ xác nhận MetaMask...");
       if (!window.ethereum) {
         throw new Error("MetaMask chưa được cài đặt. Vui lòng cài đặt để tiếp tục!");
       }
@@ -132,7 +123,7 @@ export const warrantyService = {
         expiryTimestamp
       );
 
-      onProgress("3/4 Giao dịch đã gửi — đang chờ xác nhận từ mạng...");
+      onProgress("2/3 Giao dịch đã gửi — đang chờ xác nhận từ mạng...");
       const receipt = await tx.wait();
       const txHash = receipt.hash;
 
@@ -151,8 +142,8 @@ export const warrantyService = {
         }
       }
 
-      // ── BƯỚC 4: Cập nhật DB với kết quả blockchain ──────────────────────
-      onProgress("4/4 Đang hoàn tất và lưu kết quả vào hệ thống...");
+      // ── BƯỚC 3: Cập nhật bằng chứng lên Backend ───────────────────────
+      onProgress("3/3 Đang xác thực thông tin với hệ thống trung tâm...");
       await apiClient.patch(`/warranties/${currentWarrantyId}`, {
         txHash,
         tokenId,
