@@ -1,7 +1,8 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { productService } from "../../../services/productService";
 import { repairService } from "../../../services/repairService";
+import { useProducts } from "../../../hooks/useAdminData";
 import { getStatusConfig } from "../../../utils/statusStyles";
 
 
@@ -537,8 +538,7 @@ function ProductDetailModal({ product, onClose }) {
 }
 
 function ProductList() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { products, isLoading: loading, mutateProducts } = useProducts();
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterType, setFilterType] = useState("Tất cả"); // Quick Filter (Nút ngoài)
   const [filterBrand, setFilterBrand] = useState("all"); // Lọc theo hãng (Trong Popup)
@@ -553,27 +553,10 @@ function ProductList() {
   const listTopRef = useRef(null);
   const ITEMS_PER_PAGE = 10;
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const res = await productService.getAllProducts();
-      setProducts(res.data || []);
-      toast.success("Đã tải danh sách sản phẩm.");
-    } catch (err) {
-      toast.error("Lỗi khi tải dữ liệu Admin: " + (err.response?.data?.message || err.message));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleUpdateProduct = async (code, data) => {
     try {
       await productService.updateProduct(code, data);
-      await fetchProducts(); // Refresh list
+      mutateProducts(); // Refresh list via SWR
     } catch (err) {
       throw err;
     }
@@ -584,7 +567,7 @@ function ProductList() {
       await productService.deleteProduct(product.productCode);
       toast.success(`Đã xóa sản phẩm ${product.productName}`);
       setDeletingProduct(null);
-      await fetchProducts(); // Refresh list
+      mutateProducts(); // Refresh list via SWR
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Xóa thất bại!";
       toast.error(errorMsg);

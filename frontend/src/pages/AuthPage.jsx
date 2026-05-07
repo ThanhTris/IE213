@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { connectMetaMask, isValidWalletAddress } from "../utils/web3";
+import { connectMetaMask, isValidWalletAddress, parseMetaMaskError } from "../utils/web3";
 import { persistAuthToken } from "../utils/auth";
 import { toast } from "sonner";
 import { userService } from "../services/userService";
@@ -43,7 +43,7 @@ function AuthPage({ onAuthSuccess, onCancel }) {
       onAuthSuccess?.(auth);
     } catch (e) {
       console.error("[Login Error]", e);
-      const msg = e?.message || "Kết nối ví thất bại.";
+      const msg = parseMetaMaskError(e);
       setError(msg);
       toast.error(msg);
     } finally {

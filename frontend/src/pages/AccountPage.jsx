@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { userService } from "../services/userService";
-import { warrantyService } from "../services/warrantyService";
 import { ethers } from "ethers";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import WarrantyNFT from "../../../contracts/WarrantyNFT.json";
 import apiClient from "../services/apiClient";
+import { userService } from "../services/userService";
+import { parseMetaMaskError } from "../utils/web3";
+import useProfile from "../hooks/useProfile";
+import useWarranties from "../hooks/useWarranties";
+import BlockingOverlay from "../components/BlockingOverlay";
 import "../assets/css/AccountPage.css";
 
 function AccountPage({ auth, onLogout }) {
@@ -15,23 +18,24 @@ function AccountPage({ auth, onLogout }) {
   const [activeTab, setActiveTab] = useState("info");
   const [isEditing, setIsEditing] = useState(false);
 
-  // Profile state
-  const [profile, setProfile] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    role: "user",
-    createdAt: null,
-    isActive: true,
-  });
-  const [editProfile, setEditProfile] = useState({ ...profile });
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [profileSaving, setProfileSaving] = useState(false);
-  const [stats, setStats] = useState({ total: 0, active: 0 });
+  // → SWR: tự động fetch + cache profile & stats
+  const {
+    profile,
+    stats,
+    isLoading: profileLoading,
+    mutate: mutateProfile,
+  } = useProfile(Boolean(auth?.token));
 
-  // Warranties state
-  const [myWarranties, setMyWarranties] = useState([]);
-  const [loadingWarranties, setLoadingWarranties] = useState(false);
+  // → SWR: tự động fetch + cache danh sách warranties
+  const {
+    warranties: myWarranties,
+    isLoading: loadingWarranties,
+    mutate: mutateWarranties,
+  } = useWarranties(Boolean(auth?.token));
+
+  // Edit profile state
+  const [editProfile, setEditProfile] = useState({ fullName: "", email: "", phone: "" });
+  const [profileSaving, setProfileSaving] = useState(false);
 
   // Transfer state
   const [showWarningModal, setShowWarningModal] = useState(false);
@@ -40,6 +44,7 @@ function AccountPage({ auth, onLogout }) {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [transferStep, setTransferStep] = useState("");
 
   const walletAddress = auth?.walletAddress || "";
   const initials = profile.fullName
@@ -51,67 +56,13 @@ function AccountPage({ auth, onLogout }) {
         .slice(0, 2)
     : "??";
 
-  useEffect(() => {
-    async function loadProfile() {
-      if (!auth?.token) return;
-      setProfileLoading(true);
-      try {
-        const res = await userService.getMe();
-        if (res && res.success) {
-          const userData = res.data || {};
-          const loaded = {
-            fullName: userData.fullName || "",
-            email: userData.email || "",
-            phone: userData.phone || "",
-            role: userData.role || "user",
-            isActive: userData.isActive,
-            createdAt: userData.createdAt,
-          };
-          setProfile(loaded);
-          setEditProfile({
-            fullName: userData.fullName || "",
-            email: userData.email || "",
-            phone: userData.phone || "",
-          });
-
-          // Fetch stats
-          const sRes = await warrantyService.getMyStats();
-          if (sRes && sRes.success) {
-            setStats({
-              total: sRes.data?.total || 0,
-              active: sRes.data?.active || 0,
-            });
-          }
-        }
-      } catch (err) {
-        console.error("Error loading profile:", err);
-      } finally {
-        setProfileLoading(false);
-      }
-    }
-    loadProfile();
-  }, [auth]);
-
-  useEffect(() => {
-    if (activeTab === "devices" && auth?.token) {
-      loadWarranties();
-    }
-  }, [activeTab, auth]);
-
-  const loadWarranties = async () => {
-    setLoadingWarranties(true);
-    try {
-      const res = await warrantyService.getMyWarranties();
-      if (res && res.success) {
-        setMyWarranties(res.data || []);
-      }
-    } catch (err) {
-      console.error("Error loading warranties:", err);
-      toast.error("Không thể tải danh sách thiết bị");
-    } finally {
-      setLoadingWarranties(false);
-    }
-  };
+  // Khi profile load xong, đồng bộ vào editProfile
+  // (chỉ đồng bộ lần đầu, không ghi đè khi đang edit)
+  const [editSynced, setEditSynced] = useState(false);
+  if (!profileLoading && !editSynced && profile.fullName !== undefined) {
+    setEditProfile({ fullName: profile.fullName, email: profile.email, phone: profile.phone });
+    setEditSynced(true);
+  }
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -123,9 +74,10 @@ function AccountPage({ auth, onLogout }) {
     try {
       const res = await userService.updateProfile(editProfile);
       if (res && res.success) {
-        setProfile({ ...profile, ...editProfile });
+        mutateProfile(); // SWR revalidate
         toast.success("Hồ sơ đã được cập nhật thành công!");
         setIsEditing(false);
+        setEditSynced(false); // Reset để sync lại từ SWR
       } else {
         toast.error(res?.message || "Cập nhật hồ sơ thất bại");
       }
@@ -188,6 +140,7 @@ function AccountPage({ auth, onLogout }) {
     }
 
     setIsTransferring(true);
+    setTransferStep("");
     try {
       if (!window.ethereum) throw new Error("Vui lòng cài đặt MetaMask!");
 
@@ -201,6 +154,7 @@ function AccountPage({ auth, onLogout }) {
         signer,
       );
 
+      setTransferStep("Đang yêu cầu xác nhận từ ví MetaMask...");
       toast.info("Đang yêu cầu xác nhận từ ví...");
 
       // NFT Transfer on blockchain
@@ -209,9 +163,12 @@ function AccountPage({ auth, onLogout }) {
         recipientAddress,
         selectedWarranty.tokenId,
       );
+
+      setTransferStep("Đang chờ xác nhận từ mạng blockchain...");
       const receipt = await tx.wait();
 
       // Update backend
+      setTransferStep("Đang cập nhật hệ thống...");
       await apiClient.post("/transfers", {
         tokenId: selectedWarranty.tokenId,
         toAddress: recipientAddress,
@@ -220,17 +177,27 @@ function AccountPage({ auth, onLogout }) {
 
       toast.success("Chuyển nhượng thành công!");
       setShowTransferModal(false);
-      loadWarranties(); // Refresh list
+      setRecipientAddress("");
+      mutateWarranties(); // Cập nhật lại danh sách NFT
+      mutateProfile(); // Cập nhật lại thống kê số lượng bên cột trái
     } catch (err) {
       console.error(err);
-      toast.error(err.message || "Lỗi trong quá trình chuyển nhượng");
+      toast.error(parseMetaMaskError(err));
     } finally {
       setIsTransferring(false);
+      setTransferStep("");
     }
   };
 
   return (
-    <div className="settings-page">
+    <>
+      {/* Blocking overlay khi đang chờ giao dịch transfer NFT */}
+      <BlockingOverlay
+        isVisible={isTransferring}
+        step={transferStep}
+        title="Đang xử lý chuyển nhượng NFT"
+      />
+      <div className="settings-page">
       <div className="settings-layout">
         {/* Left Card - Profile Summary */}
         <div className="profile-card">
@@ -330,7 +297,9 @@ function AccountPage({ auth, onLogout }) {
             </button>
             <button
               className={`tab-btn ${activeTab === "devices" ? "active" : ""}`}
-              onClick={() => setActiveTab("devices")}
+              onClick={() => {
+                setActiveTab("devices");
+              }}
             >
               <svg
                 viewBox="0 0 24 24"
@@ -846,6 +815,7 @@ function AccountPage({ auth, onLogout }) {
         </div>
       )}
     </div>
+    </>
   );
 }
 
