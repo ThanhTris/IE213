@@ -1,6 +1,8 @@
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const Warranty = require("../../../backend/src/models/WarrantyModel");
+const Product = require("../../../backend/src/models/ProductModel");
+const User = require("../../../backend/src/models/UserModel");
 const app = require("../../../backend/src/app");
 
 process.env.JWT_SECRET = "test-jwt-secret";
@@ -38,12 +40,19 @@ describe("Warranty Public Verify Endpoint", () => {
       mintedAt: "2026-03-30T07:00:00.000Z",
     });
 
+    vi.spyOn(Product, "findOne").mockReturnValue({
+      lean: vi.fn().mockResolvedValueOnce({ productName: "iPhone 16" }),
+    });
+    vi.spyOn(User, "findOne").mockReturnValue({
+      lean: vi.fn().mockResolvedValueOnce({ fullName: "User A" }),
+    });
+
     const res = await request(app).get("/api/warranties/verify/SN-001");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.message).toBe("Tra cứu bảo hành thành công");
-    
+
     expect(res.body.data.ownerWallet).toBe("0x1234...abcd");
     expect(res.body.data.ownerWallet).not.toBe(rawOwnerWallet);
     expect(res.body.data.isMinted).toBe(true);
