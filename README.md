@@ -4,31 +4,39 @@ Dự án E-Warranty được thiết kế theo mô hình **Hybrid Web3**, kết 
 
 ---
 
-## 🏗️ Kiến Trúc Hệ Thống (Hybrid Web3 Architecture)
+## 🗺️ Kiến Trúc Hệ Thống (System Overview)
+
+Dự án áp dụng mô hình **Hybrid Web3 Architecture** nhằm tối ưu hóa giữa tính minh bạch của Blockchain và hiệu năng của Web2.
+
+### 🖼️ Sơ đồ Thành phần (Component Diagram)
 
 ```mermaid
-sequenceDiagram
-    actor User as Admin (Trình duyệt)
-    participant FE as Frontend (React.js)
-    participant BE as Backend (Node.js/Express)
-    participant DB as MongoDB
-    participant IPFS as Pinata (IPFS)
-    participant MetaMask
-    participant SC as Smart Contract (Sepolia)
+graph TB
+    subgraph Client["🖥️ CLIENT (Trình duyệt)"]
+        FE["Frontend (React.js)"]
+        MM["MetaMask (Ví Web3)"]
+    end
 
-    User->>FE: 1. Nhập thông tin phiếu bảo hành & Upload Ảnh
-    FE->>BE: 2. Gửi API (FormData) yêu cầu lưu nháp
-    BE->>IPFS: 3. Tải Ảnh & Metadata JSON lên IPFS
-    IPFS-->>BE: 4. Trả về tokenURI (ipfs://...)
-    BE->>DB: 5. Lưu thông tin nháp vào CSDL
-    BE-->>FE: 6. Trả kết quả kèm tokenURI
-    FE->>MetaMask: 7. Yêu cầu ký giao dịch Mint NFT (Kèm tokenURI)
-    MetaMask->>SC: 8. Gửi Tx đúc NFT lên Blockchain
-    SC-->>FE: 9. Trả về Receipt (TxHash, TokenId)
-    FE->>BE: 10. Gửi API cập nhật TxHash & TokenId
-    BE->>DB: 11. Cập nhật trạng thái thành công
-    BE-->>FE: 12. Hoàn tất quy trình
+    subgraph Server["☁️ SERVER (Render.com)"]
+        BE["Backend API (Node.js)"]
+        DB[("MongoDB Atlas")]
+    end
+
+    subgraph Decentralized["🌐 PHÂN TÁN (Decentralized)"]
+        IPFS["Pinata IPFS"]
+        BC["Ethereum Sepolia"]
+    end
+
+    FE --> BE
+    FE --> MM
+    MM --> BC
+    BE --> DB
+    BE --> IPFS
 ```
+
+> [!IMPORTANT]
+> **Tài liệu Kiến trúc Chi tiết**: Để xem đầy đủ 7 sơ đồ (Use Case, Sequence, ERD, State Machine, ...), vui lòng truy cập:  
+> 👉 **[Tài liệu Kiến trúc Hệ thống (architecture.md)](./docs/architecture.md)**
 
 ---
 
