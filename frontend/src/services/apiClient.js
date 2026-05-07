@@ -20,7 +20,7 @@ const apiClient = axios.create({
   },
 });
 
-// Interceptor to add Auth Token automatically
+// Interceptor: Tự động đính kèm Auth Token vào Header của mọi Request
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("bw_auth_token");
@@ -34,15 +34,15 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Interceptor for common error handling
+// Interceptor: Xử lý lỗi chung từ Response của Backend
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    // If unauthorized (401), logout and redirect to login
+    // Nếu mã lỗi là 401 (Unauthorized), xóa token và chuyển hướng về trang đăng nhập
     if (error.response?.status === 401) {
       toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
       localStorage.removeItem("bw_auth_token");
-      // Only redirect if not already on the auth page to avoid loops
+      // Chỉ chuyển hướng nếu chưa ở trang auth để tránh vòng lặp (loop)
       if (!window.location.pathname.startsWith("/auth")) {
         setTimeout(() => {
           window.location.href = "/auth";
@@ -51,8 +51,8 @@ apiClient.interceptors.response.use(
     }
 
     const message = error.response?.data?.message || "Lỗi kết nối máy chủ";
-    // We don't show a global toast here for EVERY error to avoid double-toasts in components,
-    // but we ensure the error is passed back correctly.
+    // Không tự động hiển thị Toast cho MỌI lỗi ở đây để tránh trùng lặp thông báo.
+    // Lỗi sẽ được ném về cho Component tự xử lý.
     return Promise.reject(error.response?.data || { message });
   }
 );

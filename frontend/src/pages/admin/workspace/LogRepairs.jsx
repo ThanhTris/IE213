@@ -2,7 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { repairService } from "../../../services/repairService";
 import { warrantyService } from "../../../services/warrantyService";
+import { useWarrantiesAdmin } from "../../../hooks/useAdminData";
 import { API_ROOT } from "../../../utils/api";
+import { mutate } from "swr";
 
 const WrenchIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -24,9 +26,6 @@ const SearchIcon = () => (
 
 function LogRepairs() {
   const [loading, setLoading] = useState(false);
-  const [warranties, setWarranties] = useState([]);
-  const [isFetchingWarranties, setIsFetchingWarranties] = useState(true);
-
   const [form, setForm] = useState({
     serialNumber: "",
     repairContent: "",
@@ -43,21 +42,7 @@ function LogRepairs() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    const fetchWarranties = async () => {
-      try {
-        const res = await warrantyService.getAllWarranties();
-        if (res.success && Array.isArray(res.data)) {
-          setWarranties(res.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch warranties:", err);
-      } finally {
-        setIsFetchingWarranties(false);
-      }
-    };
-    fetchWarranties();
-  }, []);
+  const { warranties, isLoading: isFetchingWarranties } = useWarrantiesAdmin();
 
   const filteredWarranties = useMemo(() => {
     if (!searchTerm) return warranties;
@@ -102,6 +87,9 @@ function LogRepairs() {
       await repairService.createRepair(payload);
       toast.success("Đã ghi nhận bản ghi sửa chữa thành công!");
       setSubmitted(true);
+      
+      // Báo SWR tải lại lịch sử sửa chữa
+      mutate("/api/repair-logs");
       setForm({
         serialNumber: "",
         repairContent: "",

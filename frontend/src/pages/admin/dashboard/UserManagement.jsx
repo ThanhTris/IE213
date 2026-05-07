@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { userService } from "../../../services/userService";
 import { warrantyService } from "../../../services/warrantyService";
+import { useUsers, useWarrantiesAdmin } from "../../../hooks/useAdminData";
 
 // Helper to get initials
 const getInitials = (name) => {
@@ -118,8 +119,10 @@ const ROLE_ICON = {
 const AVATAR_COLORS = ["#1e40af", "#7c3aed", "#0f766e", "#b45309", "#9f1239"];
 
 function UserManagement() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { users: rawUsers, isLoading: loadingUsers, mutateUsers } = useUsers();
+  const { warranties: rawWarranties, isLoading: loadingWarrantiesAll } = useWarrantiesAdmin();
+  
+  const loading = loadingUsers || loadingWarrantiesAll;
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -157,45 +160,27 @@ function UserManagement() {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const [userRes, warrantyRes] = await Promise.all([
-        userService.getAllUsers(),
-        warrantyService.getAllWarranties()
-      ]);
+  const users = useMemo(() => {
+    const countMap = rawWarranties.reduce((acc, w) => {
+      const wallet = w.ownerWallet?.toLowerCase();
+      if (wallet) acc[wallet] = (acc[wallet] || 0) + 1;
+      return acc;
+    }, {});
 
-      const warranties = warrantyRes.data || [];
-      const countMap = warranties.reduce((acc, w) => {
-        const wallet = w.ownerWallet?.toLowerCase();
-        if (wallet) acc[wallet] = (acc[wallet] || 0) + 1;
-        return acc;
-      }, {});
+    return rawUsers.map(u => {
+      const wallet = u.walletAddress?.toLowerCase();
+      return {
+        ...u,
+        id: u._id || u.id,
+        initials: getInitials(u.fullName),
+        status: u.isActive ? "active" : "inactive",
+        joinDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString() : null,
+        lastActive: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : null,
+        warrantyCount: countMap[wallet] || 0,
+      };
+    });
+  }, [rawUsers, rawWarranties]);
 
-      const formatted = (userRes.data || []).map(u => {
-        const wallet = u.walletAddress?.toLowerCase();
-        return {
-          ...u,
-          id: u._id || u.id,
-          initials: getInitials(u.fullName),
-          status: u.isActive ? "active" : "inactive",
-          joinDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString() : null,
-          lastActive: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : null,
-          warrantyCount: countMap[wallet] || 0,
-        };
-      });
-      setUsers(formatted);
-      toast.success("Đã tải danh sách người dùng và dữ liệu bảo hành.");
-    } catch (err) {
-      toast.error("Lỗi khi tải dữ liệu: " + (err.response?.data?.message || err.message));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -223,7 +208,7 @@ function UserManagement() {
         phone: newUser.phone
       });
       toast.success("Thêm người dùng thành công!");
-      fetchUsers();
+      mutateUsers();
       setNewUser({ fullName: "", email: "", walletAddress: "", role: "user", phone: "" });
       setIsAddOpen(false);
     } catch (err) {
@@ -273,7 +258,7 @@ function UserManagement() {
 
       await Promise.all(updatePromises);
       toast.success("Cập nhật thông tin người dùng thành công!");
-      await fetchUsers();
+      mutateUsers();
       setEditUser(null);
     } catch (err) {
       const msg = err.error?.message || err.message || "Lỗi khi cập nhật";
@@ -291,7 +276,7 @@ function UserManagement() {
       await userService.updateUserStatus(userToDelete.walletAddress, false);
       toast.success(`Đã tạm dừng người dùng ${userToDelete.fullName} thành công.`);
       setUserToDelete(null);
-      fetchUsers();
+      mutateUsers();
     } catch (err) {
       const msg = err.error?.message || err.message || "Lỗi khi xóa người dùng";
       toast.error("Lỗi: " + msg);
@@ -302,7 +287,7 @@ function UserManagement() {
     try {
       await userService.updateUserStatus(user.walletAddress, true);
       toast.success(`Đã mở khóa người dùng ${user.fullName || "Unnamed"} thành công.`);
-      fetchUsers();
+      mutateUsers();
     } catch (err) {
       const msg = err.error?.message || err.message || "Lỗi khi mở khóa";
       toast.error("Lỗi: " + msg);

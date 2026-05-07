@@ -8,7 +8,7 @@ services:
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
-    branch: staging
+    branch: main
     plan: free
     healthCheckPath: /health
     envVars:
@@ -34,10 +34,14 @@ services:
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    branch: staging
+    branch: main
     envVars:
-      - key: VITE_API_URL
+      - key: VITE_API_BASE_URL
         sync: false # URL backend — điền sau khi backend deploy xong
+      - key: VITE_CONTRACT_ADDRESS
+        value: "0xF79Fb7022B5AfB635FC0BD65682271db766bab14"
+      - key: VITE_NETWORK_ID
+        value: "11155111"
     routes:
       - type: rewrite
         source: /*

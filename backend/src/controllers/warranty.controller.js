@@ -59,14 +59,27 @@ const createWarranty = async (req, res) => {
       });
     }
 
-    // Kiểm tra serialNumber chưa được dùng
+    // Kiểm tra serialNumber đã tồn tại chưa
     const existedWarranty = await Warranty.findOne({
       serialNumber: normalizedSerialNumber,
-    }).lean();
-    if (existedWarranty) {
+    });
+
+    // Nếu đã tồn tại VÀ đã đúc NFT thành công (có txHash) → từ chối tạo mới
+    if (existedWarranty && existedWarranty.txHash) {
       return sendError(res, {
         statusCode: 409,
-        message: "serialNumber đã tồn tại trong hệ thống bảo hành",
+        message: "serialNumber đã tồn tại và đã được đúc NFT trên blockchain",
+      });
+    }
+
+    // Nếu đã tồn tại NHƯNG chưa đúc NFT (chưa có txHash) → tái sử dụng bản nháp cũ
+    // Trường hợp này xảy ra khi người dùng bấm "Hủy" trên MetaMask rồi thử lại
+    if (existedWarranty && !existedWarranty.txHash) {
+      console.log(`[Warranty] Tái sử dụng bản nháp cũ cho serialNumber: ${normalizedSerialNumber}`);
+      return sendSuccess(res, {
+        statusCode: 200,
+        message: "Tái sử dụng bản nháp bảo hành đã tạo trước đó",
+        data: existedWarranty,
       });
     }
 
